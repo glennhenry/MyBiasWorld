@@ -5,6 +5,7 @@ import encore.utils.hash
 import encore.utils.identifier.Ids
 import portal.domain.Members
 import portal.mongo.collection.UserAccount
+import kotlin.random.Random
 
 /**
  * Utilities to create dummy accounts.
@@ -13,7 +14,7 @@ object AccountFactory {
     fun account(
         username: String = username(),
         displayName: String = displayName(),
-        email: String = email(),
+        email: String = email(username),
         password: String = "dummy",
         extra: Map<String, String> = emptyMap()
     ): UserAccount {
@@ -41,21 +42,30 @@ object AccountFactory {
     }
 
     /**
-     * Produce string like "BurgerPerfect_Xiaoting"
+     * Produce string like "Forever Xiaoting 😍"
      */
     fun displayName(): String {
-        val firstWord = Words.capitalNoun()
-        val secondWord = Words.capitalAdjective()
-        val thirdWord = Members.all.random()
-        return "$firstWord${secondWord}_$thirdWord"
+        val firstWord = Words.title()
+        val secondWord = Members.all.random()
+        // 30% to use emoji
+        val thirdWord = if (Random.nextDouble() < 0.3) {
+            " ${Words.emoji()}"
+        } else {
+            ""
+        }
+        return "$firstWord $secondWord$thirdWord"
     }
 
     /**
      * Produce string like "tomatosmart@email.com"
      */
-    fun email(): String {
-        val firstWord = Words.noun()
-        val secondWord = Words.adjective()
-        return "$firstWord$secondWord-${Ids.random(6)}@email.com"
+    fun email(username: String? = null): String {
+        if (username != null) {
+            return "$username-${Ids.random(6)}@email.com"
+        } else {
+            val firstWord = Words.noun()
+            val secondWord = Words.adjective()
+            return "$firstWord$secondWord-${Ids.random(6)}@email.com"
+        }
     }
 }

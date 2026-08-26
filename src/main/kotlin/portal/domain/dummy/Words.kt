@@ -23,6 +23,17 @@ object Words {
         "perfect", "elegant", "radiant", "graceful", "nice",
     )
 
+    private val titles = listOf(
+        "Queen", "Pretty", "Elegant", "Biased", "Ult",
+        "Forever", "Nonstop", "Keep on", "Love", "Everything",
+        "All About", "Thinking of", "Dreamy", "Princess", "Cafe"
+    )
+
+    private val emojis = listOf(
+        "😀", "😎", "❤️", "😍", "😁",
+        "🍕", "🍔", "🍟", "🌭", "🍿"
+    )
+
     fun noun(): String = nouns.random()
     fun capitalNoun(): String = nouns.random().capitalizeFirstLetter()
 
@@ -31,6 +42,9 @@ object Words {
 
     fun adjective(): String = adjectives.random()
     fun capitalAdjective(): String = adjectives.random().capitalizeFirstLetter()
+
+    fun title(): String = titles.random()
+    fun emoji(): String = emojis.random()
 
     private fun String.capitalizeFirstLetter(): String {
         require(this.isNotBlank())

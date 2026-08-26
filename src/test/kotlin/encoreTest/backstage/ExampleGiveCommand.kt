@@ -1,12 +1,9 @@
 package encoreTest.backstage
 
-import portal.context.ServerContext
-import encore.backstage.command.types.ArgumentCollection
-import encore.backstage.command.types.ArgumentDescriptor
 import encore.backstage.command.Command
+import encore.backstage.command.types.ArgumentCollection
 import encore.backstage.command.types.CommandResult
-import encore.backstage.command.types.CommandVariant
-import kotlin.text.toIntOrNull
+import portal.context.ServerContext
 
 /**
  * Example of how command can be implemented.
@@ -16,29 +13,20 @@ import kotlin.text.toIntOrNull
  */
 class ExampleGiveCommand : Command {
     override val commandId: String = "give"
-    override val description: String = "Give a particular item of an amount to a specific user."
-    override val variants = listOf(
-        // give userId itemId
-        CommandVariant(
-            listOf(
-                ArgumentDescriptor("userId", "String", "the target userId"),
-                ArgumentDescriptor("itemId", "String", "the ID of item to be given"),
-            ),
-        ),
-        // give userId itemId 100
-        CommandVariant(
-            listOf(
-                ArgumentDescriptor("userId", "String", "the target userId"),
-                ArgumentDescriptor("itemId", "String", "the ID of item to be given"),
-                ArgumentDescriptor("amount", "Int", "amount of item to be sent"),
-            ),
-        ),
-    )
+    override val description: String = """
+    Give a particular item of an amount to a specific user.
+    
+    There are 3 arguments:
+    - userId: String (required) = the target userId.
+    - itemId: String (required) = the ID of item to be given.
+    - amount: Int (optional) = amount of item to be sent, default=1.
+    
+    """.trimIndent()
 
     /**
      * amount = 2 simulates uncaught exception, amount = 3 simulates failure
      */
-    override fun execute(serverContext: ServerContext, args: ArgumentCollection): CommandResult {
+    override suspend fun execute(serverContext: ServerContext, args: ArgumentCollection): CommandResult {
         val userId = args.next() ?: return CommandResult.NotEnoughArgument("userId is required")
         val itemId = args.next() ?: return CommandResult.NotEnoughArgument("itemId is required")
 

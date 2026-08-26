@@ -13,11 +13,11 @@ import kotlin.random.Random
 
 object ProfileFactory {
     private val avatars = listOf(
+        "avatars/box.jpg",
         "avatars/duck.jpg",
-        "avatars/penguin.jpg",
-        "avatars/truck.jpg",
-        "avatars/turtle.jpg",
-        "avatars/work.jpg"
+        "avatars/plushie.jpg",
+        "avatars/toys.jpg",
+        "avatars/truck.jpg"
     )
 
     private val countries = listOf(

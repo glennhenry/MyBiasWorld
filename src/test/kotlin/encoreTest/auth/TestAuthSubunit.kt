@@ -180,6 +180,7 @@ class TestAuthSubunit {
             override suspend fun updateLastActivity(userId: UserId, lastActivity: Long): Result<Unit> = TODO()
             override suspend fun usernameExists(username: String): Result<Boolean> = TODO()
             override suspend fun emailExists(email: String): Result<Boolean> = TODO()
+            override suspend fun getRandomUsername(): Result<String?> = TODO()
         }
         val accountSubunit = AccountSubunit(repo)
         val pcs = UserCreationSubunit(db, BlankProfileRepository(), RealUserCreationFactory())

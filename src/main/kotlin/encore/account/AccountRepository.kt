@@ -90,4 +90,11 @@ interface AccountRepository {
      * Returns [Result.failure] if an error occurs while retrieving the data.
      */
     suspend fun emailExists(email: String): Result<Boolean>
+
+    /**
+     * Returns a random username from the database.
+     *
+     * Returns [Result.success] with the username, or `null` if no user exist at all.
+     */
+    suspend fun getRandomUsername(): Result<String?>
 }

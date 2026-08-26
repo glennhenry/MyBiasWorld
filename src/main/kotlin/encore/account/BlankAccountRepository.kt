@@ -15,4 +15,5 @@ class BlankAccountRepository : AccountRepository {
     override suspend fun updateLastActivity(userId: UserId, lastActivity: Long): Result<Unit> = Result.success(Unit)
     override suspend fun usernameExists(username: String): Result<Boolean> = TODO("NO OPERATION")
     override suspend fun emailExists(email: String): Result<Boolean> = TODO("NO OPERATION")
+    override suspend fun getRandomUsername(): Result<String?> = TODO("NO OPERATION")
 }

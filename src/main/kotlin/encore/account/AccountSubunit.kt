@@ -161,6 +161,21 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
             .toOutcome { exists -> return Outcome.Ok(exists) }
     }
 
+    /**
+     * Returns an [Outcome] containing a random username.
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the username, or null if no user exist at all.
+     */
+    suspend fun getRandomUsername(): Outcome<UserId?> {
+        return accountRepository.getRandomUsername()
+            .onFailure {
+                Fancam.error(it, Tags.Account) {
+                    "Get random username failed with repository scandal"
+                }
+            }
+            .toOutcome { userId -> return Outcome.Ok(userId) }
+    }
+
     override suspend fun debut(scope: ServerScope): Result<Unit> = Result.success(Unit)
     override suspend fun disband(scope: ServerScope): Result<Unit> = Result.success(Unit)
 

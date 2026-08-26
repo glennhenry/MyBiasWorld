@@ -1,5 +1,6 @@
 package encore.account
 
+import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Projections
 import com.mongodb.client.model.Updates
@@ -121,6 +122,25 @@ class MongoAccountRepository(val accountCollection: MongoCollection<UserAccount>
                 .firstOrNull() != null
         }
     }
+
+    override suspend fun getRandomUsername(): Result<String?> {
+        return runMongoCatching {
+            accountCollection
+                .withDocumentClass<QueryUsername>()
+                .aggregate(
+                    listOf(
+                        Aggregates.sample(1), Aggregates.project(
+                            Projections.fields(
+                                Projections.excludeId(),
+                                Projections.include("username")
+                            )
+                        )
+                    )
+                )
+                .firstOrNull()
+                ?.username
+        }
+    }
 }
 
 /**
@@ -129,6 +149,14 @@ class MongoAccountRepository(val accountCollection: MongoCollection<UserAccount>
 data class QueryUserId(
     @field:BsonId val id: String? = null,
     val userId: UserId
+)
+
+/**
+ * Mongo projection class to query the `username` of [UserAccount].
+ */
+data class QueryUsername(
+    @field:BsonId val id: String? = null,
+    val username: String
 )
 
 /**

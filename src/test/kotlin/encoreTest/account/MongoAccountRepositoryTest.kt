@@ -11,6 +11,7 @@ import testUtils.createAccount
 import testUtils.createProfile
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -58,5 +59,6 @@ class MongoAccountRepositoryTest {
 
         assertTrue(repo.usernameExists(name).getOrThrow())
         assertTrue(repo.emailExists(email).getOrThrow())
+        assertNotNull(repo.getRandomUsername().getOrThrow())
     }
 }

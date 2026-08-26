@@ -34,6 +34,16 @@ class ProfileRoutes(private val serverContext: ServerContext) : RouteHandler {
             }
         }
 
+        get("/profile/random") {
+            guard(call, optionalAccountGuard) {
+                val username = serverContext.subunits.account.getRandomUsername().okOrNull() ?: run {
+                    call.respond(HttpStatusCode.NotFound, "No user exist")
+                }
+                Fancam.debug { "Random profile request to '$username'" }
+                call.respondRedirect("/profile/@$username/overview", permanent = false)
+            }
+        }
+
         get("/profile/@{username}/overview") {
             guard(call, optionalAccountGuard) {
                 val username = requireNotNull(call.request.pathVariables["username"])

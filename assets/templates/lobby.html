@@ -24,6 +24,8 @@
             <h1>Lobby</h1>
             <p th:text="'System time: ' + ${data.time}"></p>
             <p th:text="'Bias: ' + ${data.bias}"></p>
+            <div class="space-y-md"></div>
+            <a class="link" href="/profile/random">Give me a random profile!</a>
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>

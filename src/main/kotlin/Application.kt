@@ -2,6 +2,7 @@ import bootstrap.acceptsTerminalInput
 import bootstrap.installEncore
 import bootstrap.logStartupInformation
 import bootstrap.shutdownHook
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import encore.EncoreIdentity
 import encore.EncoreIdentity.celebrate
 import encore.backstage.BackstageRoutes
@@ -26,7 +27,7 @@ import portal.context.ServerContext
 import portal.domain.auth.AuthApiRoutes
 import portal.domain.auth.AuthPageRoutes
 import portal.domain.cafe.CafeRoutes
-import portal.domain.dummy.DummyActivitySetup
+import portal.domain.dummy.DummySetupCommand
 import portal.domain.lobby.LobbyRoutes
 import portal.domain.profile.ProfileRoutes
 import portal.mongo.RuntimeMongoCollections
@@ -81,7 +82,7 @@ suspend fun Application.configureApplication() {
     websocketHandlers(serverContext)
 
     // register commands
-    commandHandlers(serverContext)
+    commandHandlers(serverContext, db)
 
     // configure routing
     // ephemeral token storage for /backstage entry
@@ -111,9 +112,6 @@ suspend fun Application.configureApplication() {
 
     // install shutdown hook
     shutdownHook(appScope, serverSubunitScope, serverContext.subunits)
-
-    // dummy setup
-    DummyActivitySetup(db, serverContext).setup()
 }
 
 fun websocketHandlers(serverContext: ServerContext) {
@@ -122,8 +120,9 @@ fun websocketHandlers(serverContext: ServerContext) {
     }
 }
 
-fun commandHandlers(serverContext: ServerContext) {
+fun commandHandlers(serverContext: ServerContext, db: MongoDatabase) {
     with(serverContext.commandDispatcher) {
         register(ExampleCommand())
+        register(DummySetupCommand(db))
     }
 }

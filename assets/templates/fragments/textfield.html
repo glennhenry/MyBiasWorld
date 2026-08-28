@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="textfield-styles">
+  <style>
+    .textfield-container {
+      width: max-content;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .textarea-styles {
+      all: unset;
+      width: 300px;
+      height: 50px;
+      padding: 4px;
+      padding-right: 16px;
+      border: 1px solid #ccc;
+      overflow-y: auto;
+      overflow-wrap: break-word;
+      resize: none;
+      cursor: text;
+    }
+
+    .input-styles {
+      all: unset;
+      width: 200px;
+      height: 20px;
+      padding: 4px;
+      border: 1px solid #ccc;
+      cursor: text;
+    }
+
+    .textfield-counter {
+      text-align: end;
+    }
+
+    .insufficient {
+      color: red;
+    }
+
+    .sufficient {
+      color: green;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="textfield-container" th:fragment="tracking-textarea(minLength, maxLength, placeholder)"
+    th:data-minlength=${minLength} th:data-maxlength=${maxLength}>
+    <textarea class="textfield textarea-styles" th:placeholder=${placeholder} th:maxlength=${maxLength}></textarea>
+    <p class="textfield-counter"></p>
+  </div>
+
+  <div class="textfield-container" th:fragment="tracking-inputtext(minLength, maxLength, placeholder)"
+    th:data-minlength=${minLength} th:data-maxlength=${maxLength}>
+    <input class="textfield input-styles" type="text" th:placeholder="${placeholder}" th:maxlength="${maxLength}">
+    <p class="textfield-counter"></p>
+  </div>
+
+  <script th:fragment="textfield-scripts">
+    $(document).ready(function () {
+      $(function () {
+        $(".textfield-container").each(function () {
+          const container = $(this)
+          const textfield = container.children(".textfield")
+          const counter = container.children(".textfield-counter")
+
+          const min = Number(container.data("minlength"))
+          const max = Number(container.data("maxlength"))
+
+          function updateCounter() {
+            const len = textfield.val().length
+            const valid = len >= min && len <= max
+
+            counter
+              .toggleClass("sufficient", valid)
+              .toggleClass("insufficient", !valid)
+
+            if (len < min) {
+              counter.text(`(min ${min} characters) ${len}/${min}`)
+            } else if (len >= max) {
+              counter.text(`(max ${max} characters) ${len}/${min}`)
+            } else {
+              counter.text(`${len}/${min}`)
+            }
+
+            container.attr("data-input-ok", valid)
+          }
+
+          updateCounter()
+          textfield.on("input", updateCounter)
+        })
+      })
+    })
+  </script>
+</body>
+
+</html>

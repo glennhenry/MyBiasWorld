@@ -88,7 +88,13 @@
               counter.text(`${len}/${min}`)
             }
 
-            container.attr("data-input-ok", valid)
+            if (valid) {
+              textfield.attr("data-input-status", "ok")
+            } else if (len < min) {
+              textfield.attr("data-input-status", "more")
+            } else {
+              textfield.attr("data-input-status", "toomuch")
+            }
           }
 
           updateCounter()

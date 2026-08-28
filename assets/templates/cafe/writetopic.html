@@ -11,6 +11,7 @@
   <script src="/site/toast.js"></script>
   <script src="/site/utils.js"></script>
   <title>Cafe.WriteTopic</title>
+  <th:block th:replace="~{fragments/textfield :: textfield-styles}"></th:block>
   <style>
     .content {
       padding-left: 0;
@@ -33,18 +34,15 @@
       margin-top: 16px;
     }
 
-    .content-textarea {
+    #content-textarea {
       width: 300px;
       height: 200px;
       resize: none;
       padding-right: 12px;
     }
 
-    .topic-title-textarea {
-      field-sizing: content;
+    #topic-title-input {
       width: 300px;
-      resize: none;
-      padding-right: 12px;
     }
 
     .post-submit {
@@ -69,16 +67,17 @@
           <div class="content">
             <div class="space-y-xs"></div>
             <a class="link backlink" th:text="'← Back to ' + ${#strings.capitalize(data.sectionName)}"></a>
-            <form id="post-form" class="post-container">
-              <p>Write a topic</p>
-              <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title"
-                maxlength="80"></textarea>
-              <div class="content-section">
-                <label for="content-textarea">Content</label>
-                <textarea id="content-textarea" class="content-textarea"
-                  placeholder="Write your topic here..."></textarea>
+            <form class="post-container">
+              <h2>Write a topic</h2>
+              <label for="topic-title-input">Title</label>
+              <div
+                th:replace="~{fragments/textfield :: tracking-inputtext(minLength=10, maxLength=80, placeholder='Write the title here...', inputId='topic-title-input', inputClasses='')}">
               </div>
-              <button type="submit" class="post-submit">Post</button>
+              <label for="content-textarea">Content</label>
+              <div
+                th:replace="~{fragments/textfield :: tracking-textarea(minLength=20, maxLength=3000, placeholder='Write your topic here...', textareaId='content-textarea', textareaClasses='')}">
+              </div>
+              <button class="post-submit">Post</button>
               <p id="post-status" class="post-status"></p>
             </form>
           </div>
@@ -92,12 +91,10 @@
   </div>
 
   <th:block th:replace="~{fragments/floating-toolbar :: floating-toolbar-script}"></th:block>
+  <th:block th:replace="~{fragments/textfield :: textfield-scripts}"></th:block>
   <script>
-    let isTitleValid = false;
-    let isContentValid = false;
-
     $(document).ready(function () {
-      $("#post-form").submit(function (event) {
+      $(".post-submit").click(function (event) {
         postFormSubmitListener(event)
       })
 
@@ -105,39 +102,36 @@
     })
 
     function checkForm() {
-      validateTitle()
-      validateContent()
-      return isTitleValid && isContentValid
-    }
-
-    function validateTitle() {
-      const titleText = $("#topic-title-textarea").val();
-      if (titleText.length < 8) {
-        isTitleValid = true;
-        $("#post-status").text("Title must be at least 8 characters.")
-      } else {
-        isTitleValid = true;
+      const titleStatus = $("#topic-title-input").attr("data-input-status")
+      if (titleStatus != "ok") {
+        if (titleStatus == "more") {
+          $("#post-status").text("Title must be at least 10 characters.")
+        } else if (titleStatus == "toomuch") {
+          $("#post-status").text("Title should not be more than 80 characters.")
+        }
+        return false
       }
-    }
 
-    function validateContent() {
-      const contentText = $("#content-textarea").val();
-      if (contentText.length < 20) {
-        isContentValid = false;
-        $("#post-status").text("Content should contains at least 20 characters.")
-      } else {
-        isContentValid = true;
+      const contentStatus = $("#content-textarea").attr("data-input-status")
+      if (contentStatus != "ok") {
+        if (contentStatus == "more") {
+          $("#post-status").text("Content must be at least 20 characters.")
+        } else if (contentStatus == "toomuch") {
+          $("#post-status").text("Content should not be more than 3000 characters.")
+        }
+        return false
       }
+
+      return true
     }
 
     async function postFormSubmitListener(event) {
       event.preventDefault()
       if (!checkForm()) return
 
-      const titleText = $("#topic-title-textarea").val();
+      const titleText = $("#topic-title-input").val();
       const contentText = $("#content-textarea").val();
       const payload = { title: titleText, content: contentText }
-      console.log(JSON.stringify(payload))
 
       try {
         const response = await fetch(window.location.href, {

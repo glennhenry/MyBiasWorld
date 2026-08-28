@@ -47,15 +47,17 @@
 </head>
 
 <body>
-  <div class="textfield-container" th:fragment="tracking-textarea(minLength, maxLength, placeholder)"
-    th:data-minlength=${minLength} th:data-maxlength=${maxLength}>
-    <textarea class="textfield textarea-styles" th:placeholder=${placeholder} th:maxlength=${maxLength}></textarea>
+  <div class="textfield-container"
+    th:fragment="tracking-textarea(minLength, maxLength, placeholder, textareaId, textareaClasses)">
+    <textarea th:id=${textareaId} th:class="'textfield textarea-styles ' + ${textareaClasses}"
+      th:placeholder="${placeholder}" th:minlength=${minLength} th:maxlength="${maxLength}"></textarea>
     <p class="textfield-counter"></p>
   </div>
 
-  <div class="textfield-container" th:fragment="tracking-inputtext(minLength, maxLength, placeholder)"
-    th:data-minlength=${minLength} th:data-maxlength=${maxLength}>
-    <input class="textfield input-styles" type="text" th:placeholder="${placeholder}" th:maxlength="${maxLength}">
+  <div class="textfield-container"
+    th:fragment="tracking-inputtext(minLength, maxLength, placeholder, inputId, inputClasses)">
+    <input type="text" th:id=${inputId} th:class="'textfield input-styles ' + ${inputClasses}"
+      th:placeholder="${placeholder}" th:minlength=${minLength} th:maxlength="${maxLength}">
     <p class="textfield-counter"></p>
   </div>
 
@@ -67,8 +69,8 @@
           const textfield = container.children(".textfield")
           const counter = container.children(".textfield-counter")
 
-          const min = Number(container.data("minlength"))
-          const max = Number(container.data("maxlength"))
+          const min = Number(textfield.attr("minlength"))
+          const max = Number(textfield.attr("maxlength"))
 
           function updateCounter() {
             const len = textfield.val().length

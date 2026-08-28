@@ -376,7 +376,11 @@
                     <!-- Comment to a reply -->
                     <div class="comment-form">
                       <textarea class="comment-textarea" placeholder="Write a reply..."
-                        th:data-comment-form-id="${reply.replyId}"></textarea>
+                        th:data-comment-form-id="${reply.replyId}" th:if="${data.account != null}"></textarea>
+                      <p th:if="${data.account == null}">You need to <a class="register link"
+                          href="/register">register</a>
+                        or <a class="login link" href="/login">login</a> before posting a
+                        comment.</p>
                       <div class="counter-publish-row" th:if="${data.account != null}">
                         <p id="comment-counter" th:data-comment-form-id="${reply.replyId}"></p>
                         <button class="comment-publish-btn" th:data-comment-form-id="${reply.replyId}">Publish</button>
@@ -393,9 +397,8 @@
               <div class="topic-reply-box">
                 <textarea id="topic-reply-textarea" placeholder="Write your reply here..."
                   th:if="${data.account != null}"></textarea>
-                <p th:if="${data.account == null}">You need to <a id="register" class="link"
-                    href="/register">register</a>
-                  or <a id="login" class="link" href="/login">login</a> before posting a
+                <p th:if="${data.account == null}">You need to <a class="register link" href="/register">register</a>
+                  or <a class="login link" href="/login">login</a> before posting a
                   reply.</p>
               </div>
               <div class="counter-publish-row" th:if="${data.account != null}">
@@ -432,15 +435,17 @@
 
       $(".backlink").attr('href', new URL('..', window.location.href).href.replace(/\/$/, ''))
 
-      $("#register").attr('href', `/register?return=${window.location.pathname}`)
-      $("#login").attr('href', `/login?return=${window.location.pathname}`)
+      $(".register").attr('href', `/register?return=${window.location.pathname}`)
+      $(".login").attr('href', `/login?return=${window.location.pathname}`)
 
-      updateReplyCounter()
-      resizeReplyTextarea()
-      $("#topic-reply-textarea").on("input", function () {
+      if ($("#topic-reply-textarea").length > 0) {
         updateReplyCounter()
         resizeReplyTextarea()
-      })
+        $("#topic-reply-textarea").on("input", function () {
+          updateReplyCounter()
+          resizeReplyTextarea()
+        })
+      }
 
       $(".comment-textarea").each(function () {
         updateCommentCounter($(this))

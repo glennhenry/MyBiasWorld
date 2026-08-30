@@ -36,6 +36,5 @@
 
     <!-- Custom config, follow `CustomConfig` definition in code -->
     <custom>
-        <setupDummyActivity>true</setupDummyActivity>
     </custom>
 </venue>

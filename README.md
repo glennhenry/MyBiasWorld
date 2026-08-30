@@ -1,14 +1,18 @@
 # Bias Cafe
 
-**Bias Cafe** is a social portal platform designed for fan communities. It's inspired by the look and culture of the old-school internet, forums, and social platforms of the late 2000s and 2010s. The goal is to discover the engineering aspect behind social portal applications and to explore old school web designs.
+**Bias Cafe** is a forum platform designed for fan communities. It’s inspired by the look and culture of the old-school forums of the late 2000s and 2010s. The goal is to discover the engineering aspect behind forum applications and to explore old-school web designs.
 
-Particularly, this portal focuses on creating a fan-centered environment around the K-pop girl group **Kep1er**.
+It combines a forum application with a fan-centered environment as a thematic layer. Particularly, this instance of the platform focuses on creating a fan-centered environment around the K-pop girl group **Kep1er**.
+
+_This is a fan-made community project and is not affiliated with or endorsed by the brand mentioned above. It's used only as a reference and to add personal meaning._
 
 Latest progress:
 
 <img src="progress.png" alt="website image" style="border:1px black solid;" width=500/>
 
 <img src="progress2.png" alt="website image" style="border:1px black solid;" width=500/>
+
+_(fake posts)_
 
 Still establishing the core system...
 

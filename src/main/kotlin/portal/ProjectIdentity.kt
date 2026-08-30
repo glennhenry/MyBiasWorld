@@ -20,6 +20,6 @@ import encore.EncoreIdentity
  */
 object ProjectIdentity {
     const val Title = "Bias Cafe"
-    const val Version = "0.0.1"
+    const val Version = "0.0.2"
     const val Description = "Under construction..."
 }

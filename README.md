@@ -140,7 +140,7 @@ description: example
 │   │   ├── websocket/              # WebSocket communication components
 │   │   ├── EncoreConfig.kt         # Encore configuration
 │   │   └── EncoreIdentity.kt       # Encore version and flavor metadata
-│   ├── portal/                     # Portal implementation source
+│   ├── forum/                     # Portal implementation source
 │   │   ├── config/                 # User-defined configuration
 │   │   ├── FileRoutes.kt           # Static file serving routes
 │   │   ├── ProjectIdentity.kt      # Implementation version and flavor metadata

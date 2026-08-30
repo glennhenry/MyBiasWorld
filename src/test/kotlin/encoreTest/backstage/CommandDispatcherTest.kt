@@ -8,7 +8,7 @@ import encore.backstage.command.types.CommandRequest
 import encore.backstage.command.types.CommandResult
 import encore.fancam.events.Level
 import kotlinx.coroutines.test.runTest
-import portal.context.ServerContext
+import forum.context.ServerContext
 import testUtils.TestFancam
 import testUtils.randomString
 import kotlin.random.Random

@@ -6,9 +6,8 @@ import encore.account.MongoAccountRepository
 import encore.utils.hash
 import initMongo
 import kotlinx.coroutines.test.runTest
-import portal.mongo.collection.UserAccount
+import forum.mongo.collection.UserAccount
 import testUtils.createAccount
-import testUtils.createProfile
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

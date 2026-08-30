@@ -2,7 +2,7 @@ package encore.backstage.command
 
 import encore.backstage.command.types.ArgumentCollection
 import encore.backstage.command.types.CommandResult
-import portal.context.ServerContext
+import forum.context.ServerContext
 
 /**
  * Represents a server command that can be invoked to perform

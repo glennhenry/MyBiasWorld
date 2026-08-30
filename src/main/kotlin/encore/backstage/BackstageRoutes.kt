@@ -1,6 +1,6 @@
 package encore.backstage
 
-import portal.context.ServerContext
+import forum.context.ServerContext
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.route.RouteHandler

@@ -1,7 +1,7 @@
 package encore.acts
 
 import encore.acts.choreo.BasicChoreography
-import portal.mongo.collection.UserId
+import forum.mongo.collection.UserId
 
 /**
  * Marker interface representing the input for a stage act.

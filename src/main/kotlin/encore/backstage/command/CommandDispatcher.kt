@@ -2,7 +2,7 @@ package encore.backstage.command
 
 import encore.backstage.command.types.CommandRequest
 import encore.backstage.command.types.CommandResult
-import portal.context.ServerContext
+import forum.context.ServerContext
 import encore.fancam.Fancam
 import encore.fancam.Tags
 

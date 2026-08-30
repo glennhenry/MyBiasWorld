@@ -1,16 +1,16 @@
 package testUtils
 
-import portal.mongo.collection.UserAccount
-import portal.mongo.collection.UserId
+import forum.mongo.collection.UserAccount
+import forum.mongo.collection.UserId
 import encore.time.TimeCenter
 import encore.utils.hash
 import encore.utils.identifier.Ids
-import portal.domain.Members
-import portal.domain.profile.model.FanProfile
-import portal.domain.profile.model.GameProfile
-import portal.domain.profile.model.Profile
-import portal.domain.profile.model.UserLevel
-import portal.domain.profile.model.UsersStats
+import forum.domain.Members
+import forum.domain.profile.model.FanProfile
+import forum.domain.profile.model.GameProfile
+import forum.domain.profile.model.Profile
+import forum.domain.profile.model.UserLevel
+import forum.domain.profile.model.UsersStats
 
 fun createAccount(
     userId: UserId = Ids.uuid(),

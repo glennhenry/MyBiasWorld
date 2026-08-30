@@ -1,6 +1,6 @@
 package encore.presence
 
-import portal.mongo.collection.UserId
+import forum.mongo.collection.UserId
 
 /**
  * Represents the current presence status of a user.

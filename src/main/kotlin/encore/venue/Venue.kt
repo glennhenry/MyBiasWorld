@@ -4,8 +4,8 @@ import encore.EncoreConfig
 import encore.annotation.runtime.VenueKey
 import encore.fancam.Fancam
 import encore.fancam.Tags
-import portal.config.CustomConfig
-import portal.config.SecretConfig
+import forum.config.CustomConfig
+import forum.config.SecretConfig
 import java.io.File
 
 /**

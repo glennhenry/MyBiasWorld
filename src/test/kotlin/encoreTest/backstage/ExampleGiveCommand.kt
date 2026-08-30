@@ -3,7 +3,7 @@ package encoreTest.backstage
 import encore.backstage.command.Command
 import encore.backstage.command.types.ArgumentCollection
 import encore.backstage.command.types.CommandResult
-import portal.context.ServerContext
+import forum.context.ServerContext
 
 /**
  * Example of how command can be implemented.

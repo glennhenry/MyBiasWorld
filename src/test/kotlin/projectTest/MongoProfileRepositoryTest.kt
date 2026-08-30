@@ -1,12 +1,10 @@
 package projectTest
 
 import TestCollections
-import encore.utils.hash
 import initMongo
 import kotlinx.coroutines.test.runTest
-import portal.domain.profile.subunits.MongoProfileRepository
-import portal.domain.profile.model.Profile
-import testUtils.createAccount
+import forum.domain.profile.subunits.MongoProfileRepository
+import forum.domain.profile.model.Profile
 import testUtils.createProfile
 import kotlin.test.Test
 import kotlin.test.assertEquals

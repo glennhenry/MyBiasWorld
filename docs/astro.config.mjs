@@ -52,7 +52,16 @@ export default defineConfig({
         {
           label: "Developer Documentation",
           collapsed: true,
-          items: [{ label: "Scratchpad", slug: "scratchpad" }],
+          items: [
+            { label: "Scratchpad", slug: "scratchpad" },
+            { label: "Cafe", slug: "cafe" },
+            { label: "Session", slug: "session" },
+            { label: "Profile", slug: "profile" },
+            { label: "Data Modelling", slug: "data-modelling" },
+            { label: "Attendance", slug: "attendance" },
+            { label: "Mailbox", slug: "mailbox" },
+            { label: "Board", slug: "board" },
+          ],
         },
       ],
     }),

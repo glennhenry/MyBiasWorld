@@ -7,8 +7,8 @@ plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
 }
 
-group = "dev.biascafe"
-version = "0.0.2"
+group = "dev.mbworld"
+version = "0.1.0"
 
 application {
     mainClass = "ApplicationKt"
@@ -16,12 +16,12 @@ application {
 
 ktor {
     fatJar {
-        archiveFileName.set("cafe.jar")
+        archiveFileName.set("mbworld.jar")
     }
 }
 
 tasks.withType<ShadowJar> {
-    archiveFileName.set("cafe.jar")
+    archiveFileName.set("mbworld.jar")
     destinationDirectory.set(file("deploy"))
     manifest {
         attributes["Main-Class"] = "ApplicationKt"

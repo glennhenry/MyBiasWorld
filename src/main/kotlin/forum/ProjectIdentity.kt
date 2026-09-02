@@ -19,7 +19,7 @@ import encore.EncoreIdentity
  * - [Description]: descriptive texts.
  */
 object ProjectIdentity {
-    const val Title = "Bias Cafe"
-    const val Version = "0.0.2"
-    const val Description = "Under construction..."
+    const val Title = "MyBiasWorld"
+    const val Version = "0.1.0"
+    const val Description = "Formulating world..."
 }

@@ -27,19 +27,19 @@ export default defineConfig({
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 6 },
       credits: true,
       lastUpdated: true,
-      title: "Bias Cafe",
+      title: "My Bias World",
       components: {
         Pagination: "./src/components/Pagination.astro",
         PageFrame: "./src/components/PageFrame.astro",
       },
       editLink: {
-        baseUrl: "https://github.com/glennhenry/Bias-Cafe/edit/main/",
+        baseUrl: "https://github.com/glennhenry/MyBiasWorld/edit/main/",
       },
       social: [
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/glennhenry/Bias-Cafe",
+          href: "https://github.com/glennhenry/MyBiasWorld",
         },
       ],
       sidebar: [
@@ -53,7 +53,7 @@ export default defineConfig({
           label: "Developer Documentation",
           collapsed: true,
           items: [
-            { label: "Scratchpad", slug: "scratchpad" },
+            { label: "Introduction", slug: "introduction" },
             { label: "Cafe", slug: "cafe" },
             { label: "Session", slug: "session" },
             { label: "Profile", slug: "profile" },

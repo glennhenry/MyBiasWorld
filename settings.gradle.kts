@@ -1,4 +1,4 @@
-rootProject.name = "Bias-Cafe"
+rootProject.name = "My-Bias-World"
 
 dependencyResolutionManagement {
     repositories {

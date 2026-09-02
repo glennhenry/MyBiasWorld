@@ -15,7 +15,7 @@
         <admin enabled="true" />
         <database>
             <mongo>
-                <dbname>BIAS_CAFE-prod-DB</dbname>
+                <dbname>MBWORLD-prod-DB</dbname>
                 <dburl>mongodb://localhost:27017</dburl>
             </mongo>
         </database>

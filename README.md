@@ -1,10 +1,16 @@
-# Bias Cafe
+# MyBiasWorld
 
-**Bias Cafe** is a forum platform designed for fan communities. It’s inspired by the look and culture of the old-school forums of the late 2000s and 2010s. The goal is to discover the engineering aspect behind forum applications and to explore old-school web designs.
+<img src="mbworld.png" alt="My bias world logo" width="200">
 
-It combines a forum application with a fan-centered environment as a thematic layer. Particularly, this instance of the platform focuses on creating a fan-centered environment around the K-pop girl group **Kep1er**.
+## About
 
-_This is a fan-made community project and is not affiliated with or endorsed by the brand mentioned above. It's used only as a reference and to add personal meaning._
+**MyBiasWorld** is a fan social portal platform for fan communities. It reimagines plain social applications of the old internet as a fan-centered environment.
+
+Inspired by the look and culture of old-school websites, forum, and services from the late 2000s and 2010s, the project seek to discover the engineering aspect behind them and explore old-school web design.
+
+The fan thematic layer is the heart of the platform. Particularly, this instance of platform focuses on creating a fan-centered environment around the K-pop girl group **Kep1er**.
+
+_This is a fan-made community project and is not affiliated with or endorsed by the aforementioned brand. It's used only as a reference and to add personal meaning._
 
 Latest progress:
 
@@ -50,7 +56,7 @@ You can also run the server from IntelliJ IDE run plugin on `Application.kt`.
 
 ## Build
 
-To build the server, simply run the `build.bat/sh` script. Output will be in `deploy/`. Run the deployment server using `java -jar cafe.jar`.
+To build the server, simply run the `build.bat/sh` script. Output will be in `deploy/`. Run the deployment server using `java -jar mbworld.jar`.
 
 For manual build:
 
@@ -69,7 +75,7 @@ Every variables can be overriden from OS environment variables. For example, in 
 ```ps1
 $env:ENCORE_DEVMODE = "false"
 $env:ENCORE_SERVER_HOST = "127.0.0.1"
-java -jar cafe.jar
+java -jar mbworld.jar
 ```
 
 More information in [Venue.kt](https://github.com/glennhenry/Encore/blob/main/src/main/kotlin/encore/venue/Venue.kt)
@@ -140,7 +146,7 @@ description: example
 │   │   ├── websocket/              # WebSocket communication components
 │   │   ├── EncoreConfig.kt         # Encore configuration
 │   │   └── EncoreIdentity.kt       # Encore version and flavor metadata
-│   ├── forum/                     # Portal implementation source
+│   ├── mbworld/                    # Portal implementation source
 │   │   ├── config/                 # User-defined configuration
 │   │   ├── FileRoutes.kt           # Static file serving routes
 │   │   ├── ProjectIdentity.kt      # Implementation version and flavor metadata

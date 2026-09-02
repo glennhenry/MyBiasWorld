@@ -4,7 +4,7 @@ slug: session
 description: Session docs
 ---
 
-Bias Cafe is a website application.
+MyBiasWorld is a website application.
 
 The session model used in the website is as follow:
 

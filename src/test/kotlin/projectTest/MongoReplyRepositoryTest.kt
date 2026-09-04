@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import mbworld.domain.cafe.reply.Comment
 import mbworld.domain.cafe.reply.MongoReplyRepository
 import mbworld.domain.cafe.reply.Reply
+import testUtils.assertDoesNotFailSuspend
 import testUtils.randomString
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -48,10 +49,10 @@ class MongoReplyRepositoryTest {
 
         // tests
         // 1. getReply
-        assertNotNull(repo.getReply(id).getOrNull())
+        assertDoesNotFailSuspend { repo.getReply(id).getOrThrow() }
 
         // 2. getRepliesUnder
-        assertEquals(11, repo.getRepliesUnder("fixedTopicId").getOrNull()?.size)
+        assertEquals(11, repo.getRepliesUnder("fixedTopicId").getOrThrow().size)
 
         // 3. getReplyCount
         assertEquals(11, repo.getReplyCount(topicId = "fixedTopicId").getOrThrow())
@@ -63,8 +64,10 @@ class MongoReplyRepositoryTest {
         }
 
         // 5. addReply
-        assertNotNull(repo.addReply(Reply("asdf", "asdf", "asdf", "asdf", 0, 0, emptyList())).getOrNull())
-        assertNotNull(repo.getReply("asdf").getOrNull())
+        assertDoesNotFailSuspend {
+            repo.addReply(Reply("asdf", "asdf", "asdf", "asdf", 0, 0, emptyList())).getOrThrow()
+        }
+        assertDoesNotFailSuspend { repo.getReply("asdf").getOrThrow() }
 
         // 6. getComments
         assertTrue {
@@ -75,16 +78,18 @@ class MongoReplyRepositoryTest {
         }
 
         // 6. addComment
-        repo.addComment(id, comment = Comment("comment7", "author7", "hello world 7", 0)).getOrThrow()
+        assertDoesNotFailSuspend {
+            repo.addComment(id, comment = Comment("comment7", "author7", "hello world 7", 0)).getOrThrow()
+        }
         assertNotNull(repo.getComments(id, 7).getOrThrow().find { it.commentId == "comment7" })
 
         // 7. incrementLike
-        assertNotNull(repo.incrementLike(id).getOrNull())
-        assertEquals(1, repo.getReply(id).getOrNull()?.likes)
+        assertDoesNotFailSuspend { repo.incrementLike(id).getOrThrow() }
+        assertEquals(1, repo.getReply(id).getOrThrow().likes)
 
         // 8. decrementLike
-        assertNotNull(repo.decrementLike(id).getOrNull())
-        assertEquals(0, repo.getReply(id).getOrNull()?.likes)
+        assertDoesNotFailSuspend { repo.decrementLike(id).getOrThrow() }
+        assertEquals(0, repo.getReply(id).getOrThrow().likes)
     }
 
     private fun createReply(amount: Int, topicId: String = randstr()): List<Reply> {

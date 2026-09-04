@@ -1,5 +1,9 @@
 package mbworld.domain.cafe.topic
 
+import encore.datastore.DocumentNotDeletedException
+import encore.datastore.DocumentNotFoundException
+import encore.datastore.DocumentNotUpdatedException
+
 /**
  * Repository for [Topic] collection.
  *
@@ -18,37 +22,37 @@ interface TopicRepository {
      *
      * Returns:
      * - [Result.success] with the topic.
-     * - [Result.success] with null if not found.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
-    suspend fun getTopic(topicId: String): Result<Topic?>
+    suspend fun getTopic(topicId: String): Result<Topic>
 
     /**
      * Get the topic identified by its first 8-characters of `topicId`.
      *
      * Returns:
      * - [Result.success] with the topic.
-     * - [Result.success] with null if not found.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
-    suspend fun getTopicByShortId(shortTopicId: String): Result<Topic?>
+    suspend fun getTopicByShortId(shortTopicId: String): Result<Topic>
 
     /**
      * Get the full `topicId` from its [shortTopicId].
      *
      * Returns:
-     * - [Result.success] with the topicId.
-     * - [Result.success] with null if not found.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.success] with the full `topicId`.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
-    suspend fun getFullTopicId(shortTopicId: String): Result<String?>
+    suspend fun getFullTopicId(shortTopicId: String): Result<String>
 
     /**
      * Get every available topics.
      *
      * Returns:
      * - [Result.success] with the list of topic, or empty.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
     suspend fun getTopics(): Result<List<Topic>>
 
@@ -57,7 +61,7 @@ interface TopicRepository {
      *
      * Returns:
      * - [Result.success] with the list of topic, or empty.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
     suspend fun getTopicsOfSection(sectionId: String): Result<List<Topic>>
 
@@ -66,7 +70,7 @@ interface TopicRepository {
      *
      * Returns:
      * - [Result.success] with map of each `sectionId` to its count.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
     suspend fun getTopicsCountForEachSection(): Result<Map<String, Int>>
 
@@ -75,7 +79,7 @@ interface TopicRepository {
      *
      * Returns:
      * - [Result.success] if the operation succeeded.
-     * - [Result.failure] if an error occurs during the operation.
+     * - [Result.failure] if other error occurs during the operation.
      */
     suspend fun addTopic(topic: Topic): Result<Unit>
 
@@ -84,8 +88,9 @@ interface TopicRepository {
      *
      * Returns:
      * - [Result.success] if the operation succeeded.
-     * - [Result.failure] if topic matched but fails to be deleted or
-     *   if an error occurs during the operation.
+     * - [Result.failure] with [DocumentNotDeletedException] if topic is not found
+     *   or fails to be deleted.
+     * - [Result.failure] other error occurs during the operation.
      */
     suspend fun deleteTopic(topicId: String): Result<Unit>
 
@@ -94,7 +99,7 @@ interface TopicRepository {
      *
      * Returns:
      * - [Result.success] if the operation succeeded.
-     * - [Result.failure] if an error occurs during the operation.
+     * - [Result.failure] if other error occurs during the operation.
      */
     suspend fun deleteAllTopics(): Result<Unit>
 
@@ -103,7 +108,9 @@ interface TopicRepository {
      *
      * Returns:
      * - [Result.success] if the operation succeeded.
-     * - [Result.failure] if topic is not found or an error occurs during the operation.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
+     * - [Result.failure] if other error occurs during the operation.
      */
     suspend fun incrementLike(topicId: String): Result<Unit>
 
@@ -112,7 +119,9 @@ interface TopicRepository {
      *
      * Returns:
      * - [Result.success] if the operation succeeded.
-     * - [Result.failure] if topic is not found or an error occurs during the operation.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
+     * - [Result.failure] if other error occurs during the operation.
      */
     suspend fun decrementLike(topicId: String): Result<Unit>
 }

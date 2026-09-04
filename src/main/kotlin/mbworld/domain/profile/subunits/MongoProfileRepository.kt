@@ -9,15 +9,13 @@ import encore.datastore.runMongoCatching
 import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.associateBy
 import kotlinx.coroutines.flow.firstOrNull
-import org.bson.codecs.pojo.annotations.BsonId
 import mbworld.domain.profile.model.FanProfile
 import mbworld.domain.profile.model.FanProfileSummary
-import mbworld.domain.profile.model.Profile
 import mbworld.domain.profile.model.OverviewSummary
+import mbworld.domain.profile.model.Profile
 import mbworld.mongo.collection.UserAccount
 import mbworld.mongo.collection.UserId
-import kotlin.String
-import kotlin.collections.List
+import org.bson.codecs.pojo.annotations.BsonId
 
 /** `displayName`*/
 val FieldDisplayName = Profile::displayName.name
@@ -34,7 +32,7 @@ class MongoProfileRepository(
         }
     }
 
-    override suspend fun getProfile(userId: UserId): Result<Profile?> {
+    override suspend fun getProfile(userId: UserId): Result<Profile> {
         return runMongoCatching {
             profiles
                 .find(Filters.eq(FieldUserId, userId))
@@ -42,7 +40,7 @@ class MongoProfileRepository(
         }
     }
 
-    override suspend fun getProfileOverview(userId: UserId): Result<OverviewSummary?> {
+    override suspend fun getProfileOverview(userId: UserId): Result<OverviewSummary> {
         return runMongoCatching {
             val query = profiles
                 .withDocumentClass<QueryProfileOverview>()
@@ -59,23 +57,21 @@ class MongoProfileRepository(
                 )
                 .firstOrNull()
 
-            return if (query != null) {
-                Result.success(
-                    OverviewSummary(
-                        query.displayName,
-                        query.avatarUrl,
-                        query.country,
-                        query.birthday,
-                        query.bio
-                    )
+            if (query != null) {
+                OverviewSummary(
+                    query.displayName,
+                    query.avatarUrl,
+                    query.country,
+                    query.birthday,
+                    query.bio
                 )
             } else {
-                Result.success(null)
+                null
             }
         }
     }
 
-    override suspend fun getFanProfile(userId: UserId): Result<FanProfileSummary?> {
+    override suspend fun getFanProfile(userId: UserId): Result<FanProfileSummary> {
         return runMongoCatching {
             val query = profiles
                 .withDocumentClass<QueryFanProfile>()
@@ -93,25 +89,23 @@ class MongoProfileRepository(
                     )
                 ).firstOrNull()
 
-            return if (query != null) {
-                Result.success(
-                    FanProfileSummary(
-                        query.displayName,
-                        query.avatarUrl,
-                        query.startedStan,
-                        query.favoriteSong,
-                        query.favoriteEra,
-                        query.bias,
-                        query.story
-                    )
+            if (query != null) {
+                FanProfileSummary(
+                    query.displayName,
+                    query.avatarUrl,
+                    query.startedStan,
+                    query.favoriteSong,
+                    query.favoriteEra,
+                    query.bias,
+                    query.story
                 )
             } else {
-                Result.success(null)
+                null
             }
         }
     }
 
-    override suspend fun getUserSummary(userId: UserId): Result<UserSummary?> {
+    override suspend fun getUserSummary(userId: UserId): Result<UserSummary> {
         return runMongoCatching {
             val query = profiles
                 .withDocumentClass<QueryUserSummary>()
@@ -126,10 +120,10 @@ class MongoProfileRepository(
                 )
                 .firstOrNull()
 
-            return if (query != null) {
-                Result.success(UserSummary(query.userId, query.displayName, query.avatarUrl))
+            if (query != null) {
+                UserSummary(query.userId, query.displayName, query.avatarUrl)
             } else {
-                Result.success(null)
+                null
             }
         }
     }

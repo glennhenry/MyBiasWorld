@@ -17,19 +17,19 @@ class ReplySubunit(private val replyRepository: ReplyRepository) : Subunit<Serve
     /**
      * Returns an [Outcome] containing the requested reply.
      * - [Outcome.Fail] when there is internal repository error.
-     * - [Outcome.Ok] with the reply, or null if it's not found.
+     * - [Outcome.Ok] with the reply, or `null` if it's not found.
      */
     suspend fun getReply(replyId: String): Outcome<Reply?> {
         return replyRepository.getReply(replyId)
             .onFailure {
-                if (it !is DocumentNotFoundException) {
-                    Fancam.error(it, "reply") {
-                        "getReply query failed for replyId=$replyId"
+                if (it is DocumentNotFoundException) {
+                    Fancam.warn("reply") {
+                        "getReply topic not found for replyId=$replyId"
                     }
-                } else {
-                    Fancam.error(it, "reply") {
-                        "getReply reply not found for replyId=$replyId"
-                    }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, "reply") {
+                    "getReply query failed for replyId=$replyId"
                 }
             }
             .toOutcome { reply -> return Outcome.Ok(reply) }
@@ -103,19 +103,19 @@ class ReplySubunit(private val replyRepository: ReplyRepository) : Subunit<Serve
      * which exists under the reply identified by [replyId].
      *
      * - [Outcome.Fail] when there is internal repository error.
-     * - [Outcome.Ok] with the comment, or null if it's not found.
+     * - [Outcome.Ok] with the comment, or null if the reply or the comment is not found.
      */
     suspend fun getCommentById(replyId: String, commentId: String): Outcome<Comment?> {
         return replyRepository.getComments(replyId, 20)
             .onFailure {
-                if (it !is DocumentNotFoundException) {
+                if (it is DocumentNotFoundException) {
                     Fancam.error(it, "reply") {
-                        "getCommentById query failed for replyId=$replyId"
-                    }
-                } else {
-                    Fancam.warn("reply") {
                         "getCommentById reply not found for replyId=$replyId"
                     }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, "reply") {
+                    "getCommentById query failed for replyId=$replyId commentId=$commentId"
                 }
             }
             .toOutcome { comments -> comments.find { it.commentId == commentId } }
@@ -127,11 +127,17 @@ class ReplySubunit(private val replyRepository: ReplyRepository) : Subunit<Serve
      * of a reply.
      *
      * - [Outcome.Fail] when there is internal repository error.
-     * - [Outcome.Ok] with the replies, or empty.
+     * - [Outcome.Ok] with the comments or empty, or null if the reply is not found.
      */
-    suspend fun getCommentsUnder(replyId: String, limit: Int): Outcome<List<Comment>> {
+    suspend fun getCommentsUnder(replyId: String, limit: Int): Outcome<List<Comment>?> {
         return replyRepository.getComments(replyId, minOf(20, limit))
             .onFailure {
+                if (it is DocumentNotFoundException) {
+                    Fancam.error(it, "reply") {
+                        "getCommentsUnder reply not found for replyId=$replyId"
+                    }
+                    return Outcome.Ok(null)
+                }
                 Fancam.error(it, "reply") {
                     "getCommentsUnder query failed for replyId=$replyId"
                 }
@@ -146,14 +152,8 @@ class ReplySubunit(private val replyRepository: ReplyRepository) : Subunit<Serve
     suspend fun addComment(replyId: String, comment: Comment): Report {
         return replyRepository.addComment(replyId, comment)
             .onFailure {
-                if (it !is DocumentNotFoundException) {
-                    Fancam.error(it, "reply") {
-                        "addComment query failed for replyId=$replyId with comment=$comment"
-                    }
-                } else {
-                    Fancam.warn("reply") {
-                        "addComment reply not found for replyId=$replyId"
-                    }
+                Fancam.error(it, "reply") {
+                    "addComment query failed for replyId=$replyId with comment=$comment"
                 }
             }
             .toReport()

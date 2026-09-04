@@ -1,5 +1,6 @@
 package mbworld.domain.cafe.topic
 
+import encore.datastore.DocumentNotDeletedException
 import encore.datastore.DocumentNotFoundException
 import kotlin.math.max
 
@@ -11,16 +12,23 @@ class InMemoryTopicRepository(
 ) : TopicRepository {
     override suspend fun awaitInit() = Unit
 
-    override suspend fun getTopic(topicId: String): Result<Topic?> {
-        return Result.success(topics.find { it.topicId == topicId })
+    override suspend fun getTopic(topicId: String): Result<Topic> {
+        val topic = topics.find { it.topicId == topicId }
+            ?: return Result.failure(DocumentNotFoundException("topicId=$topicId not found"))
+        return Result.success(topic)
     }
 
-    override suspend fun getTopicByShortId(shortTopicId: String): Result<Topic?> {
-        return Result.success(topics.find { it.topicId.startsWith(shortTopicId) })
+    override suspend fun getTopicByShortId(shortTopicId: String): Result<Topic> {
+        val topic = topics.find { it.topicId.startsWith(shortTopicId) }
+            ?: return Result.failure(DocumentNotFoundException("shortTopicId=$shortTopicId not found"))
+        return Result.success(topic)
+
     }
 
-    override suspend fun getFullTopicId(shortTopicId: String): Result<String?> {
-        return Result.success(topics.find { it.topicId.startsWith(shortTopicId) }?.topicId)
+    override suspend fun getFullTopicId(shortTopicId: String): Result<String> {
+        val topic = topics.find { it.topicId.startsWith(shortTopicId) }
+            ?: return Result.failure(DocumentNotFoundException("shortTopicId=$shortTopicId not found"))
+        return Result.success(topic.topicId)
     }
 
     override suspend fun getTopics(): Result<List<Topic>> {
@@ -45,7 +53,9 @@ class InMemoryTopicRepository(
     }
 
     override suspend fun deleteTopic(topicId: String): Result<Unit> {
-        topics.removeIf { it.topicId == topicId }
+        if (!topics.removeIf { it.topicId == topicId }) {
+            return Result.failure(DocumentNotDeletedException("topicId=$topicId fails to be deleted"))
+        }
         return Result.success(Unit)
     }
 

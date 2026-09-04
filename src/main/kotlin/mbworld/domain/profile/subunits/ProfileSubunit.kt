@@ -1,5 +1,6 @@
 package mbworld.domain.profile.subunits
 
+import encore.datastore.DocumentNotFoundException
 import mbworld.mongo.collection.UserId
 import encore.fancam.Fancam
 import encore.subunit.Subunit
@@ -22,7 +23,10 @@ class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit
         return profileRepository.getProfile(userId)
             .onFailure {
                 Fancam.error(it, "profile") {
-                    "getProfile failed: repository scandal for '$userId'"
+                    "getProfile query failed for userId=$userId"
+                }
+                if (it is DocumentNotFoundException) {
+                    return Outcome.Ok(null)
                 }
             }
             .toOutcome { profile -> return Outcome.Ok(profile) }
@@ -38,7 +42,10 @@ class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit
         return profileRepository.getProfileOverview(userId)
             .onFailure {
                 Fancam.error(it, "profile") {
-                    "getProfileOverview failed: repository scandal for '$userId'"
+                    "getProfileOverview query failed for userId=$userId"
+                }
+                if (it is DocumentNotFoundException) {
+                    return Outcome.Ok(null)
                 }
             }
             .toOutcome { summary -> return Outcome.Ok(summary) }
@@ -54,7 +61,10 @@ class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit
         return profileRepository.getFanProfile(userId)
             .onFailure {
                 Fancam.error(it, "profile") {
-                    "getFanProfile failed: repository scandal for '$userId'"
+                    "getFanProfile query failed for userId=$userId"
+                }
+                if (it is DocumentNotFoundException) {
+                    return Outcome.Ok(null)
                 }
             }
             .toOutcome { summary -> return Outcome.Ok(summary) }
@@ -70,7 +80,10 @@ class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit
         return profileRepository.getUserSummary(userId)
             .onFailure {
                 Fancam.error(it, "profile") {
-                    "getUserSummary failed: repository scandal for '$userId'"
+                    "getUserSummary query failed for userId=$userId"
+                }
+                if (it is DocumentNotFoundException) {
+                    return Outcome.Ok(null)
                 }
             }
             .toOutcome { profile -> return Outcome.Ok(profile) }

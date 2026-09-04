@@ -204,7 +204,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         TopicDeletionOutcome.Success ->
                             call.respond(HttpStatusCode.NoContent)
 
-                        TopicDeletionOutcome.TopicNotFound ->
+                        TopicDeletionOutcome.TopicNotDeleted ->
                             call.respond(HttpStatusCode.NotFound, "Topic not found")
                     }
                 }

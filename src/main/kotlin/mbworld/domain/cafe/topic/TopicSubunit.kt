@@ -1,5 +1,6 @@
 package mbworld.domain.cafe.topic
 
+import encore.datastore.DocumentNotDeletedException
 import encore.datastore.DocumentNotFoundException
 import encore.fancam.Fancam
 import encore.subunit.Subunit
@@ -24,14 +25,14 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     suspend fun getTopic(topicId: String): Outcome<Topic?> {
         return topicRepository.getTopic(topicId)
             .onFailure {
-                if (it !is DocumentNotFoundException) {
-                    Fancam.error(it, "topic") {
-                        "getTopic query failed for topicId=$topicId"
-                    }
-                } else {
+                if (it is DocumentNotFoundException) {
                     Fancam.warn("topic") {
                         "getTopic topic not found for topicId=$topicId"
                     }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, "topic") {
+                    "getTopic query failed for topicId=$topicId"
                 }
             }
             .toOutcome { topic -> return Outcome.Ok(topic) }
@@ -45,14 +46,14 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     suspend fun getTopicByShortId(shortTopicId: String): Outcome<Topic?> {
         return topicRepository.getTopicByShortId(shortTopicId)
             .onFailure {
-                if (it !is DocumentNotFoundException) {
-                    Fancam.error(it, "topic") {
-                        "getTopicByShortId query failed for shortTopicId=$shortTopicId"
-                    }
-                } else {
+                if (it is DocumentNotFoundException) {
                     Fancam.warn("topic") {
                         "getTopicByShortId topic not found for shortTopicId=$shortTopicId"
                     }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, "topic") {
+                    "getTopicByShortId query failed for shortTopicId=$shortTopicId"
                 }
             }
             .toOutcome { topic -> return Outcome.Ok(topic) }
@@ -66,14 +67,14 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     suspend fun getFullTopicId(shortTopicId: String): Outcome<String?> {
         return topicRepository.getFullTopicId(shortTopicId)
             .onFailure {
-                if (it !is DocumentNotFoundException) {
-                    Fancam.error(it, "topic") {
-                        "getFullTopicId query failed for shortTopicId=$shortTopicId"
-                    }
-                } else {
+                if (it is DocumentNotFoundException) {
                     Fancam.warn("topic") {
                         "getFullTopicId topic not found for shortTopicId=$shortTopicId"
                     }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, "topic") {
+                    "getFullTopicId query failed for shortTopicId=$shortTopicId"
                 }
             }
             .toOutcome { topicId -> return Outcome.Ok(topicId) }
@@ -139,7 +140,7 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
                 }
 
                 return when (it) {
-                    is DocumentNotFoundException -> Outcome.Ok(TopicDeletionOutcome.TopicNotFound)
+                    is DocumentNotDeletedException -> Outcome.Ok(TopicDeletionOutcome.TopicNotDeleted)
                     else -> Outcome.Fail
                 }
             }
@@ -213,7 +214,7 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
 /**
  * Represent outcome for topic deletion.
  * - [Success]
- * - [TopicNotFound]
+ * - [TopicNotDeleted]
  */
 enum class TopicDeletionOutcome {
     /**
@@ -222,7 +223,7 @@ enum class TopicDeletionOutcome {
     Success,
 
     /**
-     * Failed to delete topic because it wasn't found.
+     * Failed to delete topic because either it wasn't found or fail to be deleted
      */
-    TopicNotFound
+    TopicNotDeleted
 }

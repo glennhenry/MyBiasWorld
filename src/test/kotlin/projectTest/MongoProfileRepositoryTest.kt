@@ -5,6 +5,7 @@ import initMongo
 import kotlinx.coroutines.test.runTest
 import mbworld.domain.profile.subunits.MongoProfileRepository
 import mbworld.domain.profile.model.Profile
+import testUtils.assertDoesNotFailSuspend
 import testUtils.createProfile
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -43,13 +44,13 @@ class MongoProfileRepositoryTest {
         assertEquals("UserABC", repo.getProfile(id).getOrNull()?.displayName)
 
         // 2. insert
-        repo.insert(createProfile(userId = "xyzasdf"))
+        assertDoesNotFailSuspend { repo.insert(createProfile(userId = "xyzasdf")).getOrThrow() }
         assertEquals("xyzasdf", repo.getProfile("xyzasdf").getOrNull()?.userId)
 
         // 3. getUserSummary
         assertTrue {
             val x = repo.getUserSummary(id).getOrThrow()
-            x?.userId == id && x.displayName == "UserABC" && x.avatarUrl == "avatars/duck.jpg"
+            x.userId == id && x.displayName == "UserABC" && x.avatarUrl == "avatars/duck.jpg"
         }
 
         // 4. getUserSummaries
@@ -59,10 +60,9 @@ class MongoProfileRepositoryTest {
         }
 
         // 5. getProfileOverview
-        assertEquals(targetProfile.birthday, repo.getProfileOverview(id).getOrThrow()?.birthday)
+        assertEquals(targetProfile.birthday, repo.getProfileOverview(id).getOrThrow().birthday)
 
         // 5. getFanProfile
-        assertEquals(targetProfile.fanProfile.favoriteSong, repo.getFanProfile(id).getOrThrow()?.favoriteSong)
+        assertEquals(targetProfile.fanProfile.favoriteSong, repo.getFanProfile(id).getOrThrow().favoriteSong)
     }
 }
-

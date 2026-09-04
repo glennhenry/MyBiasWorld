@@ -1,20 +1,15 @@
 package mbworld.domain.cafe.reply
 
-import com.mongodb.client.model.Accumulators
-import com.mongodb.client.model.Aggregates
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Projections
-import com.mongodb.client.model.Updates
+import com.mongodb.client.model.*
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.runMongoCatching
-import encore.datastore.throwIfNothingMatched
 import encore.datastore.throwIfNothingModified
 import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.associate
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
-import org.bson.codecs.pojo.annotations.BsonId
 import mbworld.domain.cafe.topic.FieldTopicId
+import org.bson.codecs.pojo.annotations.BsonId
 
 /** `topicId`*/
 val FieldReplyId = Reply::replyId.name
@@ -28,7 +23,7 @@ val FieldReplyLikes = Reply::likes.name
 class MongoReplyRepository(private val replies: MongoCollection<Reply>) : ReplyRepository {
     override suspend fun awaitInit() {}
 
-    override suspend fun getReply(replyId: String): Result<Reply?> {
+    override suspend fun getReply(replyId: String): Result<Reply> {
         return runMongoCatching {
             replies
                 .find(Filters.eq(FieldReplyId, replyId))
@@ -44,7 +39,7 @@ class MongoReplyRepository(private val replies: MongoCollection<Reply>) : ReplyR
         }
     }
 
-    override suspend fun getReplyCount(topicId: String): Result<Int?> {
+    override suspend fun getReplyCount(topicId: String): Result<Int> {
         return runMongoCatching {
             replies
                 .countDocuments(Filters.eq(FieldTopicId, topicId))
@@ -103,7 +98,7 @@ class MongoReplyRepository(private val replies: MongoCollection<Reply>) : ReplyR
             val update = Updates.addToSet(FieldComments, comment)
 
             replies.updateOne(filter, update)
-                .throwIfNothingMatched("addComment", { filter })
+                .throwIfNothingModified("addComment", { filter })
         }
     }
 

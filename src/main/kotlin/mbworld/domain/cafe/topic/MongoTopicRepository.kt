@@ -29,7 +29,7 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
         topicCollection.createIndex(Indexes.descending(FieldPostedDate))
     }
 
-    override suspend fun getTopic(topicId: String): Result<Topic?> {
+    override suspend fun getTopic(topicId: String): Result<Topic> {
         return runMongoCatching {
             topicCollection
                 .find(Filters.eq(FieldTopicId, topicId))
@@ -37,7 +37,7 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
         }
     }
 
-    override suspend fun getTopicByShortId(shortTopicId: String): Result<Topic?> {
+    override suspend fun getTopicByShortId(shortTopicId: String): Result<Topic> {
         return runMongoCatching {
             topicCollection
                 .find(Filters.regex(FieldTopicId, "^$shortTopicId"))
@@ -45,7 +45,7 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
         }
     }
 
-    override suspend fun getFullTopicId(shortTopicId: String): Result<String?> {
+    override suspend fun getFullTopicId(shortTopicId: String): Result<String> {
         return runMongoCatching {
             topicCollection
                 .withDocumentClass<QueryTopicId>()

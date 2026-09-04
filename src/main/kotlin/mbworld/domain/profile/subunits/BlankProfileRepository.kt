@@ -10,19 +10,19 @@ class BlankProfileRepository: ProfileRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getProfile(userId: UserId): Result<Profile?> {
+    override suspend fun getProfile(userId: UserId): Result<Profile> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getProfileOverview(userId: UserId): Result<OverviewSummary?> {
+    override suspend fun getProfileOverview(userId: UserId): Result<OverviewSummary> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getFanProfile(userId: UserId): Result<FanProfileSummary?> {
+    override suspend fun getFanProfile(userId: UserId): Result<FanProfileSummary> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getUserSummary(userId: UserId): Result<UserSummary?> {
+    override suspend fun getUserSummary(userId: UserId): Result<UserSummary> {
         TODO("Not yet implemented")
     }
 

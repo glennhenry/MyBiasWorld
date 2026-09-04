@@ -11,15 +11,17 @@ class InMemoryReplyRepository(
 ) : ReplyRepository {
     override suspend fun awaitInit() = Unit
 
-    override suspend fun getReply(replyId: String): Result<Reply?> {
-        return Result.success(replies.find { it.replyId == replyId })
+    override suspend fun getReply(replyId: String): Result<Reply> {
+        val reply = replies.find { it.replyId == replyId }
+            ?: return Result.failure(DocumentNotFoundException("replyId=$replyId not found"))
+        return Result.success(reply)
     }
 
     override suspend fun getRepliesUnder(topicId: String): Result<List<Reply>> {
         return Result.success(replies.filter { it.topicId == topicId })
     }
 
-    override suspend fun getReplyCount(topicId: String): Result<Int?> {
+    override suspend fun getReplyCount(topicId: String): Result<Int> {
         return Result.success(replies.count { it.topicId == topicId })
     }
 
@@ -41,13 +43,10 @@ class InMemoryReplyRepository(
         replyId: String,
         limit: Int
     ): Result<List<Comment>> {
-        return Result.success(
-            replies
-                .find { it.replyId == replyId }
-                ?.comments
-                ?.take(limit)
-                .orEmpty()
-        )
+        val reply = replies.find { it.replyId == replyId }
+            ?: return Result.failure(DocumentNotFoundException("replyId=$replyId not found"))
+
+        return Result.success(reply.comments.take(limit))
     }
 
     override suspend fun addComment(
@@ -55,7 +54,8 @@ class InMemoryReplyRepository(
         comment: Comment
     ): Result<Unit> {
         val reply = replies.find { it.replyId == replyId }
-            ?: return Result.failure(Exception("replyId=$replyId not found."))
+            ?: return Result.failure(DocumentNotFoundException("replyId=$replyId not found."))
+
         replies.removeIf { it.replyId == replyId }
         replies.add(reply.copy(comments = reply.comments + comment))
         return Result.success(Unit)

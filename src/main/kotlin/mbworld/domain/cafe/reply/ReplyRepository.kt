@@ -1,5 +1,8 @@
 package mbworld.domain.cafe.reply
 
+import encore.datastore.DocumentNotFoundException
+import encore.datastore.DocumentNotUpdatedException
+
 /**
  * Repository for [Reply] collection.
  */
@@ -16,17 +19,17 @@ interface ReplyRepository {
      *
      * Returns:
      * - [Result.success] with the reply.
-     * - [Result.success] with `null` if not found.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.failure] with [DocumentNotFoundException] if reply is not found.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
-    suspend fun getReply(replyId: String): Result<Reply?>
+    suspend fun getReply(replyId: String): Result<Reply>
 
     /**
      * Get all the replies under certain topic identified by its [topicId].
      *
      * Returns:
      * - [Result.success] with the replies or empty.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
     suspend fun getRepliesUnder(topicId: String): Result<List<Reply>>
 
@@ -34,10 +37,11 @@ interface ReplyRepository {
      * Get the amount of replies under certain topic identified by its [topicId].
      *
      * Returns:
-     * - [Result.success] with the count or `null` if topic is not found.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.success] with the count.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
-    suspend fun getReplyCount(topicId: String): Result<Int?>
+    suspend fun getReplyCount(topicId: String): Result<Int>
 
     /**
      * Get the amount of replies of each `topicId` in [topicIds].
@@ -47,7 +51,7 @@ interface ReplyRepository {
      *
      * Returns:
      * - [Result.success] with a map of each `topicId` (if really exist) to the count.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
     suspend fun getReplyCounts(topicIds: List<String>): Result<Map<String, Int>>
 
@@ -56,7 +60,7 @@ interface ReplyRepository {
      *
      * Returns:
      * - [Result.success] if the operation succeeded.
-     * - [Result.failure] if an error occurs during the operation.
+     * - [Result.failure] if other error occurs during the operation.
      */
     suspend fun addReply(reply: Reply): Result<Unit>
 
@@ -66,7 +70,8 @@ interface ReplyRepository {
      *
      * Returns:
      * - [Result.success] with a list of comments, or empty.
-     * - [Result.failure] if an error occurs while retrieving the data.
+     * - [Result.failure] with [DocumentNotFoundException] if reply is not found.
+     * - [Result.failure] if other error occurs while retrieving the data.
      */
     suspend fun getComments(replyId: String, limit: Int): Result<List<Comment>>
 
@@ -75,7 +80,9 @@ interface ReplyRepository {
      *
      * Returns:
      * - [Result.success] if the operation succeeded.
-     * - [Result.failure] if an error occurs during the operation.
+     * - [Result.failure] with [DocumentNotFoundException] if reply is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if comment fails to be added.
+     * - [Result.failure] if other error occurs during the operation.
      */
     suspend fun addComment(replyId: String, comment: Comment): Result<Unit>
 
@@ -84,7 +91,9 @@ interface ReplyRepository {
      *
      * Returns:
      * - [Result.success] if the operation succeeded.
-     * - [Result.failure] if reply is not found or an error occurs during the operation.
+     * - [Result.failure] with [DocumentNotFoundException] if reply is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if reply fails to be updated.
+     * - [Result.failure] if other error occurs during the operation.
      */
     suspend fun incrementLike(replyId: String): Result<Unit>
 
@@ -93,7 +102,9 @@ interface ReplyRepository {
      *
      * Returns:
      * - [Result.success] if the operation succeeded.
-     * - [Result.failure] if reply is not found or an error occurs during the operation.
+     * - [Result.failure] with [DocumentNotFoundException] if reply is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if reply fails to be updated.
+     * - [Result.failure] if other error occurs during the operation.
      */
     suspend fun decrementLike(replyId: String): Result<Unit>
 }

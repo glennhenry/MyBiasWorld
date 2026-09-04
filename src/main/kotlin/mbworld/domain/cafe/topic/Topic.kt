@@ -12,6 +12,7 @@ import mbworld.mongo.collection.UserAccount
  * @property title The title of the topic.
  * @property authorId Identifier of the user who posted this topic. References [UserAccount.userId].
  * @property content The content of the topic.
+ * @property likes The amount of likes the topic has.
  * @property postedDate Epoch millis of when the topic was posted.
  */
 @Serializable
@@ -21,5 +22,6 @@ data class Topic(
     val title: String,
     val authorId: String,
     val content: String,
+    val likes: Int,
     val postedDate: Long
 )

@@ -1,5 +1,8 @@
 package mbworld.domain.cafe.topic
 
+import encore.datastore.DocumentNotFoundException
+import kotlin.math.max
+
 /**
  * In-memory implementation for [TopicRepository].
  */
@@ -48,6 +51,26 @@ class InMemoryTopicRepository(
 
     override suspend fun deleteAllTopics(): Result<Unit> {
         topics.clear()
+        return Result.success(Unit)
+    }
+
+    override suspend fun incrementLike(topicId: String): Result<Unit> {
+        val topic = topics.find { it.topicId == topicId }
+            ?.let { it.copy(likes = it.likes + 1) }
+            ?: return Result.failure(DocumentNotFoundException("topicId=$topicId not found"))
+
+        topics.removeIf { it.topicId == topicId }
+        topics.add(topic)
+        return Result.success(Unit)
+    }
+
+    override suspend fun decrementLike(topicId: String): Result<Unit> {
+        val topic = topics.find { it.topicId == topicId }
+            ?.let { it.copy(likes = max(0, it.likes - 1)) }
+            ?: return Result.failure(DocumentNotFoundException("topicId=$topicId not found"))
+
+        topics.removeIf { it.topicId == topicId }
+        topics.add(topic)
         return Result.success(Unit)
     }
 }

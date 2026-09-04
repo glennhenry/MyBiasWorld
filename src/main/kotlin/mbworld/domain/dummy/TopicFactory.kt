@@ -28,6 +28,7 @@ object TopicFactory {
                 title = title(member),
                 authorId = authorId,
                 content = content(member),
+                likes = 0,
                 postedDate = postedDate()
             )
         }

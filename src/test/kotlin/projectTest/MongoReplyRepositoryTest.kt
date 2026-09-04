@@ -33,6 +33,7 @@ class MongoReplyRepositoryTest {
             topicId = "fixedTopicId",
             authorId = "author123",
             content = "content123",
+            likes = 0,
             postedDate = 0,
             comments = listOf(
                 Comment("comment1", "author1", "hello world 1", 0),
@@ -62,7 +63,7 @@ class MongoReplyRepositoryTest {
         }
 
         // 5. addReply
-        assertNotNull(repo.addReply(Reply("asdf", "asdf", "asdf", "asdf", 0, emptyList())).getOrNull())
+        assertNotNull(repo.addReply(Reply("asdf", "asdf", "asdf", "asdf", 0, 0, emptyList())).getOrNull())
         assertNotNull(repo.getReply("asdf").getOrNull())
 
         // 6. getComments
@@ -73,14 +74,22 @@ class MongoReplyRepositoryTest {
                     x.find { it.commentId == "comment3" } != null
         }
 
-        // 5. addComment
+        // 6. addComment
         repo.addComment(id, comment = Comment("comment7", "author7", "hello world 7", 0)).getOrThrow()
         assertNotNull(repo.getComments(id, 7).getOrThrow().find { it.commentId == "comment7" })
+
+        // 7. incrementLike
+        assertNotNull(repo.incrementLike(id).getOrNull())
+        assertEquals(1, repo.getReply(id).getOrNull()?.likes)
+
+        // 8. decrementLike
+        assertNotNull(repo.decrementLike(id).getOrNull())
+        assertEquals(0, repo.getReply(id).getOrNull()?.likes)
     }
 
     private fun createReply(amount: Int, topicId: String = randstr()): List<Reply> {
         return List(amount) {
-            Reply(randstr(), topicId, randstr(), randstr(), getTimeMillis(), emptyList())
+            Reply(randstr(), topicId, randstr(), randstr(), 0, getTimeMillis(), emptyList())
         }
     }
 

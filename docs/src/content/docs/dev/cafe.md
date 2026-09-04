@@ -259,3 +259,11 @@ This mean loading a topic generate multiple queries:
 The backend query, summarize everything, and build the frontend model. The response to frontend would be: the topic model including title, content, and author information, a list of replies containing the reply content, author information, posted date, and a list of comments; each comment would also contain the content, author info, and posted date.
 
 The topic post is rendered separately. The replies will be rendered in the order of the posted date. Each reply add a comment section if the corresponding reply has any comments.
+
+### Likes
+
+Topics and replies can be liked but not comments. The model of like is anonymous but not hidden. When someone likes a topic or reply, the identity of the actor won't be shown in the topic or reply, but it will be shown on each individual user's activity history.
+
+The like is modeled as a simple counter in topic and reply data model. The amount increase when a user click the like button, and will decrease if the user decided to unlike the post.
+
+Liking a topic or reply will also increase own's cafe stats.

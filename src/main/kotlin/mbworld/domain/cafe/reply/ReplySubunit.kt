@@ -159,6 +159,34 @@ class ReplySubunit(private val replyRepository: ReplyRepository) : Subunit<Serve
             .toReport()
     }
 
+    /**
+     * Increment the likes amount of [replyId].
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun incrementLike(replyId: String): Report {
+        return replyRepository.incrementLike(replyId)
+            .onFailure {
+                Fancam.error(it, "reply") {
+                    "incrementLike failed for reply=$replyId"
+                }
+            }
+            .toReport()
+    }
+
+    /**
+     * Decrement the likes amount of [replyId].
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun decrementLike(replyId: String): Report {
+        return replyRepository.decrementLike(replyId)
+            .onFailure {
+                Fancam.error(it, "reply") {
+                    "decrementLike failed for replyId=$replyId"
+                }
+            }
+            .toReport()
+    }
+
     override suspend fun debut(scope: ServerScope): Result<Unit> {
         return runCatching { }
     }

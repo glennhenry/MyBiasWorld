@@ -160,6 +160,34 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
             .toReport()
     }
 
+    /**
+     * Increment the likes amount of [topicId].
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun incrementLike(topicId: String): Report {
+        return topicRepository.incrementLike(topicId)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "incrementLike failed for topicId=$topicId"
+                }
+            }
+            .toReport()
+    }
+
+    /**
+     * Decrement the likes amount of [topicId].
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun decrementLike(topicId: String): Report {
+        return topicRepository.decrementLike(topicId)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "decrementLike failed for topicId=$topicId"
+                }
+            }
+            .toReport()
+    }
+
     override suspend fun debut(scope: ServerScope): Result<Unit> {
         return runCatching { }
     }

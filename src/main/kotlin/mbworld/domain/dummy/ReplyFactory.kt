@@ -28,6 +28,7 @@ object ReplyFactory {
             topicId = topicId,
             authorId = possibleReplyAuthors.random(),
             content = content(),
+            likes = 0,
             postedDate = replyPostDate,
             comments = comments(possibleCommentAuthors, replyPostDate, possibleAmountofComments)
         )

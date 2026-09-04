@@ -178,6 +178,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     title = post.title,
                     authorId = acc.userId,
                     content = post.content,
+                    likes = 0,
                     postedDate = TimeCenter.now(),
                 )
                 serverContext.subunits.topic.addTopic(topic)
@@ -239,7 +240,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 val authors = mutableListOf(topic.authorId)
 
                 val replies = serverContext.subunits.reply.getRepliesUnder(topic.topicId).okOrNull() ?: emptyList()
-                for ((_, _, authorId, _, _, comments) in replies) {
+                for ((_, _, authorId, _, _, _, comments) in replies) {
                     authors.add(authorId)
                     for ((_, authorId2) in comments) {
                         authors.add(authorId2)
@@ -319,6 +320,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     topicId = topicId,
                     authorId = call.attributes.getUserAccount().userId,
                     content = replyPayload.reply,
+                    likes = 0,
                     postedDate = TimeCenter.now(),
                     comments = emptyList()
                 )

@@ -8,6 +8,7 @@ import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.runMongoCatching
 import encore.datastore.throwIfNothingMatched
+import encore.datastore.throwIfNothingModified
 import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.associate
 import kotlinx.coroutines.flow.firstOrNull
@@ -20,6 +21,9 @@ val FieldReplyId = Reply::replyId.name
 
 /** `comments` */
 val FieldComments = Reply::comments.name
+
+/** `likes` */
+val FieldReplyLikes = Reply::likes.name
 
 class MongoReplyRepository(private val replies: MongoCollection<Reply>) : ReplyRepository {
     override suspend fun awaitInit() {}
@@ -100,6 +104,26 @@ class MongoReplyRepository(private val replies: MongoCollection<Reply>) : ReplyR
 
             replies.updateOne(filter, update)
                 .throwIfNothingMatched("addComment", { filter })
+        }
+    }
+
+    override suspend fun incrementLike(replyId: String): Result<Unit> {
+        return runMongoCatching {
+            val filter = Filters.eq(FieldReplyId, replyId)
+            val update = Updates.inc(FieldReplyLikes, 1)
+
+            replies.updateOne(filter, update)
+                .throwIfNothingModified("incrementLike", { filter }, { update })
+        }
+    }
+
+    override suspend fun decrementLike(replyId: String): Result<Unit> {
+        return runMongoCatching {
+            val filter = Filters.eq(FieldReplyId, replyId)
+            val update = Updates.inc(FieldReplyLikes, -1)
+
+            replies.updateOne(filter, update)
+                .throwIfNothingModified("decrementLike", { filter }, { update })
         }
     }
 }

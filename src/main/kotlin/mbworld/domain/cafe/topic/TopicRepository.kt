@@ -84,7 +84,8 @@ interface TopicRepository {
      *
      * Returns:
      * - [Result.success] if the operation succeeded.
-     * - [Result.failure] if an error occurs during the operation.
+     * - [Result.failure] if topic matched but fails to be deleted or
+     *   if an error occurs during the operation.
      */
     suspend fun deleteTopic(topicId: String): Result<Unit>
 
@@ -96,4 +97,22 @@ interface TopicRepository {
      * - [Result.failure] if an error occurs during the operation.
      */
     suspend fun deleteAllTopics(): Result<Unit>
+
+    /**
+     * Increment the like of the post identified by [topicId].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] if topic is not found or an error occurs during the operation.
+     */
+    suspend fun incrementLike(topicId: String): Result<Unit>
+
+    /**
+     * Decrement the like of the post identified by [topicId].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] if topic is not found or an error occurs during the operation.
+     */
+    suspend fun decrementLike(topicId: String): Result<Unit>
 }

@@ -1,5 +1,8 @@
 package mbworld.domain.cafe.reply
 
+import encore.datastore.DocumentNotFoundException
+import kotlin.math.max
+
 /**
  * In-memory implementation for [ReplyRepository].
  */
@@ -55,6 +58,26 @@ class InMemoryReplyRepository(
             ?: return Result.failure(Exception("replyId=$replyId not found."))
         replies.removeIf { it.replyId == replyId }
         replies.add(reply.copy(comments = reply.comments + comment))
+        return Result.success(Unit)
+    }
+
+    override suspend fun incrementLike(replyId: String): Result<Unit> {
+        val reply = replies.find { it.replyId == replyId }
+            ?.let { it.copy(likes = it.likes + 1) }
+            ?: return Result.failure(DocumentNotFoundException("replyId=$replyId not found"))
+
+        replies.removeIf { it.replyId == replyId }
+        replies.add(reply)
+        return Result.success(Unit)
+    }
+
+    override suspend fun decrementLike(replyId: String): Result<Unit> {
+        val reply = replies.find { it.replyId == replyId }
+            ?.let { it.copy(likes = max(0, it.likes - 1)) }
+            ?: return Result.failure(DocumentNotFoundException("replyId=$replyId not found"))
+
+        replies.removeIf { it.replyId == replyId }
+        replies.add(reply)
         return Result.success(Unit)
     }
 }

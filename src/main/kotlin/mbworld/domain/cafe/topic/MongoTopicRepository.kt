@@ -4,6 +4,7 @@ import com.mongodb.client.model.*
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.runMongoCatching
 import encore.datastore.throwIfNothingDeleted
+import encore.datastore.throwIfNothingModified
 import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.associate
 import kotlinx.coroutines.flow.firstOrNull
@@ -18,6 +19,9 @@ val FieldPostedDate = Topic::postedDate.name
 
 /** `sectionId` */
 val FieldSectionId = Topic::sectionId.name
+
+/** `likes` */
+val FieldTopicLikes = Topic::likes.name
 
 class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) : TopicRepository {
     override suspend fun awaitInit() {
@@ -109,6 +113,26 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
 
     override suspend fun deleteAllTopics(): Result<Unit> {
         return runMongoCatching { topicCollection.drop() }
+    }
+
+    override suspend fun incrementLike(topicId: String): Result<Unit> {
+        return runMongoCatching {
+            val filter = Filters.eq(FieldTopicId, topicId)
+            val update = Updates.inc(FieldTopicLikes, 1)
+
+            topicCollection.updateOne(filter, update)
+                .throwIfNothingModified("incrementLike", { filter }, { update })
+        }
+    }
+
+    override suspend fun decrementLike(topicId: String): Result<Unit> {
+        return runMongoCatching {
+            val filter = Filters.eq(FieldTopicId, topicId)
+            val update = Updates.inc(FieldTopicLikes, -1)
+
+            topicCollection.updateOne(filter, update)
+                .throwIfNothingModified("decrementLike", { filter }, { update })
+        }
     }
 }
 

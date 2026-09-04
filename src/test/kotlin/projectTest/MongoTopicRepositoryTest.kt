@@ -28,7 +28,7 @@ class MongoTopicRepositoryTest {
 
         // setup
         val id = "5ab0980c-e2cb-990a-427a-5ad9b0311b7f"
-        val targetTopic = Topic(id, "sectionId123", "title123", "author123", "content123", 0)
+        val targetTopic = Topic(id, "sectionId123", "title123", "author123", "content123", 0, 0)
         collection.insertMany(createTopic(20) + targetTopic)
 
         // tests
@@ -55,18 +55,26 @@ class MongoTopicRepositoryTest {
         assertEquals(1, repo.getTopicsCountForEachSection().getOrThrow()["sectionId123"])
 
         // 7. addTopic
-        val t = Topic("asdf", "asdf", "asdf", "asdf", "asdf", 0)
+        val t = Topic("asdf", "asdf", "asdf", "asdf", "asdf", 0, 0)
         assertNotNull(repo.addTopic(t).getOrNull())
         assertNotNull(repo.getTopic("asdf").getOrNull())
 
         // 8. deleteTopic
         assertNotNull(repo.deleteTopic("asdf").getOrNull())
         assertNull(repo.getTopic("asdf").getOrNull())
+
+        // 9. incrementLike
+        assertNotNull(repo.incrementLike(id).getOrNull())
+        assertEquals(1, repo.getTopic(id).getOrNull()?.likes)
+
+        // 10. decrementLike
+        assertNotNull(repo.decrementLike(id).getOrNull())
+        assertEquals(0, repo.getTopic(id).getOrNull()?.likes)
     }
 
     private fun createTopic(amount: Int): List<Topic> {
         return List(amount) {
-            Topic(randstr(), randstr(), randstr(), randstr(), randstr(), getTimeMillis())
+            Topic(randstr(), randstr(), randstr(), randstr(), randstr(), 0, getTimeMillis())
         }
     }
 

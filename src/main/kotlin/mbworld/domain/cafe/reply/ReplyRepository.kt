@@ -78,4 +78,22 @@ interface ReplyRepository {
      * - [Result.failure] if an error occurs during the operation.
      */
     suspend fun addComment(replyId: String, comment: Comment): Result<Unit>
+
+    /**
+     * Increment the like of the post identified by [replyId].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] if reply is not found or an error occurs during the operation.
+     */
+    suspend fun incrementLike(replyId: String): Result<Unit>
+
+    /**
+     * Decrement the like of the post identified by [replyId].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] if reply is not found or an error occurs during the operation.
+     */
+    suspend fun decrementLike(replyId: String): Result<Unit>
 }

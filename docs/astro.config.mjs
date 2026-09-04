@@ -61,6 +61,7 @@ export default defineConfig({
             { label: "Attendance", slug: "attendance" },
             { label: "Mailbox", slug: "mailbox" },
             { label: "Board", slug: "board" },
+			{ label: "Games", slug: "games" },
           ],
         },
       ],

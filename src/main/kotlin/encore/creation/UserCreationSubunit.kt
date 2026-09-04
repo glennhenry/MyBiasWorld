@@ -7,9 +7,9 @@ import encore.fancam.Tags
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.utils.types.isOk
-import forum.domain.profile.subunits.BlankProfileRepository
-import forum.domain.profile.subunits.ProfileRepository
-import forum.mongo.collection.UserId
+import mbworld.domain.profile.subunits.BlankProfileRepository
+import mbworld.domain.profile.subunits.ProfileRepository
+import mbworld.mongo.collection.UserId
 
 /**
  * Server-scoped subunit responsible for user creation.

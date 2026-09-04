@@ -5,8 +5,8 @@ import encore.utils.identifier.shortUuid
 import initMongo
 import io.ktor.util.date.*
 import kotlinx.coroutines.test.runTest
-import forum.domain.cafe.topic.MongoTopicRepository
-import forum.domain.cafe.topic.Topic
+import mbworld.domain.cafe.topic.MongoTopicRepository
+import mbworld.domain.cafe.topic.Topic
 import testUtils.randomString
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -7,8 +7,8 @@ import encore.account.FieldUserId
 import encore.datastore.runMongoCatching
 import encore.datastore.throwIfNothingMatched
 import kotlinx.coroutines.flow.firstOrNull
-import forum.mongo.collection.UserAccount
-import forum.mongo.collection.UserId
+import mbworld.mongo.collection.UserAccount
+import mbworld.mongo.collection.UserId
 
 class MongoUserExtraRepository(
     private val accCollection: MongoCollection<UserAccount>

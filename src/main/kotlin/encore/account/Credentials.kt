@@ -1,6 +1,6 @@
 package encore.account
 
-import forum.mongo.collection.UserId
+import mbworld.mongo.collection.UserId
 import kotlinx.serialization.Serializable
 
 /**

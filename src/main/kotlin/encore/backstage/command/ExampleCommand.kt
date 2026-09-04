@@ -2,7 +2,7 @@ package encore.backstage.command
 
 import encore.backstage.command.types.ArgumentCollection
 import encore.backstage.command.types.CommandResult
-import forum.context.ServerContext
+import mbworld.context.ServerContext
 
 /**
  * An example implementation of command.

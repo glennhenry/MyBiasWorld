@@ -4,9 +4,9 @@ import TestCollections
 import initMongo
 import io.ktor.util.date.*
 import kotlinx.coroutines.test.runTest
-import forum.domain.cafe.reply.Comment
-import forum.domain.cafe.reply.MongoReplyRepository
-import forum.domain.cafe.reply.Reply
+import mbworld.domain.cafe.reply.Comment
+import mbworld.domain.cafe.reply.MongoReplyRepository
+import mbworld.domain.cafe.reply.Reply
 import testUtils.randomString
 import kotlin.test.Test
 import kotlin.test.assertEquals

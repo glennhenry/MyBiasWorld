@@ -1,7 +1,7 @@
 package encore.datastore
 
-import forum.mongo.collection.UserAccount
-import forum.mongo.collection.UserId
+import mbworld.mongo.collection.UserAccount
+import mbworld.mongo.collection.UserId
 
 /**
  * Persistence component that owns access to the core database collections

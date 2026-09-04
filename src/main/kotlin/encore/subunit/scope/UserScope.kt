@@ -1,6 +1,6 @@
 package encore.subunit.scope
 
-import forum.mongo.collection.UserId
+import mbworld.mongo.collection.UserId
 
 /**
  * A user-scoped context.

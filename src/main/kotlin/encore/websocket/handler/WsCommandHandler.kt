@@ -1,6 +1,6 @@
 package encore.websocket.handler
 
-import forum.context.ServerContext
+import mbworld.context.ServerContext
 import encore.serialization.JSON
 import encore.websocket.WebSocketMessage
 import encore.websocket.WebSocketMessageType

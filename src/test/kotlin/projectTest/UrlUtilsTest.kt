@@ -1,6 +1,6 @@
 package projectTest
 
-import forum.domain.cafe.toUrlSlug
+import mbworld.domain.cafe.toUrlSlug
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

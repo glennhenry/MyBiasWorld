@@ -1,7 +1,7 @@
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import org.bson.Document
-import forum.mongo.MongoCollections
+import mbworld.mongo.MongoCollections
 
 const val MBWORLD_TEST_DB_NAME = "MBWORLD-test-DB"
 const val MONGO_TEST_URL = "mongodb://localhost:27017"

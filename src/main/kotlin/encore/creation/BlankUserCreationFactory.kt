@@ -1,9 +1,9 @@
 package encore.creation
 
 import encore.utils.types.Report
-import forum.domain.profile.model.Profile
-import forum.mongo.collection.UserAccount
-import forum.mongo.collection.UserId
+import mbworld.domain.profile.model.Profile
+import mbworld.mongo.collection.UserAccount
+import mbworld.mongo.collection.UserId
 
 class BlankUserCreationFactory: UserCreationFactory {
     override fun userId(isAdmin: Boolean): UserId {

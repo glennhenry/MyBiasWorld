@@ -1,8 +1,8 @@
 package encore.annotation.runtime
 
 import encore.EncoreConfig
-import forum.config.CustomConfig
-import forum.config.SecretConfig
+import mbworld.config.CustomConfig
+import mbworld.config.SecretConfig
 
 /**
  * Used to annotate [EncoreConfig], [CustomConfig], and [SecretConfig]

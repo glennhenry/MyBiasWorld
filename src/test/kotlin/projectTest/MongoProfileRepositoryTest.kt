@@ -3,8 +3,8 @@ package projectTest
 import TestCollections
 import initMongo
 import kotlinx.coroutines.test.runTest
-import forum.domain.profile.subunits.MongoProfileRepository
-import forum.domain.profile.model.Profile
+import mbworld.domain.profile.subunits.MongoProfileRepository
+import mbworld.domain.profile.model.Profile
 import testUtils.createProfile
 import kotlin.test.Test
 import kotlin.test.assertEquals

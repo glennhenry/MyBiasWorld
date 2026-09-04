@@ -1,10 +1,10 @@
 package encore.creation
 
 import encore.utils.types.Report
-import forum.domain.profile.model.Profile
-import forum.mongo.collection.UserAccount
-import forum.mongo.collection.UserId
-import forum.mongo.collection.ServerObjects
+import mbworld.domain.profile.model.Profile
+import mbworld.mongo.collection.UserAccount
+import mbworld.mongo.collection.UserId
+import mbworld.mongo.collection.ServerObjects
 
 /**
  * Component responsible for managing database documents for new user.

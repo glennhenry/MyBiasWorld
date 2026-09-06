@@ -8,10 +8,7 @@ import encore.serialization.JSON
 import encore.time.TimeCenter
 import encore.utils.identifier.Ids
 import encore.utils.identifier.shortUuid
-import encore.utils.types.Outcome
-import encore.utils.types.okOrNull
-import encore.utils.types.okOrThrow
-import encore.utils.types.onFail
+import encore.utils.types.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -19,6 +16,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
 import mbworld.context.ServerContext
+import mbworld.domain.cafe.likes.Likes
 import mbworld.domain.cafe.reply.Comment
 import mbworld.domain.cafe.reply.Reply
 import mbworld.domain.cafe.topic.Topic
@@ -33,6 +31,7 @@ import mbworld.routes.guard.OptionalAccountGuard
 import mbworld.routes.guard.RequireAccountGuard
 import mbworld.routes.guard.getAccountData
 import mbworld.routes.guard.getUserAccount
+import mbworld.routes.utils.serverError
 
 val Sections = mapOf(
     "kep1er" to "Kep1er Discussion",
@@ -374,6 +373,162 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     }
 
                 Fancam.debug { "Created new commentId=$commentId" }
+                call.respond(HttpStatusCode.OK)
+            }
+        }
+
+        post("/cafe/{section}/{id}/{title}/like") {
+            guard(call, requireAccountGuard) {
+                val section = requireNotNull(call.request.pathVariables["section"])
+                val id = requireNotNull(call.request.pathVariables["id"])
+
+                if (!Sections.contains(section)) {
+                    call.sectionNotFound()
+                    return@guard
+                }
+
+                val topicId = serverContext.subunits.topic.getFullTopicId(id).okOrNull()
+                if (topicId == null) {
+                    call.topicNotFound()
+                    return@guard
+                }
+
+                val userId = call.attributes.getUserAccount().userId
+
+                // if post is already liked -> ignore
+                val outcome = serverContext.subunits.likes.isPostLikedBy(userId, topicId)
+                if (outcome.isFail()) {
+                    call.serverError()
+                    return@guard
+                }
+
+                val likeCastedAt = outcome.okOrThrow()
+                if (likeCastedAt != null) {
+                    call.respond(HttpStatusCode.OK, "post is already liked")
+                    return@guard
+                }
+
+                // if post is not yet liked -> add the like and increment topic's like
+                serverContext.subunits.likes.addLike(Likes(userId, topicId, TimeCenter.now()))
+                    .onFail {
+                        call.serverError()
+                        return@guard
+                    }
+
+                serverContext.subunits.topic.incrementLike(topicId)
+                    .onFail {
+                        call.serverError()
+                        return@guard
+                    }
+
+                Fancam.debug { "${call.attributes.getUserAccount().username} liked topic=$topicId" }
+                call.respond(HttpStatusCode.OK)
+            }
+        }
+
+        post("/cafe/{section}/{id}/{title}/unlike") {
+            guard(call, requireAccountGuard) {
+                val section = requireNotNull(call.request.pathVariables["section"])
+                val id = requireNotNull(call.request.pathVariables["id"])
+
+                if (!Sections.contains(section)) {
+                    call.sectionNotFound()
+                    return@guard
+                }
+
+                val topicId = serverContext.subunits.topic.getFullTopicId(id).okOrNull()
+                if (topicId == null) {
+                    call.topicNotFound()
+                    return@guard
+                }
+
+                val userId = call.attributes.getUserAccount().userId
+
+                // like exist or not -> remove the like and decrement
+                serverContext.subunits.likes.removeLike(userId, topicId)
+                    .onFail {
+                        call.serverError()
+                        return@guard
+                    }
+
+                serverContext.subunits.topic.decrementLike(topicId)
+                    .onFail {
+                        call.serverError()
+                        return@guard
+                    }
+
+                Fancam.debug { "${call.attributes.getUserAccount().username} unliked topic=$topicId" }
+                call.respond(HttpStatusCode.OK)
+            }
+        }
+
+        post("/cafe/{section}/{id}/{title}/{replyId}/like") {
+            guard(call, requireAccountGuard) {
+                val section = requireNotNull(call.request.pathVariables["section"])
+                if (!Sections.contains(section)) {
+                    call.sectionNotFound()
+                    return@guard
+                }
+
+                val replyId = requireNotNull(call.request.pathVariables["replyId"])
+                val userId = call.attributes.getUserAccount().userId
+
+                // if post is already liked -> ignore
+                val outcome = serverContext.subunits.likes.isPostLikedBy(userId, replyId)
+                if (outcome.isFail()) {
+                    call.serverError()
+                    return@guard
+                }
+
+                val likeCastedAt = outcome.okOrThrow()
+                if (likeCastedAt != null) {
+                    call.respond(HttpStatusCode.OK, "post is already liked")
+                    return@guard
+                }
+
+                // if post is not yet liked -> add the like and increment topic's like
+                serverContext.subunits.likes.addLike(Likes(userId, replyId, TimeCenter.now()))
+                    .onFail {
+                        call.serverError()
+                        return@guard
+                    }
+
+                serverContext.subunits.reply.incrementLike(replyId)
+                    .onFail {
+                        call.serverError()
+                        return@guard
+                    }
+
+                Fancam.debug { "${call.attributes.getUserAccount().username} liked reply=$replyId" }
+                call.respond(HttpStatusCode.OK)
+            }
+        }
+
+        post("/cafe/{section}/{id}/{title}/{replyId}/unlike") {
+            guard(call, requireAccountGuard) {
+                val section = requireNotNull(call.request.pathVariables["section"])
+                if (!Sections.contains(section)) {
+                    call.sectionNotFound()
+                    return@guard
+                }
+
+                val replyId = requireNotNull(call.request.pathVariables["replyId"])
+                val userId = call.attributes.getUserAccount().userId
+
+                // like exist or not -> remove the like and decrement
+                serverContext.subunits.likes.removeLike(userId, replyId)
+                    .onFail {
+                        call.serverError()
+                        return@guard
+                    }
+
+                serverContext.subunits.reply.decrementLike(replyId)
+                    .onFail {
+                        call.serverError()
+                        return@guard
+                    }
+
+                Fancam.debug { "${call.attributes.getUserAccount().username} unliked reply=$replyId" }
                 call.respond(HttpStatusCode.OK)
             }
         }

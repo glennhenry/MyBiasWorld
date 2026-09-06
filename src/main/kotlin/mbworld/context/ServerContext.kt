@@ -35,6 +35,9 @@ import mbworld.domain.profile.subunits.ProfileSubunit
 import mbworld.domain.auth.session.BlankSessionStore
 import mbworld.domain.auth.session.SessionStore
 import mbworld.domain.auth.session.WebsiteSessionSubunit
+import mbworld.domain.cafe.likes.InMemoryLikesRepository
+import mbworld.domain.cafe.likes.LikesRepository
+import mbworld.domain.cafe.likes.LikesSubunit
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -68,6 +71,8 @@ data class ServerContext(
          * @param profileRepository Used to build [ProfileSubunit].
          * @param collectionRepository Used to build [CollectionSubunit].
          * @param topicRepository Used to build [TopicSubunit].
+         * @param replyRepository Used to build [ReplySubunit].
+         * @param likesRepository Used to build [LikesSubunit].
          */
         fun createForTest(
             parentScope: CoroutineScope = CoroutineScope(EmptyCoroutineContext),
@@ -79,6 +84,7 @@ data class ServerContext(
             collectionRepository: CollectionRepository = BlankCollectionRepository(),
             topicRepository: TopicRepository = InMemoryTopicRepository(),
             replyRepository: ReplyRepository = InMemoryReplyRepository(),
+            likesRepository: LikesRepository = InMemoryLikesRepository(),
         ): ServerContext {
             val account = AccountSubunit(accountRepository)
             val session = SessionSubunit.createForTest(parentScope)
@@ -89,6 +95,7 @@ data class ServerContext(
             val collection = CollectionSubunit(collectionRepository)
             val topic = TopicSubunit(topicRepository)
             val reply = ReplySubunit(replyRepository)
+            val likes = LikesSubunit(likesRepository)
 
             return ServerContext(
                 dataStore = dataStore,
@@ -106,7 +113,8 @@ data class ServerContext(
                     profile = profile,
                     collection = collection,
                     topic = topic,
-                    reply = reply
+                    reply = reply,
+                    likes = likes
                 )
             )
         }
@@ -138,6 +146,8 @@ data class ServerContext(
  * @property websiteSession Provides API related to [WebsiteSessionSubunit].
  * @property profile Provides API related to profiles.
  * @property topic Provides API related to topics.
+ * @property reply Provides API related to replies.
+ * @property likes Provides API related to likes.
  * @property collection Provides API related to cafe collection.
  */
 data class ServerSubunits(
@@ -151,13 +161,26 @@ data class ServerSubunits(
     val profile: ProfileSubunit,
     val topic: TopicSubunit,
     val reply: ReplySubunit,
+    val likes: LikesSubunit,
     val collection: CollectionSubunit
 ) {
     /**
      * Return all server subunit instances.
      */
     fun all(): Set<Subunit<ServerScope>> {
-        return setOf(account, auth, creation, presence, session, websiteSession, profile, topic, reply, collection)
+        return setOf(
+            account,
+            auth,
+            creation,
+            presence,
+            session,
+            websiteSession,
+            profile,
+            topic,
+            reply,
+            likes,
+            collection
+        )
     }
 
     /**

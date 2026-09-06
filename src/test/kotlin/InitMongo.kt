@@ -14,6 +14,7 @@ val TestCollections = MongoCollections(
     profiles = "test_profiles",
     topic = "test_topic",
     reply = "test_reply",
+    likes = "test_likes",
     spaces = "test_spaces",
     sections = "test_sections"
 )

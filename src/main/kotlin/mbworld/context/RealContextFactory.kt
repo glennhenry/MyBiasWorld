@@ -27,6 +27,8 @@ import mbworld.domain.profile.subunits.MongoProfileRepository
 import mbworld.domain.profile.subunits.ProfileSubunit
 import mbworld.domain.auth.session.MongoSessionStore
 import mbworld.domain.auth.session.WebsiteSessionSubunit
+import mbworld.domain.cafe.likes.LikesSubunit
+import mbworld.domain.cafe.likes.MongoLikesRepository
 import mbworld.mongo.MongoCollections
 
 /**
@@ -84,6 +86,9 @@ class RealContextFactory(
         val replyRepository = MongoReplyRepository(
             replies = mongoDatabase.getCollection(collections.reply)
         ).also { it.awaitInit() }
+        val likesRepository = MongoLikesRepository(
+            likes = mongoDatabase.getCollection(collections.likes)
+        ).also { it.awaitInit() }
         val collectionRepository = MongoCollectionRepository(
             spaceCollection = mongoDatabase.getCollection(collections.spaces),
             sectionCollection = mongoDatabase.getCollection(collections.sections)
@@ -92,6 +97,7 @@ class RealContextFactory(
         val websiteSession = WebsiteSessionSubunit(appScope, TimeCenter.source, sessionStore)
         val topicSubunit = TopicSubunit(topicRepository)
         val replySubunit = ReplySubunit(replyRepository)
+        val likesSubunit = LikesSubunit(likesRepository)
         val collectionSubunit = CollectionSubunit(collectionRepository)
 
         val subunits = ServerSubunits(
@@ -105,6 +111,7 @@ class RealContextFactory(
             profile = profileSubunit,
             topic = topicSubunit,
             reply = replySubunit,
+            likes = likesSubunit,
             collection = collectionSubunit
         )
 

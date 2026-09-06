@@ -15,6 +15,7 @@ data class MongoCollections(
     val profiles: String,
     val topic: String,
     val reply: String,
+    val likes: String,
     val spaces: String,
     val sections: String
 )
@@ -28,6 +29,7 @@ val RuntimeMongoCollections = MongoCollections(
     profiles = "profiles",
     topic = "topic",
     reply = "reply",
+    likes = "likes",
     spaces = "spaces",
     sections = "sections"
 )

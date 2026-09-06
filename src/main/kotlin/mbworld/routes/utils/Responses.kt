@@ -25,6 +25,6 @@ suspend fun ApplicationCall.badRequest() {
 /**
  * Respond with an error page of InternalServerError (500).
  */
-suspend fun ApplicationCall.serverError() {
-    respond(HttpStatusCode.InternalServerError, mapOf("reason" to "Internal server error"))
+suspend fun ApplicationCall.serverError(reason: String = "Internal server error") {
+    respond(HttpStatusCode.InternalServerError, mapOf("reason" to reason))
 }

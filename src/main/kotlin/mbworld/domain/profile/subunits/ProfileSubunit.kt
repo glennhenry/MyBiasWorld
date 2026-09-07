@@ -90,7 +90,11 @@ class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit
     }
 
     /**
-     * Returns an [Outcome] containing a map of each `userId` in [userIds] to [UserSummary].
+     * Gather [UserSummary] of all [userIds], returning an [Outcome] containing
+     * a map of each `userId` to the [UserSummary] object.
+     * If a `userId` given in `userIds` is not available in the map,
+     * it means the ID is not found.
+     *
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with the map otherwise.
      */

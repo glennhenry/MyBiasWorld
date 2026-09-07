@@ -412,7 +412,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 // if post is not yet liked -> add the like and increment topic's like
-                serverContext.subunits.likes.addLike(Likes(userId, topicId, TimeCenter.now()))
+                serverContext.subunits.likes.addLike(userId, topicId)
                     .onFail {
                         call.serverError()
                         return@guard
@@ -490,7 +490,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 // if post is not yet liked -> add the like and increment topic's like
-                serverContext.subunits.likes.addLike(Likes(userId, replyId, TimeCenter.now()))
+                serverContext.subunits.likes.addLike(userId, replyId)
                     .onFail {
                         call.serverError()
                         return@guard

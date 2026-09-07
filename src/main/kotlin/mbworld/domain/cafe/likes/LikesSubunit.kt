@@ -3,6 +3,7 @@ package mbworld.domain.cafe.likes
 import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
+import encore.time.TimeCenter
 import encore.utils.types.Outcome
 import encore.utils.types.Report
 import encore.utils.types.toOutcome
@@ -14,7 +15,6 @@ import mbworld.utils.peek
  * Server subunits that handles [Likes] concerns from [LikesRepository].
  */
 class LikesSubunit(private val likesRepository: LikesRepository) : Subunit<ServerScope> {
-
     /**
      * Returns an [Outcome] containing a timestamp of when the post
      * was liked at.
@@ -32,7 +32,18 @@ class LikesSubunit(private val likesRepository: LikesRepository) : Subunit<Serve
             .toOutcome { castedAt -> return Outcome.Ok(castedAt) }
     }
 
-
+    /**
+     * Find whether each post in [postIds] is liked by [userId].
+     * This returns an [Outcome] containing a map of each `postId` in `postIds`
+     * to a timestamp of when the post was liked.
+     *
+     * If any provided `postId` is not available in the map,
+     * it means the like relationship between the user and that post
+     * is not found, and can therefore be said that the post is not liked.
+     *
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the map of `postId` and timestamp.
+     */
     suspend fun likedPosts(userId: UserId, postIds: List<String>): Outcome<Map<String, Long>> {
         return likesRepository.likedPosts(userId, postIds)
             .onFailure {
@@ -43,17 +54,24 @@ class LikesSubunit(private val likesRepository: LikesRepository) : Subunit<Serve
             .toOutcome { map -> return Outcome.Ok(map) }
     }
 
-
-    suspend fun addLike(likes: Likes): Report {
-        return likesRepository.addLike(likes)
+    /**
+     * Add a like to [postId] for [userId].
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun addLike(userId: UserId, postId: String): Report {
+        return likesRepository.addLike(Likes(userId, postId, TimeCenter.now()))
             .onFailure {
                 Fancam.error(it, "likes") {
-                    "addLike failed for likes=$likes"
+                    "addLike failed for userId=$userId with postId=$postId"
                 }
             }
             .toReport()
     }
 
+    /**
+     * Remove the like of [postId] for [userId].
+     * @return [Report] type denoting success or failure.
+     */
     suspend fun removeLike(userId: UserId, postId: String): Report {
         return likesRepository.removeLike(userId, postId)
             .onFailure {

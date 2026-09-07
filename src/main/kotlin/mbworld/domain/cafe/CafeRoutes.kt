@@ -16,7 +16,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
 import mbworld.context.ServerContext
-import mbworld.domain.cafe.likes.Likes
 import mbworld.domain.cafe.reply.Comment
 import mbworld.domain.cafe.reply.Reply
 import mbworld.domain.cafe.topic.Topic
@@ -239,8 +238,10 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
                 val authors = mutableListOf(topic.authorId)
 
+                val allPostIds = mutableListOf(topic.topicId)
                 val replies = serverContext.subunits.reply.getRepliesUnder(topic.topicId).okOrNull() ?: emptyList()
-                for ((_, _, authorId, _, _, _, comments) in replies) {
+                for ((replyId, _, authorId, _, _, _, comments) in replies) {
+                    allPostIds.add(replyId)
                     authors.add(authorId)
                     for ((_, authorId2) in comments) {
                         authors.add(authorId2)
@@ -248,10 +249,24 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 val summaries = serverContext.subunits.profile.getUserSummaries(authors.distinct()).okOrThrow()
-
                 val topicAuthorSummary = summaries[topic.authorId]
+
+                // gather liked posts if logged in
+                val likedPosts = mutableMapOf<String, Long>()
+                val account = call.attributes.getAccountData()
+                val isLoggedIn = call.attributes.getAccountData() != null
+                if (isLoggedIn) {
+                    serverContext.subunits.likes.likedPosts(account!!.userId, allPostIds)
+                        .okOrNull()
+                        ?.forEach { (postId, timestamp) ->
+                            // if a postId was in allPostIds but not in the map,
+                            // that means the post is not liked
+                            likedPosts[postId] = timestamp
+                        }
+                }
+
                 val data = TopicViewModel(
-                    account = call.attributes.getAccountData(),
+                    account = account,
                     sectionName = requireNotNull(Sections[section]) { "Ensure Sections contains $section" },
                     topicId = topic.topicId,
                     topic = TopicViewData(
@@ -260,7 +275,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         authorAvatarUrl = topicAuthorSummary?.avatarUrl ?: "<topicAuthor.avatarUrl:null>",
                         postedDate = topic.postedDate,
                         content = topic.content,
-                        likesCount = topic.likes
+                        likesCount = topic.likes,
+                        isLikedByUser = isLoggedIn && likedPosts[topic.topicId] != null
                     ),
                     replies = replies.map {
                         val replyAuthorSummary = summaries[it.authorId]
@@ -271,6 +287,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             content = it.content,
                             postedDate = it.postedDate,
                             likesCount = it.likes,
+                            isLikedByUser = isLoggedIn && likedPosts[topic.topicId] != null,
                             comments = it.comments.map { comment ->
                                 val commentAuthorSummary = summaries[comment.authorId]
                                 CommentData(

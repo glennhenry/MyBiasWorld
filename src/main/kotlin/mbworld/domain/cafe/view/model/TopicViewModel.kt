@@ -31,6 +31,8 @@ data class TopicViewModel(
  * @property postedDate The date of when this topic was posted. Uses [Topic.postedDate].
  * @property content The content of the topic. Uses [Topic.content].
  * @property likesCount The amount of likes this topic has. Uses [Topic.likes].
+ * @property isLikedByUser A boolean value on whether the user liked this topic.
+ *                         This will always be false if user is not logged in.
  */
 data class TopicViewData(
     val title: String,
@@ -38,7 +40,8 @@ data class TopicViewData(
     val authorAvatarUrl: String,
     val postedDate: Long,
     val content: String,
-    val likesCount: Int
+    val likesCount: Int,
+    val isLikedByUser: Boolean
 )
 
 /**
@@ -50,6 +53,8 @@ data class TopicViewData(
  * @property postedDate The date of when this reply was posted. Uses [Reply.postedDate].
  * @property content The content of the reply. Uses [Reply.content].
  * @property likesCount The amount of likes this reply has. Uses [Reply.likes].
+ * @property isLikedByUser A boolean value on whether the user liked this reply.
+ *                         This will always be false if user is not logged in.
  * @property comments The comments of this reply.
  */
 data class ReplyData(
@@ -59,6 +64,7 @@ data class ReplyData(
     val postedDate: Long,
     val content: String,
     val likesCount: Int,
+    val isLikedByUser: Boolean,
     val comments: List<CommentData>
 )
 

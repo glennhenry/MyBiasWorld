@@ -2,6 +2,7 @@ import bootstrap.acceptsTerminalInput
 import bootstrap.installEncore
 import bootstrap.logStartupInformation
 import bootstrap.shutdownHook
+import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import encore.EncoreIdentity
 import encore.EncoreIdentity.celebrate
@@ -24,6 +25,8 @@ import kotlinx.serialization.modules.SerializersModule
 import mbworld.ProjectIdentity
 import mbworld.context.RealContextFactory
 import mbworld.context.ServerContext
+import mbworld.devtools.ResetDatabaseCommand
+import mbworld.devtools.SetupDatabaseCommand
 import mbworld.domain.auth.AuthApiRoutes
 import mbworld.domain.auth.AuthPageRoutes
 import mbworld.domain.cafe.CafeRoutes
@@ -65,7 +68,7 @@ suspend fun Application.configureApplication() {
     val security = DefaultSecurity(bannedAddresses, TimeCenter.source)
 
     // setup the framework
-    val db = installEncore(
+    val (mongoc, db) = installEncore(
         module = SerializersModule { },
         security = security
     )
@@ -82,7 +85,7 @@ suspend fun Application.configureApplication() {
     websocketHandlers(serverContext)
 
     // register commands
-    commandHandlers(serverContext, db)
+    commandHandlers(serverContext, mongoc, db)
 
     // configure routing
     // ephemeral token storage for /backstage entry
@@ -120,9 +123,11 @@ fun websocketHandlers(serverContext: ServerContext) {
     }
 }
 
-fun commandHandlers(serverContext: ServerContext, db: MongoDatabase) {
+fun commandHandlers(serverContext: ServerContext, mongoc: MongoClient, db: MongoDatabase) {
     with(serverContext.commandDispatcher) {
         register(ExampleCommand())
         register(DummySetupCommand(db))
+        register(SetupDatabaseCommand(mongoc))
+        register(ResetDatabaseCommand(mongoc))
     }
 }

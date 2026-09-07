@@ -1,5 +1,7 @@
 package mbworld.domain.cafe.collection
 
+import kotlinx.serialization.Serializable
+
 /**
  * Refer to the **space** concept in cafe.
  *
@@ -10,6 +12,7 @@ package mbworld.domain.cafe.collection
  * @property name Display name of the space.
  * @property order The order of how distinct spaces are displayed in the cafe.
  */
+@Serializable
 data class Space(
     val id: String,
     val name: String,

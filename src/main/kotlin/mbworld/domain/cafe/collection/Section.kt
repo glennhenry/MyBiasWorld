@@ -1,5 +1,7 @@
 package mbworld.domain.cafe.collection
 
+import kotlinx.serialization.Serializable
+
 /**
  * Refer to the **section** concept in cafe.
  *
@@ -13,6 +15,7 @@ package mbworld.domain.cafe.collection
  * @property name Display name of the section.
  * @property order The order of how each sections are displayed within the same space.
  */
+@Serializable
 data class Section(
     val id: String,
     val spaceId: String,

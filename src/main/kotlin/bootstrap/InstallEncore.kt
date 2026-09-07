@@ -64,7 +64,7 @@ import kotlin.time.Duration.Companion.seconds
 suspend fun Application.installEncore(
     module: SerializersModule = SerializersModule { },
     security: SecurityGuard
-): MongoDatabase {
+): Pair<MongoClient, MongoDatabase> {
     configureSerialization()
     configureFancam()
     configureCors()
@@ -199,7 +199,7 @@ val CodecRegistry: CodecRegistry = fromRegistries(
     )
 )
 
-suspend fun configureDatabase(): MongoDatabase {
+suspend fun configureDatabase(): Pair<MongoClient, MongoDatabase> {
     val mongoc = MongoClient.create(
         MongoClientSettings.builder()
             .applyConnectionString(ConnectionString(Venue.encore.database.dbUrl))
@@ -211,7 +211,7 @@ suspend fun configureDatabase(): MongoDatabase {
     Fancam.info(Tags.Startup) { "MongoDB connection successful: $commandResult" }
     val db = mongoc.getDatabase(Venue.encore.database.dbName)
         .withCodecRegistry(CodecRegistry)
-    return db
+    return mongoc to db
 }
 
 fun Application.configureWebSocket() {

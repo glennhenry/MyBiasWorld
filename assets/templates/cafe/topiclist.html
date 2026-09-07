@@ -66,8 +66,15 @@
       flex: 1;
     }
 
-    .topic-content {
-      margin-top: 12px;
+    .reply-likes-column {
+      text-align: end;
+    }
+
+    .topic-stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: end;
+      gap: 4px;
     }
   </style>
 </head>
@@ -103,7 +110,16 @@
                         </span>
                         <p class="topic-posted-date js-format-date" th:data-raw-date="${topic.postedDate}"></p>
                       </div>
-                      <p th:text="'(Reply: ' + ${topic.replyCount} + ') '"></p>
+                      <div class="reply-likes-column">
+                        <span class="topic-stat-row">
+                          <img src="/icons/chat.png" alt="Chat bubble" title="Reply" width="20px">
+                          <p th:text="${topic.replyCount}"></p>
+                        </span>
+                        <span class="topic-stat-row">
+                          <img src="/icons/heart.png" alt="Heart" title="Likes" width="20px">
+                          <p th:text="${topic.likesCount}"></p>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </li>
@@ -188,11 +204,8 @@
             } else {
               if (response.status == "403") {
                 Toast.error("Not logged in", "You must be logged in to perform this action", 5)
-            } else {
-              if (response.status == "403") {
-                Toast.error("Not logged in", "You must be logged in to perform this action", 5)
-            } else {
-              console.error("Delete failed");
+              } else {
+                console.error("Delete failed");
               }
             }
           })

@@ -287,7 +287,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             content = it.content,
                             postedDate = it.postedDate,
                             likesCount = it.likes,
-                            isLikedByUser = isLoggedIn && likedPosts[topic.topicId] != null,
+                            isLikedByUser = isLoggedIn && likedPosts[it.replyId] != null,
                             comments = it.comments.map { comment ->
                                 val commentAuthorSummary = summaries[comment.authorId]
                                 CommentData(

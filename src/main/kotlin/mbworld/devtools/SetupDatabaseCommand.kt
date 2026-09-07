@@ -6,6 +6,7 @@ import encore.backstage.command.Command
 import encore.backstage.command.types.ArgumentCollection
 import encore.backstage.command.types.CommandResult
 import encore.serialization.JSON
+import encore.utils.types.onFail
 import encore.venue.Venue
 import mbworld.context.ServerContext
 import mbworld.domain.cafe.collection.Section
@@ -67,6 +68,10 @@ class SetupDatabaseCommand(private val mongoClient: MongoClient) : Command {
         val sectionCollection = db.getCollection<Section>(RuntimeMongoCollections.sections)
         val sections = JSON.decode<List<Section>>(sectionFile.readText())
         sectionCollection.insertMany(sections)
+
+        // refresh collection subunit
+        serverContext.subunits.collection.refreshCollection()
+            .onFail { error("Error during call to CollectionSubunit.refreshCollection") }
 
         return CommandResult.Executed("Inserted space and sections successfully")
     }

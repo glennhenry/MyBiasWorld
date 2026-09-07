@@ -26,11 +26,9 @@ Made with [Encore](https://github.com/glennhenry/Encore).
 
 # Setup
 
-1. Create `spaces` collection in MongoDB.
-2. Import data from `assets/spaces.json`.
-3. Create `sections` collection in MongoDB.
-4. Import data from `assets/sections.json`.
-5. Reload server if already run before.
+1. Run the server as instructed below.
+2. Go to `http://localhost:8080/backstage` and head to the command section.
+3. Type the command 'setupdb' and click "Send" to setup the database for cafe compatibility.
 
 # Server Manual
 

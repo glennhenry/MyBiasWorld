@@ -25,7 +25,8 @@ class MongoLikesRepositoryTest {
         // setup
         val uid = "5ab0980c-e2cb-990a-427a-5ad9b0311b7a"
         val pid = "5ab0980c-e2cb-990a-427a-5ad9b0311b7b"
-        collection.insertMany(createLike(10) + Likes(uid, pid, 123))
+        val pidNotLiked = "5ab0980c-e2cb-990a-427a-5ad9b0311b7x"
+        collection.insertMany(createLike(3) + createLike(10, pid) + createLike(10, pidNotLiked) + Likes(uid, pid, 123))
 
         // tests
         // 1. isPostLikedBy
@@ -39,10 +40,10 @@ class MongoLikesRepositoryTest {
 
         // 3. likedPosts
         assertTrue {
-            val result = repo.likedPosts(uid, listOf(pid, pid2, "asdf")).getOrThrow()
+            val result = repo.likedPosts(uid, listOf(pid, pid2, pidNotLiked)).getOrThrow()
             result[pid]?.equals(123L) == true &&
                     result[pid2]?.equals(456L) == true &&
-                    result.get("asdf") == null
+                    result.keys.size == 2
         }
 
         // 4. removeLike
@@ -50,9 +51,9 @@ class MongoLikesRepositoryTest {
         assertNull(repo.isPostLikedBy(uid, pid2).getOrThrow())
     }
 
-    private fun createLike(amount: Int): List<Likes> {
+    private fun createLike(amount: Int, postId: String? = null): List<Likes> {
         return List(amount) {
-            Likes(Ids.uuid(), Ids.uuid(), 0)
+            Likes(Ids.uuid(), postId ?: Ids.uuid(), 0)
         }
     }
 }

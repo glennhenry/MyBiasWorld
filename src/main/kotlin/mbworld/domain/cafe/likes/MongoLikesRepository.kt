@@ -44,7 +44,12 @@ class MongoLikesRepository(private val likes: MongoCollection<Likes>) : LikesRep
         return runMongoCatching {
             val map = likes.aggregate<QueryPostIdAndCastedAt>(
                 listOf(
-                    Aggregates.match(Filters.`in`(FieldPostId, postIds)),
+                    Aggregates.match(
+                        Filters.and(
+                            Filters.eq(FieldUserId, userId),
+                            Filters.`in`(FieldPostId, postIds)
+                        )
+                    ),
                     Aggregates.project(
                         Projections.fields(
                             Projections.excludeId(),

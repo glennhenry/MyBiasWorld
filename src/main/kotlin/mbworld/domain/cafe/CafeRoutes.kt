@@ -119,6 +119,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                                 "<authorName:null>"
                             },
                             replyCount = replyCounts[it.topicId] ?: 0,
+                            likesCount = it.likes,
                             postedDate = it.postedDate
                         )
                     }
@@ -258,7 +259,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         authorDisplayName = topicAuthorSummary?.displayName ?: "<topicAuthor.displayName:null>",
                         authorAvatarUrl = topicAuthorSummary?.avatarUrl ?: "<topicAuthor.avatarUrl:null>",
                         postedDate = topic.postedDate,
-                        content = topic.content
+                        content = topic.content,
+                        likesCount = topic.likes
                     ),
                     replies = replies.map {
                         val replyAuthorSummary = summaries[it.authorId]
@@ -268,6 +270,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             authorAvatarUrl = replyAuthorSummary?.avatarUrl ?: "<replyAuthor.avatarUrl:null>",
                             content = it.content,
                             postedDate = it.postedDate,
+                            likesCount = it.likes,
                             comments = it.comments.map { comment ->
                                 val commentAuthorSummary = summaries[comment.authorId]
                                 CommentData(

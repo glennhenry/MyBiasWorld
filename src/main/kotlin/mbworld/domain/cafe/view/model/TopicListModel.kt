@@ -25,6 +25,7 @@ data class TopicListModel(
  * @property title Title of the topic. Uses [Topic.title].
  * @property authorName The name of author that posted the topic.
  * @property replyCount The amount of reply posted within this topic.
+ * @property likesCount The amount of likes this topic has.
  * @property postedDate The date of when this topic was posted. Uses [Topic.postedDate].
  */
 data class TopicListItemData(
@@ -33,5 +34,6 @@ data class TopicListItemData(
     val title: String,
     val authorName: String,
     val replyCount: Int,
+    val likesCount: Int,
     val postedDate: Long
 )

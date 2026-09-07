@@ -30,13 +30,15 @@ data class TopicViewModel(
  * @property authorAvatarUrl The author's avatar url that posted this topic.
  * @property postedDate The date of when this topic was posted. Uses [Topic.postedDate].
  * @property content The content of the topic. Uses [Topic.content].
+ * @property likesCount The amount of likes this topic has. Uses [Topic.likes].
  */
 data class TopicViewData(
     val title: String,
     val authorDisplayName: String,
     val authorAvatarUrl: String,
     val postedDate: Long,
-    val content: String
+    val content: String,
+    val likesCount: Int
 )
 
 /**
@@ -47,6 +49,7 @@ data class TopicViewData(
  * @property authorAvatarUrl The author's avatar url that posted this reply.
  * @property postedDate The date of when this reply was posted. Uses [Reply.postedDate].
  * @property content The content of the reply. Uses [Reply.content].
+ * @property likesCount The amount of likes this reply has. Uses [Reply.likes].
  * @property comments The comments of this reply.
  */
 data class ReplyData(
@@ -55,6 +58,7 @@ data class ReplyData(
     val authorAvatarUrl: String,
     val postedDate: Long,
     val content: String,
+    val likesCount: Int,
     val comments: List<CommentData>
 )
 

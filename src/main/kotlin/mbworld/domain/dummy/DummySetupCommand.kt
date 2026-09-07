@@ -32,7 +32,7 @@ import kotlin.random.Random
  * Usage: call 'dummy-setup' on the backstage command tool.
  * No arguments are needed.
  */
-class DummySetupCommand(private val db: MongoDatabase): Command {
+class DummySetupCommand(private val db: MongoDatabase) : Command {
     override val commandId: String = "dummy-setup"
     override val description: String = "Prepare dummy activities for the website. " +
             "This will make use the DummyActivitySetup class."
@@ -45,6 +45,7 @@ class DummySetupCommand(private val db: MongoDatabase): Command {
 
         val insertedUsers = mutableListOf<String>()
         val addedTopics = mutableListOf<Pair<String, Long>>()
+        val addedReplies = mutableListOf<String>()
 
         val accounts = mutableMapOf<UserId, UserAccount>()
         val profiles = mutableMapOf<UserId, Profile>()
@@ -69,7 +70,7 @@ class DummySetupCommand(private val db: MongoDatabase): Command {
                 accounts[acc.userId] = acc
                 profiles[acc.userId] = ProfileFactory.profile(acc.userId, acc.displayName)
                 idsToUse.add(acc.userId)
-                insertedUsers.add(creation.createUser("ignored", "ignored", "ignored"))
+                insertedUsers.add(creation.createUser("ignoreThisParam", "ignoreThisParam", "ignoreThisParam"))
             }
 
             // 2. create topics
@@ -99,9 +100,32 @@ class DummySetupCommand(private val db: MongoDatabase): Command {
                             possibleCommentAuthors = insertedUsers
                         )
                     }.sortedBy { it.postedDate }
-                    replies.forEach { serverContext.subunits.reply.addReply(it) }
+                    replies.forEach {
+                        addedReplies.add(it.replyId)
+                        serverContext.subunits.reply.addReply(it)
+                    }
                 }
             }
+
+            // 4. add user likes to topic and replies
+            insertedUsers.forEach { userId ->
+                // 30% chance for a user to like a particular topic
+                addedTopics.forEach { topicId ->
+                    if (Random.nextDouble() < 0.3) {
+                        serverContext.subunits.likes.addLike(userId, topicId.first)
+                        serverContext.subunits.topic.incrementLike(topicId.first)
+                    }
+                }
+
+                // 10% chance for a user to like a particular reply
+                addedReplies.forEach { replyId ->
+                    if (Random.nextDouble() < 0.1) {
+                        serverContext.subunits.likes.addLike(userId, replyId)
+                        serverContext.subunits.reply.incrementLike(replyId)
+                    }
+                }
+            }
+
         } catch (e: Exception) {
             Fancam.error(e, "dummysetup") { "Scandal during dummy setup" }
             return CommandResult.Error("Scandal during dummy setup: ${e.message}")

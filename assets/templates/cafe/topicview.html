@@ -94,25 +94,43 @@
 
     .post-footer {
       display: flex;
-      flex-direction: row;
       align-items: end;
-      padding: 8px;
+      justify-content: space-between;
+      padding: 6px;
       margin-top: 32px;
+    }
+
+    .post-footer-left {
+      display: flex;
+    }
+
+    .post-likes-counter {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .post-likes-counter p {
+      font-size: 12px;
     }
 
     .post-context-actions {
       display: flex;
       flex: 1;
       gap: 4px;
+      padding-left: 4px;
+      margin-left: 8px;
+      border-left: 1px solid #ccc9;
       opacity: 0;
     }
 
-    .post-info {
+    .post-footer-right {
       text-align: end;
     }
 
     .comment-info-row {
       display: flex;
+      align-items: center;
       justify-content: end;
       gap: 4px;
     }
@@ -298,15 +316,23 @@
                   <div class="post-content-container">
                     <p class="post-content" th:text="${data.topic.content}"></p>
                     <div class="post-footer">
-                      <div class="post-context-actions">
-                        <a href="javascript:void(0);" title="Report this post">
-                          <img src="/icons/danger.png" alt="Danger sign" width="24px">
-                        </a>
-                        <a href="javascript:void(0);" title="Share">
-                          <img src="/icons/share.png" alt="Blue arrow pointing right" width="24px">
-                        </a>
+                      <div class="post-footer-left">
+                        <div class="post-likes-counter">
+                          <a href="javascript:void(0);" title="Like this topic">
+                            <img src="/icons/heart.png" alt="Heart" width="24px">
+                          </a>
+                          <p th:text="${data.topic.likesCount}"></p>
+                        </div>
+                        <div class="post-context-actions">
+                          <a href="javascript:void(0);" title="Report this topic">
+                            <img src="/icons/danger.png" alt="Danger sign" width="24px">
+                          </a>
+                          <a href="javascript:void(0);" title="Share">
+                            <img src="/icons/share.png" alt="Blue arrow pointing right" width="24px">
+                          </a>
+                        </div>
                       </div>
-                      <div class="post-info">
+                      <div class="post-footer-right">
                         <span class="js-format-date" th:data-raw-date="${data.topic.postedDate}">
                       </div>
                     </div>
@@ -329,15 +355,23 @@
                   <div class="post-content-container">
                     <p class="post-content" th:text="${reply.content}"></p>
                     <div class="post-footer">
-                      <div class="post-context-actions">
-                        <a href="javascript:void(0);" title="Report this post">
-                          <img src="/icons/danger.png" alt="Danger sign" width="24px">
-                        </a>
-                        <a href="javascript:void(0);" title="Share">
-                          <img src="/icons/share.png" alt="Blue arrow pointing right" width="24px">
-                        </a>
+                      <div class="post-footer-left">
+                        <div class="post-likes-counter">
+                          <a href="javascript:void(0);" title="Like this reply">
+                            <img src="/icons/heart.png" alt="Heart" width="24px">
+                          </a>
+                          <p th:text="${reply.likesCount}"></p>
+                        </div>
+                        <div class="post-context-actions">
+                          <a href="javascript:void(0);" title="Report this reply">
+                            <img src="/icons/danger.png" alt="Danger sign" width="24px">
+                          </a>
+                          <a href="javascript:void(0);" title="Share">
+                            <img src="/icons/share.png" alt="Blue arrow pointing right" width="24px">
+                          </a>
+                        </div>
                       </div>
-                      <div class="post-info">
+                      <div class="post-footer-right">
                         <div class="comment-info-row">
                           <a class="link see-comment" href="javascript:void(0)"
                             th:text="${#lists.isEmpty(reply.comments) ? 'See comments' : 'Collapse'}"

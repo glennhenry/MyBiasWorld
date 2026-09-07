@@ -318,10 +318,20 @@
                     <div class="post-footer">
                       <div class="post-footer-left">
                         <div class="post-likes-counter">
-                          <a href="javascript:void(0);" title="Like this topic">
-                            <img src="/icons/heart.png" alt="Heart" width="24px">
-                          </a>
-                          <p th:text="${data.topic.likesCount}"></p>
+                          <th:block th:if="${data.topic.isLikedByUser}">
+                            <a class="like-post" href="javascript:void(0);" title="Unlike this post" data-liked="true"
+                              th:data-postid="${data.topicId}" data-post-type="topic">
+                              <img src="/icons/heart.png" alt="Empty heart" width="24px">
+                            </a>
+                            <p th:text="${data.topic.likesCount}"></p>
+                          </th:block>
+                          <th:block th:if="${not data.topic.isLikedByUser}">
+                            <a class="like-post" href="javascript:void(0);" title="Like this post" data-liked="false"
+                              th:data-postid="${data.topicId}" data-post-type="topic">
+                              <img src="/icons/unheart.png" alt="Filled heart" width="24px">
+                            </a>
+                            <p th:text="${data.topic.likesCount}"></p>
+                          </th:block>
                         </div>
                         <div class="post-context-actions">
                           <a href="javascript:void(0);" title="Report this topic">
@@ -357,10 +367,20 @@
                     <div class="post-footer">
                       <div class="post-footer-left">
                         <div class="post-likes-counter">
-                          <a href="javascript:void(0);" title="Like this reply">
-                            <img src="/icons/heart.png" alt="Heart" width="24px">
-                          </a>
-                          <p th:text="${reply.likesCount}"></p>
+                          <th:block th:if="${reply.isLikedByUser}">
+                            <a class="like-post" href="javascript:void(0);" title="Unlike this post" data-liked="true"
+                              th:data-postid="${reply.replyId}" data-post-type="reply">
+                              <img src="/icons/heart.png" alt="Empty heart" width="24px">
+                            </a>
+                            <p th:text="${reply.likesCount}"></p>
+                          </th:block>
+                          <th:block th:if="${not reply.isLikedByUser}">
+                            <a class="like-post" href="javascript:void(0);" title="Like this post" data-liked="false"
+                              th:data-postid="${reply.replyId}" data-post-type="reply">
+                              <img src="/icons/unheart.png" alt="Filled heart" width="24px">
+                            </a>
+                            <p th:text="${reply.likesCount}"></p>
+                          </th:block>
                         </div>
                         <div class="post-context-actions">
                           <a href="javascript:void(0);" title="Report this reply">
@@ -471,6 +491,42 @@
 
       $(".register").attr('href', `/register?return=${window.location.pathname}`)
       $(".login").attr('href', `/login?return=${window.location.pathname}`)
+
+      $(".post-likes-counter").each(function () {
+        const likeAction = $(this).children().first()
+        const img = likeAction.children().first()
+        const counter = $(this).children().eq(1)
+
+        likeAction.on("mouseover", function () {
+          if (likeAction.attr("data-liked") == "false") {
+            img.attr("src", "/icons/heart.png")
+          }
+        })
+        likeAction.on("mouseout", function () {
+          if (likeAction.attr("data-liked") == "false") {
+            img.attr("src", "/icons/unheart.png")
+          }
+        })
+
+        likeAction.click(function () {
+          let requestUrl = ""
+          if (likeAction.attr("data-liked") == "true") {
+            if (likeAction.attr("data-post-type") == "topic") {
+              requestUrl = window.location.href + "/unlike"
+            } else {
+              requestUrl = window.location.href + "/" + likeAction.attr("data-postid") + "/unlike"
+            }
+            unlikePost(requestUrl, likeAction, img, counter)
+          } else {
+            if (likeAction.attr("data-post-type") == "topic") {
+              requestUrl = window.location.href + "/like"
+            } else {
+              requestUrl = window.location.href + "/" + likeAction.attr("data-postid") + "/like"
+            }
+            likePost(requestUrl, likeAction, img, counter)
+          }
+        })
+      })
 
       if ($("#topic-reply-textarea").length > 0) {
         updateReplyCounter()
@@ -620,6 +676,60 @@
     $(".comment-publish-btn").click(function (event) {
       commentListener($(this).attr("data-comment-form-id"))
     })
+
+    async function likePost(url, likeAction, imgElement, counter) {
+      // update UI to reflect a liked post
+      onPostLiked(likeAction, imgElement, counter)
+      try {
+        const response = await fetch(url, { method: 'POST' })
+        if (response.ok) {
+          return
+        } else if (response.status == 403) {
+          // undo UI update if failed
+          onPostUnliked(likeAction, imgElement, counter)
+          Toast.error("Not logged in", "This action requires an account.")
+        } else if (response.status == 500) {
+          onPostUnliked(likeAction, imgElement, counter)
+          Toast.error("Server error", "The server failed performing the requested action.")
+        }
+      } catch (err) {
+        console.error("Reply error: ", err)
+      }
+    }
+
+    async function unlikePost(url, likeAction, imgElement, counter) {
+      // update UI to reflect an unliked post
+      onPostUnliked(likeAction, imgElement, counter)
+      try {
+        const response = await fetch(url, { method: 'POST' })
+        if (response.ok) {
+          return
+        } else if (response.status == 403) {
+          // undo UI update if failed
+          onPostLiked(likeAction, imgElement, counter)
+          Toast.error("Not logged in", "This action requires an account.")
+        } else if (response.status == 500) {
+          onPostLiked(likeAction, imgElement, counter)
+          Toast.error("Server error", "The server failed performing the requested action.")
+        }
+      } catch (err) {
+        console.error("Reply error: ", err)
+      }
+    }
+
+    function onPostLiked(likeAction, imgElement, counter) {
+      imgElement.attr("src", "/icons/heart.png")
+      likeAction.attr("data-liked", "true")
+      likeAction.attr("title", "Unlike this post")
+      counter.text(parseInt(counter.text()) + 1)
+    }
+
+    function onPostUnliked(likeAction, imgElement, counter) {
+      imgElement.attr("src", "/icons/unheart.png")
+      likeAction.attr("data-liked", "false")
+      likeAction.attr("title", "Like this post")
+      counter.text(parseInt(counter.text()) - 1)
+    }
 
     async function replyListener(event) {
       if (!checkReplyText()) return

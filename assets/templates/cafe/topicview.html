@@ -59,6 +59,7 @@
     }
 
     .avatar {
+      padding: 1px;
       border: 1px solid #ccc;
     }
 
@@ -157,12 +158,6 @@
 
     .comment:hover .comment-context-actions {
       opacity: 1;
-    }
-
-    .comment-author-avatar {
-      height: max-content;
-      padding: 1px;
-      border: 1px solid #b3b3b3;
     }
 
     .comment-author-name-container {
@@ -418,7 +413,7 @@
                     th:data-comment-id="${reply.replyId}">
                     <div class="comment" th:each="comment: ${reply.comments}">
                       <a th:href="${comment.authorProfileUrl}">
-                        <img class="comment-author-avatar" th:src="'/' + ${comment.authorAvatarUrl}" width="60px">
+                        <img class="avatar" th:src="'/' + ${comment.authorAvatarUrl}" width="60px">
                       </a>
                       <div class="comment-author-name-container">
                         <a class="comment-author-name" th:href="${comment.authorProfileUrl}"

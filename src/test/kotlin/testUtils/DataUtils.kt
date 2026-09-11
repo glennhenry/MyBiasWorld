@@ -33,11 +33,13 @@ fun createAccount(
 
 fun createProfile(
     userId: UserId = Ids.uuid(),
+    username: String = randomString(8),
     displayName: String = randomString(8),
     avatarUrl: String = randomString(8)
 ): Profile {
     return Profile(
         userId = userId,
+        username = username,
         displayName = displayName,
         avatarUrl = avatarUrl,
         country = "Indonesia",

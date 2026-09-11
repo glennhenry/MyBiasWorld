@@ -26,10 +26,11 @@ object ProfileFactory {
         "Japan", "South Korea", "Thailand", "Indonesia", "Australia"
     )
 
-    fun profile(userId: UserId, displayName: String): Profile {
+    fun profile(userId: UserId, username: String, displayName: String): Profile {
         val fanProfile = fanProfile()
         return Profile(
             userId = userId,
+            username = username,
             displayName = displayName,
             avatarUrl = avatars.random(),
             country = countries.random(),

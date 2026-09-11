@@ -68,7 +68,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
             repeat(numAccounts) {
                 val acc = AccountFactory.account()
                 accounts[acc.userId] = acc
-                profiles[acc.userId] = ProfileFactory.profile(acc.userId, acc.displayName)
+                profiles[acc.userId] = ProfileFactory.profile(acc.userId, acc.username, acc.displayName)
                 idsToUse.add(acc.userId)
                 insertedUsers.add(creation.createUser("ignoreThisParam", "ignoreThisParam", "ignoreThisParam"))
             }

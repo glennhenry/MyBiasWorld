@@ -46,6 +46,7 @@ class RealUserCreationFactory : UserCreationFactory {
     override fun profile(userId: UserId, username: String): Profile {
         return Profile(
             userId = userId,
+            username = username,
             displayName = username,
             // avatarUrl = ,
             country = "",

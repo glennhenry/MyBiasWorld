@@ -10,7 +10,8 @@ import mbworld.mongo.collection.UserAccount
  * system information, such as avatar, description, title, mood, etc.
  *
  * @property userId Unique identifier of the user. References [UserAccount.userId]
- * @property displayName Display name of the user, non-unique.
+ * @property username Username of the user, unique. This should match [UserAccount.username].
+ * @property displayName Display name of the user, non-unique. This should match [UserAccount.displayName].
  * @property avatarUrl Directory path that points to the user's avatar image.
  * @property country The country origin of user.
  * @property birthday The day when the user was born (or whatever they claim 😅).
@@ -23,6 +24,7 @@ import mbworld.mongo.collection.UserAccount
 @Serializable
 data class Profile(
     val userId: String,
+    val username: String,
     val displayName: String,
     val avatarUrl: String = "avatars/duck.jpg",
     val country: String,

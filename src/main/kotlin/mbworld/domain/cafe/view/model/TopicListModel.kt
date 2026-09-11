@@ -24,6 +24,7 @@ data class TopicListModel(
  * @property link The link that direct to the topic's page.
  * @property title Title of the topic. Uses [Topic.title].
  * @property authorName The name of author that posted the topic.
+ * @property authorProfileUrl The URL that leads to the author's profile.
  * @property replyCount The amount of reply posted within this topic.
  * @property likesCount The amount of likes this topic has.
  * @property postedDate The date of when this topic was posted. Uses [Topic.postedDate].
@@ -33,6 +34,7 @@ data class TopicListItemData(
     val link: String,
     val title: String,
     val authorName: String,
+    val authorProfileUrl: String,
     val replyCount: Int,
     val likesCount: Int,
     val postedDate: Long

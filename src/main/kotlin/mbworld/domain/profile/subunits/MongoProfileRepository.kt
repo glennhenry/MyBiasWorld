@@ -5,6 +5,7 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Projections
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.account.FieldUserId
+import encore.account.FieldUsername
 import encore.datastore.runMongoCatching
 import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.associateBy
@@ -114,6 +115,7 @@ class MongoProfileRepository(
                     Projections.fields(
                         Projections.excludeId(),
                         Projections.include(FieldUserId),
+                        Projections.include(FieldUsername),
                         Projections.include(FieldDisplayName),
                         Projections.include(FieldAvatarUrl)
                     )
@@ -121,7 +123,7 @@ class MongoProfileRepository(
                 .firstOrNull()
 
             if (query != null) {
-                UserSummary(query.userId, query.displayName, query.avatarUrl)
+                UserSummary(query.userId, query.username, query.displayName, query.avatarUrl)
             } else {
                 null
             }
@@ -137,6 +139,7 @@ class MongoProfileRepository(
                         Projections.fields(
                             Projections.excludeId(),
                             Projections.include(FieldUserId),
+                            Projections.include(FieldUsername),
                             Projections.include(FieldDisplayName),
                             Projections.include(FieldAvatarUrl)
                         )
@@ -144,7 +147,7 @@ class MongoProfileRepository(
                 )
             ).associateBy(
                 keySelector = { it.userId },
-                valueTransform = { UserSummary(it.userId, it.displayName, it.avatarUrl) }
+                valueTransform = { UserSummary(it.userId, it.username, it.displayName, it.avatarUrl) }
             )
 
             return Result.success(profile)
@@ -158,6 +161,7 @@ class MongoProfileRepository(
 data class QueryUserSummary(
     @field:BsonId val id: String? = null,
     val userId: UserId,
+    val username: String,
     val displayName: String,
     val avatarUrl: String
 )

@@ -109,14 +109,20 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     account = call.attributes.getAccountData(),
                     sectionId = section,
                     topics = topics.map {
+                        val authorDisplayName = summaries[it.authorId]?.displayName ?: run {
+                            Fancam.warn { "authorDisplayName of ${it.topicId} (title=${it.title}) is null" }
+                            "<authorDisplayName:null>"
+                        }
+                        val authorUsername = summaries[it.authorId]?.username ?: run {
+                            Fancam.warn { "authorUsername of ${it.topicId} (title=${it.title}) is null" }
+                            "<authorUsername:null>"
+                        }
                         TopicListItemData(
                             topicId = it.topicId,
                             link = "${section}/${it.topicId.shortUuid()}/${it.title.toUrlSlug()}",
                             title = it.title,
-                            authorName = summaries[it.authorId]?.displayName ?: run {
-                                Fancam.warn { "authorName of ${it.topicId} (title=${it.title}) is null" }
-                                "<authorName:null>"
-                            },
+                            authorName = authorDisplayName,
+                            authorProfileUrl = "/profile/@${authorUsername}/overview",
                             replyCount = replyCounts[it.topicId] ?: 0,
                             likesCount = it.likes,
                             postedDate = it.postedDate

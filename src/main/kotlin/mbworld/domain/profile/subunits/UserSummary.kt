@@ -11,12 +11,14 @@ import mbworld.mongo.collection.UserAccount
  * that doesn't include every fields of [UserAccount] and [Profile]
  *
  * @property userId References to [UserAccount].
+ * @property username Username of the user.
  * @property displayName Display name of the user.
  * @property avatarUrl Directory path that points to the user's avatar image.
  */
 @Serializable
 data class UserSummary(
     val userId: String,
+    val username: String,
     val displayName: String,
     val avatarUrl: String
 )

@@ -62,8 +62,9 @@
     }
 
     .topic-author-name {
+      font-weight: bold;
       font-style: italic;
-      flex: 1;
+      color: #975396;
     }
 
     .reply-likes-column {
@@ -106,7 +107,8 @@
                     <div class="topic-author-row">
                       <div>
                         <span class="topic-author-left">
-                          Posted by <span class="topic-author-name" th:text="${topic.authorName}"></span>
+                          Posted by <a class="topic-author-name" th:text="${topic.authorName}"
+                            th:href="${topic.authorProfileUrl}"></a>
                         </span>
                         <p class="topic-posted-date js-format-date" th:data-raw-date="${topic.postedDate}"></p>
                       </div>

@@ -3,6 +3,7 @@ package mbworld.domain.cafe.view.model
 import mbworld.domain.cafe.topic.Topic
 import mbworld.domain.cafe.reply.Reply
 import mbworld.domain.cafe.reply.Comment
+import mbworld.mongo.collection.UserId
 import mbworld.routes.common.AccountData
 
 /**
@@ -26,8 +27,9 @@ data class TopicViewModel(
  * Data of topic.
  *
  * @property title The title of the topic. Uses [Topic.title].
- * @property authorDisplayName The author's display name that posted this topic.
- * @property authorAvatarUrl The author's avatar url that posted this topic.
+ * @property authorUserId The [UserId] of the author's that posted this topic.
+ * @property authorDisplayName The author's display name.
+ * @property authorAvatarUrl The author's avatar url.
  * @property authorProfileUrl A link to the author's profile URL.
  * @property postedDate The date of when this topic was posted. Uses [Topic.postedDate].
  * @property content The content of the topic. Uses [Topic.content].
@@ -37,6 +39,7 @@ data class TopicViewModel(
  */
 data class TopicViewData(
     val title: String,
+    val authorUserId: UserId,
     val authorDisplayName: String,
     val authorAvatarUrl: String,
     val authorProfileUrl: String,
@@ -50,8 +53,9 @@ data class TopicViewData(
  * Data of reply.
  *
  * @property replyId The unique identifier of the reply. Uses [Reply.replyId].
- * @property authorDisplayName The author's display name that posted this reply.
- * @property authorAvatarUrl The author's avatar url that posted this reply.
+ * @property authorUserId The [UserId] of the author's that posted this reply.
+ * @property authorDisplayName The author's display name.
+ * @property authorAvatarUrl The author's avatar url.
  * @property authorProfileUrl A link to the author's profile URL.
  * @property postedDate The date of when this reply was posted. Uses [Reply.postedDate].
  * @property content The content of the reply. Uses [Reply.content].
@@ -62,6 +66,7 @@ data class TopicViewData(
  */
 data class ReplyData(
     val replyId: String,
+    val authorUserId: UserId,
     val authorDisplayName: String,
     val authorAvatarUrl: String,
     val authorProfileUrl: String,
@@ -76,14 +81,16 @@ data class ReplyData(
  * Data of comment.
  *
  * @property commentId The unique identifier of the comment. Uses [Comment.commentId].
- * @property authorDisplayName The author's display name that posted this comment.
- * @property authorAvatarUrl The author's avatar url that posted this comment.
+ * @property authorUserId The [UserId] of the author's that posted this comment.
+ * @property authorDisplayName The author's display name.
+ * @property authorAvatarUrl The author's avatar url.
  * @property authorProfileUrl A link to the author's profile URL.
  * @property postedDate The date of when this comment was posted. Uses [Comment.postedDate].
  * @property content The content of the comment. Uses [Comment.content].
  */
 data class CommentData(
     val commentId: String,
+    val authorUserId: UserId,
     val authorDisplayName: String,
     val authorAvatarUrl: String,
     val authorProfileUrl: String,

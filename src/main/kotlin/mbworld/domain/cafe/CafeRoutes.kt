@@ -277,6 +277,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     topicId = topic.topicId,
                     topic = TopicViewData(
                         title = topic.title,
+                        authorUserId = topicAuthorSummary?.userId ?: "<topicAuthor.userId:null>",
                         authorDisplayName = topicAuthorSummary?.displayName ?: "<topicAuthor.displayName:null>",
                         authorAvatarUrl = topicAuthorSummary?.avatarUrl ?: "<topicAuthor.avatarUrl:null>",
                         authorProfileUrl = topicAuthorSummary?.username?.let { "/profile/@${it}/overview" } ?: "#",
@@ -289,6 +290,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         val replyAuthorSummary = summaries[reply.authorId]
                         ReplyData(
                             replyId = reply.replyId,
+                            authorUserId = replyAuthorSummary?.userId ?: "<replyAuthor.userId:null>",
                             authorDisplayName = replyAuthorSummary?.displayName ?: "<replyAuthor.displayName:null>",
                             authorAvatarUrl = replyAuthorSummary?.avatarUrl ?: "<replyAuthor.avatarUrl:null>",
                             authorProfileUrl = replyAuthorSummary?.username?.let { "/profile/@${it}/overview" } ?: "#",
@@ -300,6 +302,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                                 val commentAuthorSummary = summaries[comment.authorId]
                                 CommentData(
                                     commentId = comment.commentId,
+                                    authorUserId = commentAuthorSummary?.userId ?: "<commentAuthor.userId:null>",
                                     authorDisplayName = commentAuthorSummary?.displayName
                                         ?: "<commentAuthor.displayName:null>",
                                     authorAvatarUrl = commentAuthorSummary?.avatarUrl

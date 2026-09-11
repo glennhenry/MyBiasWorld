@@ -309,8 +309,10 @@
               <div class="post">
                 <div class="author-profile">
                   <div class="avatar-container">
-                    <img class="avatar" style="padding: 4px;" th:src="'/' + ${data.topic.authorAvatarUrl}"
-                      alt="profile avatar" width="100">
+                    <a th:href="${data.topic.authorProfileUrl}">
+                      <img class="avatar" style="padding: 4px;" th:src="'/' + ${data.topic.authorAvatarUrl}"
+                        alt="profile avatar" width="100">
+                    </a>
                   </div>
                   <div class="author-info-container">
                     <a class="author-name author-name-link-decoration" th:text="${data.topic.authorDisplayName}"
@@ -357,8 +359,10 @@
               <div class="post" th:each="reply: ${data.replies}">
                 <div class="author-profile">
                   <div class="avatar-container">
-                    <img class="avatar" style="padding: 4px;" th:src="'/' + ${reply.authorAvatarUrl}"
-                      alt="profile avatar" width="100">
+                    <a th:href="${reply.authorProfileUrl}">
+                      <img class="avatar" style="padding: 4px;" th:src="'/' + ${reply.authorAvatarUrl}"
+                        alt="profile avatar" width="100">
+                    </a>
                   </div>
                   <div class="author-info-container">
                     <a class="author-name author-name-link-decoration" th:text="${reply.authorDisplayName}"
@@ -413,7 +417,9 @@
                   <div class="comment-layout" th:classappend="${#lists.isEmpty(reply.comments)} ? 'hidden'"
                     th:data-comment-id="${reply.replyId}">
                     <div class="comment" th:each="comment: ${reply.comments}">
-                      <img class="comment-author-avatar" th:src="'/' + ${comment.authorAvatarUrl}" width="40px">
+                      <a th:href="${comment.authorProfileUrl}">
+                        <img class="comment-author-avatar" th:src="'/' + ${comment.authorAvatarUrl}" width="60px">
+                      </a>
                       <div class="comment-author-name-container">
                         <a class="comment-author-name" th:href="${comment.authorProfileUrl}"
                           th:text="${comment.authorDisplayName}"></a>

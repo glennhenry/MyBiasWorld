@@ -63,17 +63,14 @@
     }
 
     .author-info-container {
-      font-size: 12px;
-      padding-bottom: 24px;
+      text-align: center;
+      padding: 4px;
+      padding-top: 0px;
+      padding-bottom: 12px;
     }
 
     .author-name {
-      text-align: center;
-      font-weight: bold;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 4;
-      line-clamp: 4;
+      overflow: hidden;
       overflow-wrap: anywhere;
       word-break: normal;
     }
@@ -85,9 +82,12 @@
 
     .post-layout {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
-    .post-content-container:hover .post-context-actions {
+    .post-layout:hover .post-context-actions {
       opacity: 1;
     }
 
@@ -318,38 +318,36 @@
                   </div>
                 </div>
                 <div class="post-layout">
-                  <div class="post-content-container">
-                    <p class="post-content" th:text="${data.topic.content}"></p>
-                    <div class="post-footer">
-                      <div class="post-footer-left">
-                        <div class="post-likes-counter">
-                          <th:block th:if="${data.topic.isLikedByUser}">
-                            <a class="like-post" href="javascript:void(0);" title="Unlike this post" data-liked="true"
-                              th:data-postid="${data.topicId}" data-post-type="topic">
-                              <img src="/icons/heart.png" alt="Empty heart" width="24px">
-                            </a>
-                            <p th:text="${data.topic.likesCount}"></p>
-                          </th:block>
-                          <th:block th:if="${not data.topic.isLikedByUser}">
-                            <a class="like-post" href="javascript:void(0);" title="Like this post" data-liked="false"
-                              th:data-postid="${data.topicId}" data-post-type="topic">
-                              <img src="/icons/unheart.png" alt="Filled heart" width="24px">
-                            </a>
-                            <p th:text="${data.topic.likesCount}"></p>
-                          </th:block>
-                        </div>
-                        <div class="post-context-actions">
-                          <a href="javascript:void(0);" title="Report this topic">
-                            <img src="/icons/danger.png" alt="Danger sign" width="24px">
+                  <p class="post-content" th:text="${data.topic.content}"></p>
+                  <div class="post-footer">
+                    <div class="post-footer-left">
+                      <div class="post-likes-counter">
+                        <th:block th:if="${data.topic.isLikedByUser}">
+                          <a class="like-post" href="javascript:void(0);" title="Unlike this post" data-liked="true"
+                            th:data-postid="${data.topicId}" data-post-type="topic">
+                            <img src="/icons/heart.png" alt="Empty heart" width="24px">
                           </a>
-                          <a href="javascript:void(0);" title="Share">
-                            <img src="/icons/share.png" alt="Blue arrow pointing right" width="24px">
+                          <p th:text="${data.topic.likesCount}"></p>
+                        </th:block>
+                        <th:block th:if="${not data.topic.isLikedByUser}">
+                          <a class="like-post" href="javascript:void(0);" title="Like this post" data-liked="false"
+                            th:data-postid="${data.topicId}" data-post-type="topic">
+                            <img src="/icons/unheart.png" alt="Filled heart" width="24px">
                           </a>
-                        </div>
+                          <p th:text="${data.topic.likesCount}"></p>
+                        </th:block>
                       </div>
-                      <div class="post-footer-right">
-                        <span class="js-format-date" th:data-raw-date="${data.topic.postedDate}">
+                      <div class="post-context-actions">
+                        <a href="javascript:void(0);" title="Report this topic">
+                          <img src="/icons/danger.png" alt="Danger sign" width="24px">
+                        </a>
+                        <a href="javascript:void(0);" title="Share">
+                          <img src="/icons/share.png" alt="Blue arrow pointing right" width="24px">
+                        </a>
                       </div>
+                    </div>
+                    <div class="post-footer-right">
+                      <span class="js-format-date" th:data-raw-date="${data.topic.postedDate}">
                     </div>
                   </div>
                 </div>
@@ -368,48 +366,46 @@
                   </div>
                 </div>
                 <div class="post-layout">
-                  <div class="post-content-container">
-                    <p class="post-content" th:text="${reply.content}"></p>
-                    <div class="post-footer">
-                      <div class="post-footer-left">
-                        <div class="post-likes-counter">
-                          <th:block th:if="${reply.isLikedByUser}">
-                            <a class="like-post" href="javascript:void(0);" title="Unlike this post" data-liked="true"
-                              th:data-postid="${reply.replyId}" data-post-type="reply">
-                              <img src="/icons/heart.png" alt="Empty heart" width="24px">
-                            </a>
-                            <p th:text="${reply.likesCount}"></p>
-                          </th:block>
-                          <th:block th:if="${not reply.isLikedByUser}">
-                            <a class="like-post" href="javascript:void(0);" title="Like this post" data-liked="false"
-                              th:data-postid="${reply.replyId}" data-post-type="reply">
-                              <img src="/icons/unheart.png" alt="Filled heart" width="24px">
-                            </a>
-                            <p th:text="${reply.likesCount}"></p>
-                          </th:block>
-                        </div>
-                        <div class="post-context-actions">
-                          <a href="javascript:void(0);" title="Report this reply">
-                            <img src="/icons/danger.png" alt="Danger sign" width="24px">
+                  <p class="post-content" th:text="${reply.content}"></p>
+                  <div class="post-footer">
+                    <div class="post-footer-left">
+                      <div class="post-likes-counter">
+                        <th:block th:if="${reply.isLikedByUser}">
+                          <a class="like-post" href="javascript:void(0);" title="Unlike this post" data-liked="true"
+                            th:data-postid="${reply.replyId}" data-post-type="reply">
+                            <img src="/icons/heart.png" alt="Empty heart" width="24px">
                           </a>
-                          <a href="javascript:void(0);" title="Share">
-                            <img src="/icons/share.png" alt="Blue arrow pointing right" width="24px">
+                          <p th:text="${reply.likesCount}"></p>
+                        </th:block>
+                        <th:block th:if="${not reply.isLikedByUser}">
+                          <a class="like-post" href="javascript:void(0);" title="Like this post" data-liked="false"
+                            th:data-postid="${reply.replyId}" data-post-type="reply">
+                            <img src="/icons/unheart.png" alt="Filled heart" width="24px">
                           </a>
-                        </div>
+                          <p th:text="${reply.likesCount}"></p>
+                        </th:block>
                       </div>
-                      <div class="post-footer-right">
-                        <div class="comment-info-row">
-                          <a class="link see-comment" href="javascript:void(0)"
-                            th:text="${#lists.isEmpty(reply.comments) ? 'See comments' : 'Collapse'}"
-                            th:data-comment-id="${reply.replyId}"></a>
-                          <p th:text="'(' + ${#lists.size(reply.comments)} + ')'"></p>
-                          <a class="comment-icon" href="javascript:void(0)" title="Add a comment"
-                            th:data-comment-form-id="${reply.replyId}">
-                            <img src="/icons/chat.png" alt="Chat bubble" width="24">
-                          </a>
-                        </div>
-                        <span class="js-format-date" th:data-raw-date="${reply.postedDate}"></span>
+                      <div class="post-context-actions">
+                        <a href="javascript:void(0);" title="Report this reply">
+                          <img src="/icons/danger.png" alt="Danger sign" width="24px">
+                        </a>
+                        <a href="javascript:void(0);" title="Share">
+                          <img src="/icons/share.png" alt="Blue arrow pointing right" width="24px">
+                        </a>
                       </div>
+                    </div>
+                    <div class="post-footer-right">
+                      <div class="comment-info-row">
+                        <a class="link see-comment" href="javascript:void(0)"
+                          th:text="${#lists.isEmpty(reply.comments) ? 'See comments' : 'Collapse'}"
+                          th:data-comment-id="${reply.replyId}"></a>
+                        <p th:text="'(' + ${#lists.size(reply.comments)} + ')'"></p>
+                        <a class="comment-icon" href="javascript:void(0)" title="Add a comment"
+                          th:data-comment-form-id="${reply.replyId}">
+                          <img src="/icons/chat.png" alt="Chat bubble" width="24">
+                        </a>
+                      </div>
+                      <span class="js-format-date" th:data-raw-date="${reply.postedDate}"></span>
                     </div>
                   </div>
 

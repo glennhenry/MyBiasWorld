@@ -76,7 +76,11 @@
       line-clamp: 4;
       overflow-wrap: anywhere;
       word-break: normal;
-      overflow: hidden;
+    }
+
+    .author-name-link-decoration {
+      font-weight: bold;
+      color: #975396;
     }
 
     .post-layout {
@@ -309,7 +313,8 @@
                       alt="profile avatar" width="100">
                   </div>
                   <div class="author-info-container">
-                    <p class="author-name" th:text="${data.topic.authorDisplayName}"></p>
+                    <a class="author-name author-name-link-decoration" th:text="${data.topic.authorDisplayName}"
+                      th:href="${data.topic.authorProfileUrl}"></a>
                   </div>
                 </div>
                 <div class="post-layout">
@@ -358,7 +363,8 @@
                       alt="profile avatar" width="100">
                   </div>
                   <div class="author-info-container">
-                    <p class="author-name" th:text="${reply.authorDisplayName}"></p>
+                    <a class="author-name author-name-link-decoration" th:text="${reply.authorDisplayName}"
+                      th:href="${reply.authorProfileUrl}"></a>
                   </div>
                 </div>
                 <div class="post-layout">
@@ -413,7 +419,7 @@
                     <div class="comment" th:each="comment: ${reply.comments}">
                       <img class="comment-author-avatar" th:src="'/' + ${comment.authorAvatarUrl}" width="40px">
                       <div class="comment-author-name-container">
-                        <a class="comment-author-name" href="javascript:void(0)"
+                        <a class="comment-author-name" th:href="${comment.authorProfileUrl}"
                           th:text="${comment.authorDisplayName}"></a>
                         <p class="js-format-date comment-posted-date" th:data-raw-date="${comment.postedDate}"></p>
                       </div>

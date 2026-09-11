@@ -279,22 +279,24 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         title = topic.title,
                         authorDisplayName = topicAuthorSummary?.displayName ?: "<topicAuthor.displayName:null>",
                         authorAvatarUrl = topicAuthorSummary?.avatarUrl ?: "<topicAuthor.avatarUrl:null>",
+                        authorProfileUrl = topicAuthorSummary?.username?.let { "/profile/@${it}/overview" } ?: "#",
                         postedDate = topic.postedDate,
                         content = topic.content,
                         likesCount = topic.likes,
                         isLikedByUser = isLoggedIn && likedPosts[topic.topicId] != null
                     ),
-                    replies = replies.map {
-                        val replyAuthorSummary = summaries[it.authorId]
+                    replies = replies.map { reply ->
+                        val replyAuthorSummary = summaries[reply.authorId]
                         ReplyData(
-                            replyId = it.replyId,
+                            replyId = reply.replyId,
                             authorDisplayName = replyAuthorSummary?.displayName ?: "<replyAuthor.displayName:null>",
                             authorAvatarUrl = replyAuthorSummary?.avatarUrl ?: "<replyAuthor.avatarUrl:null>",
-                            content = it.content,
-                            postedDate = it.postedDate,
-                            likesCount = it.likes,
-                            isLikedByUser = isLoggedIn && likedPosts[it.replyId] != null,
-                            comments = it.comments.map { comment ->
+                            authorProfileUrl = replyAuthorSummary?.username?.let { "/profile/@${it}/overview" } ?: "#",
+                            content = reply.content,
+                            postedDate = reply.postedDate,
+                            likesCount = reply.likes,
+                            isLikedByUser = isLoggedIn && likedPosts[reply.replyId] != null,
+                            comments = reply.comments.map { comment ->
                                 val commentAuthorSummary = summaries[comment.authorId]
                                 CommentData(
                                     commentId = comment.commentId,
@@ -302,6 +304,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                                         ?: "<commentAuthor.displayName:null>",
                                     authorAvatarUrl = commentAuthorSummary?.avatarUrl
                                         ?: "<commentAuthor.avatarUrl:null>",
+                                    authorProfileUrl = commentAuthorSummary?.username?.let { "/profile/@${it}/overview" }
+                                        ?: "#",
                                     postedDate = comment.postedDate,
                                     content = comment.content
                                 )

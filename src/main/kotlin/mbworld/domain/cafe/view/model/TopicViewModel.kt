@@ -28,6 +28,7 @@ data class TopicViewModel(
  * @property title The title of the topic. Uses [Topic.title].
  * @property authorDisplayName The author's display name that posted this topic.
  * @property authorAvatarUrl The author's avatar url that posted this topic.
+ * @property authorProfileUrl A link to the author's profile URL.
  * @property postedDate The date of when this topic was posted. Uses [Topic.postedDate].
  * @property content The content of the topic. Uses [Topic.content].
  * @property likesCount The amount of likes this topic has. Uses [Topic.likes].
@@ -38,6 +39,7 @@ data class TopicViewData(
     val title: String,
     val authorDisplayName: String,
     val authorAvatarUrl: String,
+    val authorProfileUrl: String,
     val postedDate: Long,
     val content: String,
     val likesCount: Int,
@@ -50,6 +52,7 @@ data class TopicViewData(
  * @property replyId The unique identifier of the reply. Uses [Reply.replyId].
  * @property authorDisplayName The author's display name that posted this reply.
  * @property authorAvatarUrl The author's avatar url that posted this reply.
+ * @property authorProfileUrl A link to the author's profile URL.
  * @property postedDate The date of when this reply was posted. Uses [Reply.postedDate].
  * @property content The content of the reply. Uses [Reply.content].
  * @property likesCount The amount of likes this reply has. Uses [Reply.likes].
@@ -61,6 +64,7 @@ data class ReplyData(
     val replyId: String,
     val authorDisplayName: String,
     val authorAvatarUrl: String,
+    val authorProfileUrl: String,
     val postedDate: Long,
     val content: String,
     val likesCount: Int,
@@ -74,6 +78,7 @@ data class ReplyData(
  * @property commentId The unique identifier of the comment. Uses [Comment.commentId].
  * @property authorDisplayName The author's display name that posted this comment.
  * @property authorAvatarUrl The author's avatar url that posted this comment.
+ * @property authorProfileUrl A link to the author's profile URL.
  * @property postedDate The date of when this comment was posted. Uses [Comment.postedDate].
  * @property content The content of the comment. Uses [Comment.content].
  */
@@ -81,6 +86,7 @@ data class CommentData(
     val commentId: String,
     val authorDisplayName: String,
     val authorAvatarUrl: String,
+    val authorProfileUrl: String,
     val postedDate: Long,
     val content: String
 )

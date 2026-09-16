@@ -38,6 +38,7 @@ import mbworld.domain.auth.session.WebsiteSessionSubunit
 import mbworld.domain.cafe.likes.InMemoryLikesRepository
 import mbworld.domain.cafe.likes.LikesRepository
 import mbworld.domain.cafe.likes.LikesSubunit
+import mbworld.domain.events.EventsSubunit
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -91,16 +92,12 @@ data class ServerContext(
             val creation = UserCreationSubunit.createForTest(dataStore)
 
             val websiteSession = WebsiteSessionSubunit.createForTest(parentScope, timeSource, sessionStore)
-            val profile = ProfileSubunit(profileRepository)
-            val collection = CollectionSubunit(collectionRepository)
-            val topic = TopicSubunit(topicRepository)
-            val reply = ReplySubunit(replyRepository)
-            val likes = LikesSubunit(likesRepository)
             val profile = ProfileSubunit.createForTest(profileRepository)
             val collection = CollectionSubunit.createForTest(collectionRepository)
             val topic = TopicSubunit.createForTest(topicRepository)
             val reply = ReplySubunit.createForTest(replyRepository)
             val likes = LikesSubunit.createForTest(likesRepository)
+            val events = EventsSubunit.createForTest()
 
             return ServerContext(
                 dataStore = dataStore,
@@ -119,7 +116,8 @@ data class ServerContext(
                     collection = collection,
                     topic = topic,
                     reply = reply,
-                    likes = likes
+                    likes = likes,
+                    events = events
                 )
             )
         }
@@ -154,6 +152,7 @@ data class ServerContext(
  * @property reply Provides API related to replies.
  * @property likes Provides API related to likes.
  * @property collection Provides API related to cafe collection.
+ * @property events Provides API related to events.
  */
 data class ServerSubunits(
     val account: AccountSubunit,
@@ -167,7 +166,8 @@ data class ServerSubunits(
     val topic: TopicSubunit,
     val reply: ReplySubunit,
     val likes: LikesSubunit,
-    val collection: CollectionSubunit
+    val collection: CollectionSubunit,
+    val events: EventsSubunit
 ) {
     /**
      * Return all server subunit instances.
@@ -184,7 +184,8 @@ data class ServerSubunits(
             topic,
             reply,
             likes,
-            collection
+            collection,
+            events
         )
     }
 

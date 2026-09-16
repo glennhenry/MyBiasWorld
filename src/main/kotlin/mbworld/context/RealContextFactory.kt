@@ -29,6 +29,7 @@ import mbworld.domain.auth.session.MongoSessionStore
 import mbworld.domain.auth.session.WebsiteSessionSubunit
 import mbworld.domain.cafe.likes.LikesSubunit
 import mbworld.domain.cafe.likes.MongoLikesRepository
+import mbworld.domain.events.EventsSubunit
 import mbworld.mongo.MongoCollections
 
 /**
@@ -99,6 +100,7 @@ class RealContextFactory(
         val replySubunit = ReplySubunit(replyRepository)
         val likesSubunit = LikesSubunit(likesRepository)
         val collectionSubunit = CollectionSubunit(collectionRepository)
+        val eventsSubunit = EventsSubunit()
 
         val subunits = ServerSubunits(
             account = accountSubunit,
@@ -112,7 +114,8 @@ class RealContextFactory(
             topic = topicSubunit,
             reply = replySubunit,
             likes = likesSubunit,
-            collection = collectionSubunit
+            collection = collectionSubunit,
+            events = eventsSubunit
         )
 
         // debut all subunits

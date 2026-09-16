@@ -154,7 +154,7 @@
       for (const event of data.events) {
         const item = $("<div></div>").addClass("event-list-item")
         const span = $("<span></span>").addClass("event-span")
-        const eventTimestamp = $("<p></p>").addClass("event-timestamp").text(formatTime(event.happenedAt))
+        const eventTimestamp = $("<p></p>").addClass("event-timestamp").text(formatTime(event.timestamp))
         const eventText = $("<p></p>").addClass("event-text").text(event.text)
         eventList.append(item.append(span.append(eventTimestamp).append(eventText)))
       }

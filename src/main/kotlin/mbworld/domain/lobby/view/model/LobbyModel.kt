@@ -1,4 +1,4 @@
-package mbworld.domain.lobby.model
+package mbworld.domain.lobby.view.model
 
 import mbworld.routes.common.AccountData
 

@@ -12,7 +12,9 @@ import io.ktor.server.thymeleaf.*
 import kotlinx.serialization.Serializable
 import mbworld.context.ServerContext
 import mbworld.domain.Members
-import mbworld.domain.lobby.model.LobbyModel
+import mbworld.domain.lobby.view.model.LobbyModel
+import mbworld.domain.lobby.view.response.EventData
+import mbworld.domain.lobby.view.response.EventsResponse
 import mbworld.routes.guard.OptionalAccountGuard
 import mbworld.routes.guard.getAccountData
 import java.text.SimpleDateFormat
@@ -21,7 +23,7 @@ import kotlin.random.Random
 /**
  * Routes for lobby, which is the root page `/`.
  */
-class LobbyRoutes(serverContext: ServerContext) : RouteHandler {
+class LobbyRoutes(private val serverContext: ServerContext) : RouteHandler {
     private val optionalAccountGuard = OptionalAccountGuard(serverContext)
 
     override fun Route.install() {
@@ -44,11 +46,11 @@ class LobbyRoutes(serverContext: ServerContext) : RouteHandler {
             guard(call, NoAuthGuard) {
                 val response = EventsResponse(
                     listOf(
-                        Event(
+                        EventData(
                             "First event received (${Random.nextInt(1, 200)})",
                             TimeCenter.now()
                         ),
-                        Event(
+                        EventData(
                             "Hello this is an event (${Random.nextInt(1, 200)})",
                             TimeCenter.now()
                         )
@@ -62,15 +64,3 @@ class LobbyRoutes(serverContext: ServerContext) : RouteHandler {
         }
     }
 }
-
-
-@Serializable
-data class EventsResponse(
-    val events: List<Event>
-)
-
-@Serializable
-data class Event(
-    val text: String,
-    val happenedAt: Long
-)

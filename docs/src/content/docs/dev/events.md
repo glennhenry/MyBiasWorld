@@ -25,9 +25,9 @@ For example, a topic liked by other user may generate the following event:
 
 ```json
 {
-  "type": "Event.Cafe",
+  "type": "EventType.Cafe",
   "subtype": "CafeEvent.TopicLiked",
-  "time": 1788519104768,
+  "timestamp": 1788519104768,
   "metadata": {
     "likedBy": "d8fbe779-03a7-43ba-b752-cd89f62d465b",
     "topicId": "ce913ba2-cacc-416e-a67e-e3ccb623bd89",

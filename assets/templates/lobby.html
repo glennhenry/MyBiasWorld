@@ -11,6 +11,54 @@
   <script src="/site/toast.js"></script>
   <script src="/site/utils.js"></script>
   <title>Lobby</title>
+  <style>
+    .content {
+      padding-left: 0;
+    }
+
+    .upper-content {
+      padding-left: 8px;
+    }
+
+    .lower-content {
+      padding-left: 8px;
+    }
+
+    .event-list-container {
+      width: 300px;
+      max-height: 300px;
+      overflow-y: scroll;
+      border: 1px solid #ccc;
+    }
+
+    .event-list-title {
+      padding: 4px;
+      background-color: beige;
+    }
+
+    .event-list {
+      display: flex;
+      flex-direction: column-reverse;
+    }
+
+    .event-list-item {
+      padding: 4px;
+      padding-right: 12px;
+      font-size: 12px;
+      border-top: 1px solid #ccc;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
+
+    .event-list-item:nth-child(odd) {
+      background-color: #f0f0f0;
+    }
+
+    .event-list-item:nth-child(even) {
+      background-color: #eff7ff;
+    }
+  </style>
 </head>
 
 <body>
@@ -21,11 +69,24 @@
         <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
         <main class="content-container">
           <div class="content">
-            <h1>Lobby</h1>
-            <p th:text="'System time: ' + ${data.time}"></p>
-            <p th:text="'Bias: ' + ${data.bias}"></p>
-            <div class="space-y-md"></div>
-            <a class="link" href="/profile/random">Give me a random profile!</a>
+            <div class="upper-content">
+              <h1>Lobby</h1>
+              <p th:text="'System time: ' + ${data.time}"></p>
+              <p th:text="'Bias: ' + ${data.bias}"></p>
+              <div class="space-y-s"></div>
+              <a class="link" href="/profile/random">Give me a random profile!</a>
+              <div class="space-y-s"></div>
+            </div>
+            <hr>
+            <div class="lower-content">
+              <div class="space-y-s"></div>
+              <div class="event-list-container">
+                <p class="event-list-title">Activity feed</p>
+                <div class="event-list">
+                  <div class="event-list-item" data-marker="1">No event yet!</div>
+                </div>
+              </div>
+            </div>
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>
@@ -37,6 +98,50 @@
   </div>
 
   <th:block th:replace="~{fragments/floating-toolbar :: floating-toolbar-script}"></th:block>
+  <script>
+    $(document).ready(function () {
+      // initial fetch and once a minute fetch
+      fetchEvents().then((data) => { updateEvents(data) })
+      setInterval(() => {
+        fetchEvents().then((data) => { updateEvents(data) })
+      }, 3000);
+    })
+
+    async function fetchEvents() {
+      try {
+        const response = await fetch("/events", { method: 'GET' })
+        if (response.ok) {
+          return await response.json()
+        } else {
+          Toast.warn("Something is wrong!", "Failed to fetch events.", true)
+          return []
+        }
+      } catch (err) {
+        console.error("Fetch events error: ", err)
+      }
+    }
+
+    function updateEvents(data) {
+      if (data.length === 0) {
+        return
+      }
+
+      const eventList = $(".event-list")
+      if (eventList.children().first().attr("data-marker")) {
+        eventList.children().first().remove()
+      }
+
+      for (const ev of data.events) {
+        const eventTemplate = $("<div></div>").addClass("event-list-item")
+        const newEvent = eventTemplate.text(ev.text)
+        eventList.append(newEvent)
+      }
+
+      while (eventList.children().length > 10) {
+        eventList.children().first().remove()
+      }
+    }
+  </script>
 </body>
 
 </html>

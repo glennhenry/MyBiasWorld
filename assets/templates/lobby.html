@@ -32,8 +32,16 @@
     }
 
     .event-list-title {
-      padding: 4px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 2px;
       background-color: beige;
+    }
+
+    .event-list-title p {
+      font-size: 14px;
+      font-weight: bold;
     }
 
     .event-list {
@@ -90,7 +98,10 @@
             <div class="lower-content">
               <div class="space-y-s"></div>
               <div class="event-list-container">
-                <p class="event-list-title">Activity feed</p>
+                <div class="event-list-title">
+                  <img src="/icons/unused/flat-flag.png" alt="Red flag" width="24px">
+                  <p>Activity Feed</p>
+                </div>
                 <div class="event-list">
                   <div class="event-list-item" data-marker="1">No event yet!</div>
                 </div>

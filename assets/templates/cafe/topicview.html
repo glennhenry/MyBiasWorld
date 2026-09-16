@@ -119,6 +119,10 @@
       font-size: 12px;
     }
 
+    .like-post {
+      cursor: pointer;
+    }
+
     .post-context-actions {
       display: flex;
       flex: 1;
@@ -320,14 +324,14 @@
                     <div class="post-footer-left">
                       <div class="post-likes-counter">
                         <th:block th:if="${data.topic.isLikedByUser}">
-                          <a class="like-post" href="javascript:void(0);" title="Unlike this post" data-liked="true"
+                          <a class="like-post" title="Unlike this post" data-liked="true"
                             th:data-postid="${data.topicId}" data-post-type="topic">
                             <img src="/icons/heart.png" alt="Empty heart" width="24px">
                           </a>
                           <p th:text="${data.topic.likesCount}"></p>
                         </th:block>
                         <th:block th:if="${not data.topic.isLikedByUser}">
-                          <a class="like-post" href="javascript:void(0);" title="Like this post" data-liked="false"
+                          <a class="like-post" title="Like this post" data-liked="false"
                             th:data-postid="${data.topicId}" data-post-type="topic">
                             <img src="/icons/unheart.png" alt="Filled heart" width="24px">
                           </a>
@@ -370,14 +374,14 @@
                     <div class="post-footer-left">
                       <div class="post-likes-counter">
                         <th:block th:if="${reply.isLikedByUser}">
-                          <a class="like-post" href="javascript:void(0);" title="Unlike this post" data-liked="true"
+                          <a class="like-post" title="Unlike this post" data-liked="true"
                             th:data-postid="${reply.replyId}" data-post-type="reply">
                             <img src="/icons/heart.png" alt="Empty heart" width="24px">
                           </a>
                           <p th:text="${reply.likesCount}"></p>
                         </th:block>
                         <th:block th:if="${not reply.isLikedByUser}">
-                          <a class="like-post" href="javascript:void(0);" title="Like this post" data-liked="false"
+                          <a class="like-post" title="Like this post" data-liked="false"
                             th:data-postid="${reply.replyId}" data-post-type="reply">
                             <img src="/icons/unheart.png" alt="Filled heart" width="24px">
                           </a>

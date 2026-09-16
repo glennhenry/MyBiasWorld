@@ -58,6 +58,15 @@
     .event-list-item:nth-child(even) {
       background-color: #eff7ff;
     }
+
+    .event-span {
+      display: flex;
+      gap: 4px;
+    }
+
+    .event-timestamp {
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -131,15 +140,24 @@
         eventList.children().first().remove()
       }
 
-      for (const ev of data.events) {
-        const eventTemplate = $("<div></div>").addClass("event-list-item")
-        const newEvent = eventTemplate.text(ev.text)
-        eventList.append(newEvent)
+      for (const event of data.events) {
+        const item = $("<div></div>").addClass("event-list-item")
+        const span = $("<span></span>").addClass("event-span")
+        const eventTimestamp = $("<p></p>").addClass("event-timestamp").text(formatTime(event.happenedAt))
+        const eventText = $("<p></p>").addClass("event-text").text(event.text)
+        eventList.append(item.append(span.append(eventTimestamp).append(eventText)))
       }
 
-      while (eventList.children().length > 10) {
+      while (eventList.children().length > 15) {
         eventList.children().first().remove()
       }
+    }
+
+    function formatTime(millis) {
+      const date = new Date(Number(millis))
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${hours}:${minutes}`
     }
   </script>
 </body>

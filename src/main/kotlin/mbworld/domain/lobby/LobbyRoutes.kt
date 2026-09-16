@@ -44,8 +44,14 @@ class LobbyRoutes(serverContext: ServerContext) : RouteHandler {
             guard(call, NoAuthGuard) {
                 val response = EventsResponse(
                     listOf(
-                        Event("First event received (${Random.nextInt(1, 200)})"),
-                        Event("Hello this is an event (${Random.nextInt(1, 200)})")
+                        Event(
+                            "First event received (${Random.nextInt(1, 200)})",
+                            TimeCenter.now()
+                        ),
+                        Event(
+                            "Hello this is an event (${Random.nextInt(1, 200)})",
+                            TimeCenter.now()
+                        )
                     )
                 )
 
@@ -65,5 +71,6 @@ data class EventsResponse(
 
 @Serializable
 data class Event(
-    val text: String
+    val text: String,
+    val happenedAt: Long
 )

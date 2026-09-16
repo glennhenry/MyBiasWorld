@@ -89,4 +89,16 @@ class LikesSubunit(private val likesRepository: LikesRepository) : Subunit<Serve
     override suspend fun disband(scope: ServerScope): Result<Unit> {
         return runCatching { }
     }
+
+    companion object {
+        /**
+         * Creates a test instance of [LikesSubunit].
+         * @param likesRepository use [InMemoryLikesRepository] when not under test.
+         */
+        fun createForTest(
+            likesRepository: LikesRepository = InMemoryLikesRepository()
+        ): LikesSubunit {
+            return LikesSubunit(likesRepository)
+        }
+    }
 }

@@ -86,7 +86,7 @@ data class ServerContext(
             replyRepository: ReplyRepository = InMemoryReplyRepository(),
             likesRepository: LikesRepository = InMemoryLikesRepository(),
         ): ServerContext {
-            val account = AccountSubunit(accountRepository)
+            val account = AccountSubunit.createForTest(accountRepository)
             val session = SessionSubunit.createForTest(parentScope)
             val creation = UserCreationSubunit.createForTest(dataStore)
 
@@ -96,6 +96,11 @@ data class ServerContext(
             val topic = TopicSubunit(topicRepository)
             val reply = ReplySubunit(replyRepository)
             val likes = LikesSubunit(likesRepository)
+            val profile = ProfileSubunit.createForTest(profileRepository)
+            val collection = CollectionSubunit.createForTest(collectionRepository)
+            val topic = TopicSubunit.createForTest(topicRepository)
+            val reply = ReplySubunit.createForTest(replyRepository)
+            val likes = LikesSubunit.createForTest(likesRepository)
 
             return ServerContext(
                 dataStore = dataStore,

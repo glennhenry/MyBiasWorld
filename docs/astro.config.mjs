@@ -64,6 +64,7 @@ export default defineConfig({
             { label: "Games", slug: "games" },
             { label: "Events", slug: "events" },
             { label: "Radio", slug: "radio" },
+            { label: "Lobby", slug: "lobby" },
           ],
         },
       ],

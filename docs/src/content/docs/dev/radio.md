@@ -18,4 +18,4 @@ From a class like `RadioService` any component in the server can send a content 
    - "Kep1er officially debuted in 3 January 2022, since then they have accomplished ..."
    - "In order to post a topic or reply, you need to register first."
    - "MyBiasWorld started its development from June 2026."
-3. [Events](/docs/events): Particular type of events may be broadcasted through the radio according to their consumers.
+3. [Activity](/docs/activity): Particular type of activity may be broadcasted through the radio according to their consumers.

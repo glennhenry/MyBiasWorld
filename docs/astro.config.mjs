@@ -62,7 +62,7 @@ export default defineConfig({
             { label: "Mailbox", slug: "mailbox" },
             { label: "Board", slug: "board" },
             { label: "Games", slug: "games" },
-            { label: "Events", slug: "events" },
+            { label: "Activity", slug: "activity" },
             { label: "Radio", slug: "radio" },
             { label: "Lobby", slug: "lobby" },
           ],

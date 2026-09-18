@@ -38,7 +38,7 @@ import mbworld.domain.auth.session.WebsiteSessionSubunit
 import mbworld.domain.cafe.likes.InMemoryLikesRepository
 import mbworld.domain.cafe.likes.LikesRepository
 import mbworld.domain.cafe.likes.LikesSubunit
-import mbworld.domain.events.EventsSubunit
+import mbworld.domain.activity.ActivitySubunit
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -97,7 +97,7 @@ data class ServerContext(
             val topic = TopicSubunit.createForTest(topicRepository)
             val reply = ReplySubunit.createForTest(replyRepository)
             val likes = LikesSubunit.createForTest(likesRepository)
-            val events = EventsSubunit.createForTest()
+            val events = ActivitySubunit.createForTest()
 
             return ServerContext(
                 dataStore = dataStore,
@@ -167,7 +167,7 @@ data class ServerSubunits(
     val reply: ReplySubunit,
     val likes: LikesSubunit,
     val collection: CollectionSubunit,
-    val events: EventsSubunit
+    val events: ActivitySubunit
 ) {
     /**
      * Return all server subunit instances.

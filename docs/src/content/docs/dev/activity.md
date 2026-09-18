@@ -16,8 +16,8 @@ Server log of system should use the Fancam track event instead.
 
 An activity is modeled as an object that describes the details of the activity. Each activity has:
 
-- A type, the high-level description that classifies activities.
-- A subtype, the sub-level description within each classification.
+- A source telling where the activity was produced.
+- A type which is the context detail of the activity.
 - A record of the timestamp of when the activity happened
 - Metadata fields containing arbitrary data for the activity.
 
@@ -25,8 +25,8 @@ For example, a user liking a topic in the cafe may generate the following activi
 
 ```json
 {
-  "type": "ActivityType.Cafe",
-  "subtype": "CafeActivity.TopicLiked",
+  "source": "ActivitySource.Cafe",
+  "type": "CafeActivity.TopicLiked",
   "timestamp": 1788519104768,
   "metadata": {
     "likedBy": "d8fbe779-03a7-43ba-b752-cd89f62d465b",
@@ -41,8 +41,8 @@ A user registering an account can be framed as "a user joining the platform," an
 
 ```json
 {
-  "type": "ActivityType.Users",
-  "subtype": "UsersActivity.UsersJoined",
+  "source": "ActivitySource.Users",
+  "type": "UsersActivity.UsersJoined",
   "timestamp": 1788519104768,
   "metadata": {
     "userId": "d8fbe779-03a7-43ba-b752-cd89f62d465b",
@@ -55,14 +55,14 @@ A user registering an account can be framed as "a user joining the platform," an
 Design principles:
 
 - Activity is a record of action — it should only contain details of the action.
-- The model shouldn't be overengineered with special type system or inheritance. It should be simple with enum for activity type, freeform string for subtype, and arbitrary fields on metadata.
-- The subtype follows the format of title case and is separated by dot. It describes the context of the activity.
+- The model shouldn't be overengineered with special type system or inheritance. It should be simple with enum for activity source, freeform string for type, and arbitrary fields on metadata.
+- The type follows the format of title case and is separated by dot. It describes the context of the activity.
 
 ### Pub-Sub
 
 Activity system is implemented with pub-sub system. Server component reacts to a certain circumstance and produce an activity model. Another component can opt-in to receive that type of events for its own need.
 
-Components of server can call a class like `ActivitySubunit` to emit the activity, while `ActivityReceiver` is an interface that can be inherited to register to specific event types and handle them when they are fired.
+Components of server can call a class like `ActivitySubunit` to emit the activity, while `ActivityReceiver` is an interface that can be inherited to register to specific event source or type and handle them when they are fired.
 
 ### Source
 

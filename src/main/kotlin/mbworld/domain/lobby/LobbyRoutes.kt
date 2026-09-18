@@ -9,12 +9,11 @@ import encore.time.TimeCenter
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
-import kotlinx.serialization.Serializable
 import mbworld.context.ServerContext
 import mbworld.domain.Members
 import mbworld.domain.lobby.view.model.LobbyModel
-import mbworld.domain.lobby.view.response.EventData
-import mbworld.domain.lobby.view.response.EventsResponse
+import mbworld.domain.lobby.view.response.ActivityData
+import mbworld.domain.lobby.view.response.ActivityResponse
 import mbworld.routes.guard.OptionalAccountGuard
 import mbworld.routes.guard.getAccountData
 import java.text.SimpleDateFormat
@@ -42,22 +41,22 @@ class LobbyRoutes(private val serverContext: ServerContext) : RouteHandler {
             }
         }
 
-        get("/events") {
+        get("/activity") {
             guard(call, NoAuthGuard) {
-                val response = EventsResponse(
+                val response = ActivityResponse(
                     listOf(
-                        EventData(
-                            "First event received (${Random.nextInt(1, 200)})",
+                        ActivityData(
+                            "First activity received (${Random.nextInt(1, 200)})",
                             TimeCenter.now()
                         ),
-                        EventData(
-                            "Hello this is an event (${Random.nextInt(1, 200)})",
+                        ActivityData(
+                            "Hello this is an activity (${Random.nextInt(1, 200)})",
                             TimeCenter.now()
                         )
                     )
                 )
 
-                Fancam.debug { "Request to /events" }
+                Fancam.debug { "Request to /activity" }
 
                 call.respond(JSON.encode(response))
             }

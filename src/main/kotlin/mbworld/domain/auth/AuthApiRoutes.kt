@@ -5,6 +5,7 @@ import encore.route.RouteHandler
 import encore.route.guard.NoAuthGuard
 import encore.route.handle
 import encore.serialization.JSON
+import encore.time.TimeCenter
 import encore.utils.types.isFail
 import encore.utils.types.okOrNull
 import encore.utils.types.okOrThrow
@@ -14,6 +15,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.date.*
 import mbworld.context.ServerContext
+import mbworld.domain.activity.model.Activity
+import mbworld.domain.activity.model.ActivitySource
 import mbworld.domain.auth.payload.LoginPayload
 import mbworld.domain.auth.payload.RegisterPayload
 import mbworld.routes.guard.OptionalAccountGuard
@@ -58,6 +61,7 @@ class AuthApiRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@handle
                 }
 
+                val time = TimeCenter.now()
                 val outcome = serverContext.subunits.auth
                     .register(data.username, data.password, data.email)
 
@@ -65,6 +69,20 @@ class AuthApiRoutes(private val serverContext: ServerContext) : RouteHandler {
                     call.serverError()
                     return@handle
                 }
+
+                val userId = outcome.okOrThrow()
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Users,
+                        type = UsersActivity.UserRegistered,
+                        timestamp = time,
+                        metadata = mapOf(
+                            "userId" to userId,
+                            "username" to data.username,
+                            "email" to data.email,
+                        )
+                    )
+                )
 
                 call.response.cookies.append(
                     name = "session",

@@ -12,5 +12,5 @@ package mbworld.domain.activity.model
  * - `Others`: includes any generic or uncategorized activities.
  */
 enum class ActivitySource {
-    Cafe, Others
+    Users, Cafe, Others
 }

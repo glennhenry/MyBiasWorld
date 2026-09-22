@@ -108,3 +108,67 @@ The translator is simply:
 
 - Load the corresponding strings translation file. The file contains a list of text format like `"Cafe.Post.LikeReachedAmount": "Post '{postTitle}' has reached '{amountOfLikes}' likes."`. Differnt POV of the translation should be separated to a different string file.
 - Serve translation functionality directly by a lookup to the strings file or behave differently based on metadata. A special metadata like `hyperlink: "/xyz"` may generate a hyperlink text instead of a plain text output.
+
+### Event-Driven Architecture
+
+The activity system can be utilized to change the server architecture into event-driven. This is particularly useful for our platform that involves several subunits operating at once at a specific action.
+
+For example, when user likes a post, the following circumstances could happen:
+
+```kt
+post("cafe/writetopic") {
+    TopicSubunit.newTopic(...)
+    NotificationSubunit.notify(...)
+    ActivityFeedSubunit.addEntry(...)
+    UserActivitySubunit.newActivity(...)
+    UserStatsSubunit.updateStats(...)
+    BadgeSubunit.checkBadgeObtain(...)
+    QuestSubunit.updateQuests(...)
+    LevelSubunit.increaseExp(...)
+}
+```
+
+- This is only a single route.
+- It doesn't include request validation or object model transformation.
+- Many more orchestrations are possible.
+
+The direct approach of calling subunits not only make the code longer, but it also shifts responsibility to handler. At large scale, eventually handler become a god orchestrator.
+
+With event-driven architecture, this can be reduced to:
+
+```kt
+post("cafe/writetopic") {
+    TopicSubunit.newTopic(...)
+    val activity = Activity(
+        source = ActivitySource.Cafe,
+        type = CafeActivity.WriteTopic
+        timestamp = 1788519104768,
+        metadata = (...)
+    )
+    ActivitySubunit.publish(activity)
+}
+```
+
+Handling would be done on individual subunit.
+
+```kt
+// UserStatsSubunit
+fun onActivity(...) {
+    if (activity.type == CafeActivity.WriteTopic) {
+        increaseTopicWrittenCount()
+    }
+}
+
+// LevelSubunit
+fun onActivity(...) {
+    if (activity.type == CafeActivity.WriteTopic) {
+        increaseExp(50)
+    }
+}
+```
+
+- By event-driven architecture, it's not a strict events-only system.
+- Components can choose to emit an activity or call subunit manually, depending on the needs.
+- For example, the `TopicSubunit` is still called manually because it needs a `Topic` object from the client request, unlike `UserStatsSubunit` or `LevelSubunit` that only needs a simple call to be aware of the user's action.
+- It's not impossible to add the entire `Topic` object into the activity's metadata. This can be done if many subunits need the whole topic object rather than only few fields.
+- Most importantly, `newTopic` correspond to creating the topic itself. If `TopicSubunit` utilized the event system, it's possible that it does not become the first subunit to be called and `newTopic` failed when other subunits has been called.

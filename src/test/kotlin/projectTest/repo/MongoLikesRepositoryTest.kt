@@ -1,4 +1,4 @@
-package projectTest
+package projectTest.repo
 
 import TestCollections
 import encore.utils.identifier.Ids

@@ -16,6 +16,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
 import mbworld.context.ServerContext
+import mbworld.domain.activity.model.Activity
+import mbworld.domain.activity.model.ActivitySource
 import mbworld.domain.cafe.reply.Comment
 import mbworld.domain.cafe.reply.Reply
 import mbworld.domain.cafe.topic.Topic
@@ -176,6 +178,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 val acc = call.attributes.getUserAccount()
 
+                val time = TimeCenter.now()
                 val id = Ids.uuid()
                 val topic = Topic(
                     topicId = id,
@@ -184,13 +187,25 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     authorId = acc.userId,
                     content = post.content,
                     likes = 0,
-                    postedDate = TimeCenter.now(),
+                    postedDate = time
                 )
                 serverContext.subunits.topic.addTopic(topic)
                     .onFail {
                         call.respond(HttpStatusCode.InternalServerError, "Failed to post")
                         return@handle
                     }
+
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Cafe,
+                        type = CafeActivity.TopicCreated,
+                        timestamp = time,
+                        metadata = mapOf(
+                            "topicId" to id,
+                            "authorId" to acc.userId
+                        )
+                    )
+                )
 
                 Fancam.debug { "Created new topicId=$id" }
                 call.respond(HttpStatusCode.OK)
@@ -206,8 +221,19 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         call.respond(HttpStatusCode.InternalServerError)
 
                     is Outcome.Ok -> when (outcome.value) {
-                        TopicDeletionOutcome.Success ->
+                        TopicDeletionOutcome.Success -> {
+                            serverContext.subunits.activity.publish(
+                                Activity(
+                                    source = ActivitySource.Cafe,
+                                    type = CafeActivity.TopicDeleted,
+                                    timestamp = TimeCenter.now(),
+                                    metadata = mapOf(
+                                        "topicId" to topicId
+                                    )
+                                )
+                            )
                             call.respond(HttpStatusCode.NoContent)
+                        }
 
                         TopicDeletionOutcome.TopicNotDeleted ->
                             call.respond(HttpStatusCode.NotFound, "Topic not found")
@@ -346,6 +372,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
+                val time = TimeCenter.now()
                 val replyId = Ids.uuid()
                 val reply = Reply(
                     replyId = replyId,
@@ -353,7 +380,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     authorId = call.attributes.getUserAccount().userId,
                     content = replyPayload.reply,
                     likes = 0,
-                    postedDate = TimeCenter.now(),
+                    postedDate = time,
                     comments = emptyList()
                 )
 
@@ -362,6 +389,19 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         call.respond(HttpStatusCode.InternalServerError, "Failed to reply")
                         return@guard
                     }
+
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Cafe,
+                        type = CafeActivity.ReplyAdded,
+                        timestamp = time,
+                        metadata = mapOf(
+                            "topicId" to topicId,
+                            "replyId" to replyId,
+                            "authorId" to call.attributes.getUserAccount().userId
+                        )
+                    )
+                )
 
                 Fancam.debug { "Created new replyId=$replyId" }
                 call.respond(HttpStatusCode.OK)
@@ -373,6 +413,13 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 val section = requireNotNull(call.request.pathVariables["section"])
                 if (!Sections.contains(section)) {
                     call.sectionNotFound()
+                    return@guard
+                }
+
+                val id = requireNotNull(call.request.pathVariables["id"])
+                val topicId = serverContext.subunits.topic.getFullTopicId(id).okOrNull()
+                if (topicId == null) {
+                    call.topicNotFound()
                     return@guard
                 }
 
@@ -391,12 +438,13 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
+                val time = TimeCenter.now()
                 val commentId = Ids.uuid()
                 val comment = Comment(
                     commentId = commentId,
                     authorId = call.attributes.getUserAccount().userId,
                     content = commentPayload.comment,
-                    postedDate = TimeCenter.now()
+                    postedDate = time
                 )
 
                 serverContext.subunits.reply.addComment(replyId, comment)
@@ -404,6 +452,20 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         call.respond(HttpStatusCode.InternalServerError, "Failed to post comment")
                         return@guard
                     }
+
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Cafe,
+                        type = CafeActivity.CommentAdded,
+                        timestamp = time,
+                        metadata = mapOf(
+                            "topicId" to topicId,
+                            "replyId" to replyId,
+                            "commentId" to commentId,
+                            "authorId" to call.attributes.getUserAccount().userId
+                        )
+                    )
+                )
 
                 Fancam.debug { "Created new commentId=$commentId" }
                 call.respond(HttpStatusCode.OK)
@@ -441,6 +503,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
+                val time = TimeCenter.now()
+
                 // if post is not yet liked -> add the like and increment topic's like
                 serverContext.subunits.likes.addLike(userId, topicId)
                     .onFail {
@@ -453,6 +517,18 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         call.serverError()
                         return@guard
                     }
+
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Cafe,
+                        type = CafeActivity.TopicLiked,
+                        timestamp = time,
+                        metadata = mapOf(
+                            "topicId" to topicId,
+                            "authorId" to userId
+                        )
+                    )
+                )
 
                 Fancam.debug { "${call.attributes.getUserAccount().username} liked topic=$topicId" }
                 call.respond(HttpStatusCode.OK)
@@ -476,6 +552,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 val userId = call.attributes.getUserAccount().userId
+                val time = TimeCenter.now()
 
                 // like exist or not -> remove the like and decrement
                 serverContext.subunits.likes.removeLike(userId, topicId)
@@ -489,6 +566,18 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         call.serverError()
                         return@guard
                     }
+
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Cafe,
+                        type = CafeActivity.TopicUnliked,
+                        timestamp = time,
+                        metadata = mapOf(
+                            "topicId" to topicId,
+                            "authorId" to userId
+                        )
+                    )
+                )
 
                 Fancam.debug { "${call.attributes.getUserAccount().username} unliked topic=$topicId" }
                 call.respond(HttpStatusCode.OK)
@@ -519,6 +608,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
+                val time = TimeCenter.now()
+
                 // if post is not yet liked -> add the like and increment topic's like
                 serverContext.subunits.likes.addLike(userId, replyId)
                     .onFail {
@@ -531,6 +622,18 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         call.serverError()
                         return@guard
                     }
+
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Cafe,
+                        type = CafeActivity.ReplyLiked,
+                        timestamp = time,
+                        metadata = mapOf(
+                            "replyId" to replyId,
+                            "authorId" to userId
+                        )
+                    )
+                )
 
                 Fancam.debug { "${call.attributes.getUserAccount().username} liked reply=$replyId" }
                 call.respond(HttpStatusCode.OK)
@@ -547,6 +650,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 val replyId = requireNotNull(call.request.pathVariables["replyId"])
                 val userId = call.attributes.getUserAccount().userId
+                val time = TimeCenter.now()
 
                 // like exist or not -> remove the like and decrement
                 serverContext.subunits.likes.removeLike(userId, replyId)
@@ -560,6 +664,18 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         call.serverError()
                         return@guard
                     }
+
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Cafe,
+                        type = CafeActivity.ReplyUnliked,
+                        timestamp = time,
+                        metadata = mapOf(
+                            "replyId" to replyId,
+                            "authorId" to userId
+                        )
+                    )
+                )
 
                 Fancam.debug { "${call.attributes.getUserAccount().username} unliked reply=$replyId" }
                 call.respond(HttpStatusCode.OK)

@@ -27,6 +27,7 @@ import mbworld.context.RealContextFactory
 import mbworld.context.ServerContext
 import mbworld.devtools.ResetDatabaseCommand
 import mbworld.devtools.SetupDatabaseCommand
+import mbworld.domain.activity.ActivityReceiver
 import mbworld.domain.auth.AuthApiRoutes
 import mbworld.domain.auth.AuthPageRoutes
 import mbworld.domain.cafe.CafeRoutes
@@ -87,6 +88,9 @@ suspend fun Application.configureApplication() {
     // register commands
     commandHandlers(serverContext, mongoc, db)
 
+    // register activity receivers
+    activityReceivers(serverContext)
+
     // configure routing
     // ephemeral token storage for /backstage entry
     val backstageToken = ConcurrentHashMap<String, Long>()
@@ -129,5 +133,16 @@ fun commandHandlers(serverContext: ServerContext, mongoc: MongoClient, db: Mongo
         register(DummySetupCommand(db))
         register(SetupDatabaseCommand(mongoc))
         register(ResetDatabaseCommand(mongoc))
+    }
+}
+
+fun activityReceivers(serverContext: ServerContext) {
+    with (serverContext.subunits.activity) {
+        serverContext.subunits.all().forEach {
+            if (it is ActivityReceiver) {
+                register(it)
+            }
+        }
+        // add other subunits here...
     }
 }

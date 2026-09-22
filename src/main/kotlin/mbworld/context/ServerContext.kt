@@ -97,7 +97,7 @@ data class ServerContext(
             val topic = TopicSubunit.createForTest(topicRepository)
             val reply = ReplySubunit.createForTest(replyRepository)
             val likes = LikesSubunit.createForTest(likesRepository)
-            val events = ActivitySubunit.createForTest()
+            val activity = ActivitySubunit.createForTest()
 
             return ServerContext(
                 dataStore = dataStore,
@@ -117,7 +117,7 @@ data class ServerContext(
                     topic = topic,
                     reply = reply,
                     likes = likes,
-                    events = events
+                    activity = activity
                 )
             )
         }
@@ -152,7 +152,7 @@ data class ServerContext(
  * @property reply Provides API related to replies.
  * @property likes Provides API related to likes.
  * @property collection Provides API related to cafe collection.
- * @property events Provides API related to events.
+ * @property activity Provides API related to activity.
  */
 data class ServerSubunits(
     val account: AccountSubunit,
@@ -167,7 +167,7 @@ data class ServerSubunits(
     val reply: ReplySubunit,
     val likes: LikesSubunit,
     val collection: CollectionSubunit,
-    val events: ActivitySubunit
+    val activity: ActivitySubunit
 ) {
     /**
      * Return all server subunit instances.
@@ -185,7 +185,7 @@ data class ServerSubunits(
             reply,
             likes,
             collection,
-            events
+            activity
         )
     }
 

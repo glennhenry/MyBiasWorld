@@ -100,7 +100,7 @@ class RealContextFactory(
         val replySubunit = ReplySubunit(replyRepository)
         val likesSubunit = LikesSubunit(likesRepository)
         val collectionSubunit = CollectionSubunit(collectionRepository)
-        val eventsSubunit = ActivitySubunit()
+        val eventsSubunit = ActivitySubunit(appScope).also { it.start() }
 
         val subunits = ServerSubunits(
             account = accountSubunit,
@@ -115,7 +115,7 @@ class RealContextFactory(
             reply = replySubunit,
             likes = likesSubunit,
             collection = collectionSubunit,
-            events = eventsSubunit
+            activity = eventsSubunit
         )
 
         // debut all subunits

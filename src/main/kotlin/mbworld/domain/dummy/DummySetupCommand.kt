@@ -6,8 +6,18 @@ import encore.backstage.command.types.ArgumentCollection
 import encore.backstage.command.types.CommandResult
 import encore.creation.UserCreationSubunit
 import encore.fancam.Fancam
+import encore.time.TimeCenter
 import encore.utils.types.Report
+import encore.utils.types.okOrThrow
 import mbworld.context.ServerContext
+import mbworld.domain.activity.model.Activity
+import mbworld.domain.activity.model.ActivitySource
+import mbworld.domain.auth.UsersActivity
+import mbworld.domain.cafe.CafeActivity
+import mbworld.domain.cafe.Sections
+import mbworld.domain.cafe.likes.Likes
+import mbworld.domain.cafe.reply.Reply
+import mbworld.domain.cafe.topic.Topic
 import mbworld.domain.profile.model.Profile
 import mbworld.domain.profile.subunits.MongoProfileRepository
 import mbworld.mongo.RuntimeMongoCollections
@@ -44,8 +54,10 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
         val numAccounts = (15..20).random()
 
         val insertedUsers = mutableListOf<String>()
-        val addedTopics = mutableListOf<Pair<String, Long>>()
-        val addedReplies = mutableListOf<String>()
+        val addedTopics = mutableListOf<Topic>()
+        val addedReplies = mutableListOf<Reply>()
+        val addedTopicLikes = mutableListOf<Likes>()
+        val addedReplyLikes = mutableListOf<Likes>()
 
         val accounts = mutableMapOf<UserId, UserAccount>()
         val profiles = mutableMapOf<UserId, Profile>()
@@ -81,27 +93,27 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                     val topics = TopicFactory.topics(userId, numPostsEachAccounts)
                     for (topic in topics) {
                         serverContext.subunits.topic.addTopic(topic)
-                        addedTopics.add(topic.topicId to topic.postedDate)
+                        addedTopics.add(topic)
                     }
                 }
             }
 
             // 3. create replies and comments
-            addedTopics.forEach { (topicId, postedDate) ->
+            addedTopics.forEach { topic ->
                 // 70% chance of reply, 30% chance for no reply
                 if (Random.nextDouble() < 0.7) {
                     val amountOfReply = (1..6).random()
                     val replies = List(amountOfReply) {
                         ReplyFactory.reply(
-                            topicId = topicId,
-                            topicPostDate = postedDate,
+                            topicId = topic.topicId,
+                            topicPostDate = topic.postedDate,
                             possibleReplyAuthors = insertedUsers,
                             possibleAmountofComments = 1..4,
                             possibleCommentAuthors = insertedUsers
                         )
                     }.sortedBy { it.postedDate }
                     replies.forEach {
-                        addedReplies.add(it.replyId)
+                        addedReplies.add(it)
                         serverContext.subunits.reply.addReply(it)
                     }
                 }
@@ -110,22 +122,123 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
             // 4. add user likes to topic and replies
             insertedUsers.forEach { userId ->
                 // 30% chance for a user to like a particular topic
-                addedTopics.forEach { topicId ->
+                addedTopics.forEach { topic ->
                     if (Random.nextDouble() < 0.3) {
-                        serverContext.subunits.likes.addLike(userId, topicId.first)
-                        serverContext.subunits.topic.incrementLike(topicId.first)
+                        val now = TimeCenter.now() // differ very slightly
+                        serverContext.subunits.likes.addLike(userId, topic.topicId)
+                        serverContext.subunits.topic.incrementLike(topic.topicId)
+                        addedTopicLikes.add(Likes(userId, topic.topicId, now))
                     }
                 }
 
                 // 10% chance for a user to like a particular reply
-                addedReplies.forEach { replyId ->
+                addedReplies.forEach { reply ->
                     if (Random.nextDouble() < 0.1) {
-                        serverContext.subunits.likes.addLike(userId, replyId)
-                        serverContext.subunits.reply.incrementLike(replyId)
+                        val now = TimeCenter.now() // differ very slightly
+                        serverContext.subunits.likes.addLike(userId, reply.replyId)
+                        serverContext.subunits.reply.incrementLike(reply.replyId)
+                        addedReplyLikes.add(Likes(userId, reply.replyId, now))
                     }
                 }
             }
 
+            // 5. add activities
+            // 5 accounts registration
+            accounts.toList().shuffled().take(5).forEach { (_, acc) ->
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Users,
+                        type = UsersActivity.UserRegistered,
+                        timestamp = acc.registeredAt,
+                        metadata = mapOf(
+                            "userId" to acc.userId,
+                            "username" to acc.username,
+                            "email" to acc.email,
+                        )
+                    )
+                )
+            }
+
+            // 5 topic posts
+            addedTopics.shuffled().take(5).forEach { topic ->
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Cafe,
+                        type = CafeActivity.TopicCreated,
+                        timestamp = topic.postedDate,
+                        metadata = mapOf(
+                            "topicId" to topic.topicId,
+                            "authorId" to topic.authorId,
+                            "authorDisplayName" to accounts[topic.authorId]!!.displayName,
+                            "sectionName" to Sections[topic.sectionId]
+                        )
+                    )
+                )
+            }
+
+            // 5 replies
+            addedReplies.shuffled().take(5).forEach { reply ->
+                val topicTitle = serverContext.subunits.topic.getTopic(reply.topicId)
+                    .okOrThrow()?.title
+                val replyAmount = serverContext.subunits.reply.getReplyCount(reply.topicId)
+                    .okOrThrow()
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Cafe,
+                        type = CafeActivity.ReplyAdded,
+                        timestamp = reply.postedDate,
+                        metadata = mapOf(
+                            "topicId" to reply.topicId,
+                            "replyId" to reply.replyId,
+                            "authorId" to reply.authorId,
+                            "authorDisplayName" to accounts[reply.authorId]!!.displayName,
+                            "topicTitle" to topicTitle,
+                            "replyAmount" to replyAmount
+                        )
+                    )
+                )
+            }
+
+            // 0-5 comments
+            addedReplies.shuffled().take(5).forEach { reply ->
+                reply.comments.shuffled().take(1).firstOrNull()?.let {
+                    serverContext.subunits.activity.publish(
+                        Activity(
+                            source = ActivitySource.Cafe,
+                            type = CafeActivity.CommentAdded,
+                            timestamp = it.postedDate,
+                            metadata = mapOf(
+                                "topicId" to reply.topicId,
+                                "replyId" to reply.replyId,
+                                "commentId" to it.commentId,
+                                "authorId" to it.authorId,
+                                "commentAuthorDisplayName" to accounts[it.authorId]!!.displayName,
+                                "replyAuthorDisplayName" to accounts[reply.authorId]!!.displayName
+                            )
+                        )
+                    )
+                }
+            }
+
+            // 5 likes
+            addedTopicLikes.shuffled().take(5).forEach { likes ->
+                val topic = serverContext.subunits.topic.getTopic(likes.postId)
+                    .okOrThrow()!!
+                serverContext.subunits.activity.publish(
+                    Activity(
+                        source = ActivitySource.Cafe,
+                        type = CafeActivity.TopicLiked,
+                        timestamp = likes.castedAt,
+                        metadata = mapOf(
+                            "topicId" to likes.postId,
+                            "authorId" to likes.userId,
+                            "displayName" to accounts[likes.userId]!!.displayName,
+                            "topicTitle" to topic.title,
+                            "amount" to topic.likes
+                        )
+                    )
+                )
+            }
         } catch (e: Exception) {
             Fancam.error(e, "dummysetup") { "Scandal during dummy setup" }
             return CommandResult.Error("Scandal during dummy setup: ${e.message}")

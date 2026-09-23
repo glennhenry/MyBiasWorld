@@ -2,6 +2,10 @@ package mbworld.domain.lobby.activityFeed
 
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
+import mbworld.domain.activity.ActivityReceiver
+import mbworld.domain.activity.model.Activity
+import mbworld.domain.activity.model.ActivitySource
+import mbworld.domain.activity.model.AllActivitySources
 import mbworld.utils.CircularList
 
 /**
@@ -19,8 +23,11 @@ import mbworld.utils.CircularList
  *
  * @param feedLimit Specify the maximum amount of feed to be stored.
  */
-class ActivityFeedSubunit(private val feedLimit: Int = 30) : Subunit<ServerScope> {
+class ActivityFeedSubunit(private val feedLimit: Int = 30) : Subunit<ServerScope>, ActivityReceiver {
     private val feeds = CircularList<ActivityFeedData>(feedLimit)
+
+    override val sources: Set<ActivitySource> = AllActivitySources
+    override val types: Set<String> = setOf()
 
     /**
      * Retrieve the latest [amount] of feed.
@@ -32,6 +39,10 @@ class ActivityFeedSubunit(private val feedLimit: Int = 30) : Subunit<ServerScope
      */
     fun retrieve(amount: Int): List<ActivityFeedData> {
         return feeds.get(amount)
+    }
+
+    override fun onActivity(activity: Activity) {
+        feeds.add(ActivityFeedData(activity.timestamp, activity.type))
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> {

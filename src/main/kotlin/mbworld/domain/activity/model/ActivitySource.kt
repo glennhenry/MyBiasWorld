@@ -14,3 +14,7 @@ package mbworld.domain.activity.model
 enum class ActivitySource {
     Users, Cafe, Others
 }
+
+val AllActivitySources = setOf(
+    ActivitySource.Users, ActivitySource.Cafe, ActivitySource.Others
+)

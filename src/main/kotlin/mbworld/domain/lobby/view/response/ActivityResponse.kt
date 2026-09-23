@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ActivityResponse(
-    val activities: List<ActivityData>
+    val activities: List<LobbyActivityData>
 )
 
 /**
@@ -18,7 +18,7 @@ data class ActivityResponse(
  * @property timestamp Epoch millis when the activity happened.
  */
 @Serializable
-data class ActivityData(
+data class LobbyActivityData(
     val text: String,
     val timestamp: Long
 )

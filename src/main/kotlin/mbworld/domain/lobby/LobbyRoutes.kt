@@ -12,12 +12,11 @@ import io.ktor.server.thymeleaf.*
 import mbworld.context.ServerContext
 import mbworld.domain.Members
 import mbworld.domain.lobby.view.model.LobbyModel
-import mbworld.domain.lobby.view.response.ActivityData
+import mbworld.domain.lobby.view.response.LobbyActivityData
 import mbworld.domain.lobby.view.response.ActivityResponse
 import mbworld.routes.guard.OptionalAccountGuard
 import mbworld.routes.guard.getAccountData
 import java.text.SimpleDateFormat
-import kotlin.random.Random
 
 /**
  * Routes for lobby, which is the root page `/`.
@@ -44,16 +43,9 @@ class LobbyRoutes(private val serverContext: ServerContext) : RouteHandler {
         get("/activity") {
             guard(call, NoAuthGuard) {
                 val response = ActivityResponse(
-                    listOf(
-                        ActivityData(
-                            "First activity received (${Random.nextInt(1, 200)})",
-                            TimeCenter.now()
-                        ),
-                        ActivityData(
-                            "Hello this is an activity (${Random.nextInt(1, 200)})",
-                            TimeCenter.now()
-                        )
-                    )
+                    serverContext.subunits.activityFeed.retrieve(15).map {
+                        LobbyActivityData(it.text, it.timestamp)
+                    }
                 )
 
                 Fancam.debug { "Request to /activity" }

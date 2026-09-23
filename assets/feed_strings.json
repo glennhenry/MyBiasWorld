@@ -1,0 +1,42 @@
+[
+  {
+    "type": "CafeActivity.Topic.Created",
+    "format": "{displayName} has created a topic in {sectionName}. Go check it out!"
+  },
+  {
+    "type": "CafeActivity.Topic.Deleted",
+    "format": "A topic has been deleted in {sectionName}."
+  },
+  {
+    "type": "CafeActivity.Topic.Liked",
+    "format": "{displayName} has liked the topic '{topicTitle}'."
+  },
+  {
+    "type": "CafeActivity.Topic.Unliked",
+    "format": "{displayName} has unliked a topic."
+  },
+  {
+    "type": "CafeActivity.Topic.Liked.Amount",
+    "format": "Topic '{topicTitle}' has reached {amount} likes!"
+  },
+  {
+    "type": "CafeActivity.Reply.Added",
+    "format": "{displayName} replied to the topic '{topicTitle}'."
+  },
+  {
+    "type": "CafeActivity.Reply.Added.Amount",
+    "format": "'{topicTitle}' has reached {replyAmount} replies. Must be something interesting!"
+  },
+  {
+    "type": "CafeActivity.Reply.Liked",
+    "format": "{displayName} liked a reply made by {authorDisplayName}."
+  },
+  {
+    "type": "CafeActivity.Reply.Unliked",
+    "format": "{displayName} has unliked a reply."
+  },
+  {
+    "type": "CafeActivity.Comment.Added",
+    "format": "{displayName} commented on a reply made by {authorDisplayName}."
+  }
+]

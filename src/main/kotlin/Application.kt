@@ -8,6 +8,7 @@ import encore.EncoreIdentity
 import encore.EncoreIdentity.celebrate
 import encore.backstage.BackstageRoutes
 import encore.backstage.command.ExampleCommand
+import encore.definition.DataReference
 import encore.route.guard.DefaultSecurity
 import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
@@ -25,6 +26,7 @@ import kotlinx.serialization.modules.SerializersModule
 import mbworld.ProjectIdentity
 import mbworld.context.RealContextFactory
 import mbworld.context.ServerContext
+import mbworld.definition.JsonDataSource
 import mbworld.devtools.ResetDatabaseCommand
 import mbworld.devtools.SetupDatabaseCommand
 import mbworld.domain.activity.ActivityReceiver
@@ -33,6 +35,7 @@ import mbworld.domain.auth.AuthPageRoutes
 import mbworld.domain.cafe.CafeRoutes
 import mbworld.domain.dummy.DummySetupCommand
 import mbworld.domain.lobby.LobbyRoutes
+import mbworld.domain.lobby.activityFeed.FeedStringsLoader
 import mbworld.domain.profile.ProfileRoutes
 import mbworld.mongo.RuntimeMongoCollections
 import mbworld.routes.SiteRoutes
@@ -91,6 +94,9 @@ suspend fun Application.configureApplication() {
     // register activity receivers
     activityReceivers(serverContext)
 
+    // register data definitions
+    dataReference()
+
     // configure routing
     // ephemeral token storage for /backstage entry
     val backstageToken = ConcurrentHashMap<String, Long>()
@@ -144,5 +150,11 @@ fun activityReceivers(serverContext: ServerContext) {
             }
         }
         // add other subunits here...
+    }
+}
+
+fun dataReference() {
+    DataReference.initialize {
+        add(JsonDataSource("assets/feed_strings.json"), FeedStringsLoader())
     }
 }

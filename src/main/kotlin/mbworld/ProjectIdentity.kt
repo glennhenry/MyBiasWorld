@@ -20,6 +20,6 @@ import encore.EncoreIdentity
  */
 object ProjectIdentity {
     const val Title = "MyBiasWorld"
-    const val Version = "0.1.0"
+    const val Version = "0.1.1"
     const val Description = "Formulating world..."
 }

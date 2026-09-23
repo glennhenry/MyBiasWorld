@@ -1,7 +1,7 @@
 [
   {
     "type": "CafeActivity.Topic.Created",
-    "format": "{displayName} has created a topic in {sectionName}. Go check it out!"
+    "format": "{authorDisplayName} has created a topic in {sectionName}. Go check it out!"
   },
   {
     "type": "CafeActivity.Topic.Deleted",
@@ -21,7 +21,7 @@
   },
   {
     "type": "CafeActivity.Reply.Added",
-    "format": "{displayName} replied to the topic '{topicTitle}'."
+    "format": "{authorDisplayName} replied to the topic '{topicTitle}'."
   },
   {
     "type": "CafeActivity.Reply.Added.Amount",
@@ -29,7 +29,7 @@
   },
   {
     "type": "CafeActivity.Reply.Liked",
-    "format": "{displayName} liked a reply made by {authorDisplayName}."
+    "format": "{displayName} liked a reply made by {replyAuthorDisplayName}."
   },
   {
     "type": "CafeActivity.Reply.Unliked",
@@ -37,6 +37,6 @@
   },
   {
     "type": "CafeActivity.Comment.Added",
-    "format": "{displayName} commented on a reply made by {authorDisplayName}."
+    "format": "{commentAuthorDisplayName} commented on a reply made by {replyAuthorDisplayName}."
   }
 ]

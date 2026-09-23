@@ -189,6 +189,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     likes = 0,
                     postedDate = time
                 )
+
                 serverContext.subunits.topic.addTopic(topic)
                     .onFail {
                         call.respond(HttpStatusCode.InternalServerError, "Failed to post")
@@ -202,7 +203,9 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         timestamp = time,
                         metadata = mapOf(
                             "topicId" to id,
-                            "authorId" to acc.userId
+                            "authorId" to acc.userId,
+                            "authorDisplayName" to acc.displayName,
+                            "sectionName" to Sections[section]
                         )
                     )
                 )
@@ -234,7 +237,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                                     type = CafeActivity.TopicDeleted,
                                     timestamp = TimeCenter.now(),
                                     metadata = mapOf(
-                                        "topicId" to topicId
+                                        "topicId" to topicId,
+                                        "sectionName" to Sections[section]
                                     )
                                 )
                             )
@@ -357,6 +361,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
             guard(call, requireAccountGuard) {
                 val section = requireNotNull(call.request.pathVariables["section"])
                 val id = requireNotNull(call.request.pathVariables["id"])
+                val title = requireNotNull(call.request.pathVariables["title"])
 
                 if (!Sections.contains(section)) {
                     call.sectionNotFound()
@@ -396,6 +401,10 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         return@guard
                     }
 
+                val replyAmountNow = serverContext.subunits.reply.getReplyCount(topicId)
+                    .okOrNull() ?: "an unknown amount"
+
+                val account = call.attributes.getUserAccount()
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,
@@ -404,7 +413,10 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         metadata = mapOf(
                             "topicId" to topicId,
                             "replyId" to replyId,
-                            "authorId" to call.attributes.getUserAccount().userId
+                            "authorId" to account.userId,
+                            "authorDisplayName" to account.displayName,
+                            "topicTitle" to title,
+                            "replyAmount" to replyAmountNow
                         )
                     )
                 )
@@ -435,6 +447,12 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
+                val replyAuthorDisplayName = serverContext.subunits
+                    .profile
+                    .getUserSummary(reply.authorId)
+                    .okOrNull()
+                    ?.displayName ?: "an unknown user"
+
                 val commentPayload = JSON.decode<CommentPayload>(call.receiveText())
                 if (commentPayload.comment.length < 10) {
                     call.respond(
@@ -444,11 +462,12 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
+                val account = call.attributes.getUserAccount()
                 val time = TimeCenter.now()
                 val commentId = Ids.uuid()
                 val comment = Comment(
                     commentId = commentId,
-                    authorId = call.attributes.getUserAccount().userId,
+                    authorId = account.userId,
                     content = commentPayload.comment,
                     postedDate = time
                 )
@@ -468,7 +487,9 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "topicId" to topicId,
                             "replyId" to replyId,
                             "commentId" to commentId,
-                            "authorId" to call.attributes.getUserAccount().userId
+                            "authorId" to account.userId,
+                            "commentAuthorDisplayName" to account.displayName,
+                            "replyAuthorDisplayName" to replyAuthorDisplayName
                         )
                     )
                 )
@@ -482,6 +503,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
             guard(call, requireAccountGuard) {
                 val section = requireNotNull(call.request.pathVariables["section"])
                 val id = requireNotNull(call.request.pathVariables["id"])
+                val title = requireNotNull(call.request.pathVariables["title"])
 
                 if (!Sections.contains(section)) {
                     call.sectionNotFound()
@@ -494,7 +516,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
-                val userId = call.attributes.getUserAccount().userId
+                val account = call.attributes.getUserAccount()
+                val userId = account.userId
 
                 // if post is already liked -> ignore
                 val outcome = serverContext.subunits.likes.isPostLikedBy(userId, topicId)
@@ -524,6 +547,12 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         return@guard
                     }
 
+                val likesNow = serverContext.subunits.topic.getTopicLikes(topicId)
+                    .okOrNull() ?: run {
+                    call.serverError()
+                    return@guard
+                }
+
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,
@@ -531,7 +560,10 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         timestamp = time,
                         metadata = mapOf(
                             "topicId" to topicId,
-                            "authorId" to userId
+                            "authorId" to userId,
+                            "displayName" to account.displayName,
+                            "topicTitle" to title,
+                            "amount" to likesNow
                         )
                     )
                 )
@@ -557,7 +589,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
-                val userId = call.attributes.getUserAccount().userId
+                val account = call.attributes.getUserAccount()
+                val userId = account.userId
                 val time = TimeCenter.now()
 
                 // like exist or not -> remove the like and decrement
@@ -580,7 +613,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         timestamp = time,
                         metadata = mapOf(
                             "topicId" to topicId,
-                            "authorId" to userId
+                            "authorId" to userId,
+                            "displayName" to account.displayName
                         )
                     )
                 )
@@ -599,7 +633,19 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 val replyId = requireNotNull(call.request.pathVariables["replyId"])
-                val userId = call.attributes.getUserAccount().userId
+                val reply = serverContext.subunits.reply.getReply(replyId).okOrNull() ?: run {
+                    call.respond(HttpStatusCode.NotFound, "reply not found")
+                    return@guard
+                }
+
+                val replyAuthorDisplayName = serverContext.subunits
+                    .profile
+                    .getUserSummary(reply.authorId)
+                    .okOrNull()
+                    ?.displayName ?: "an unknown user"
+
+                val account = call.attributes.getUserAccount()
+                val userId = account.userId
 
                 // if post is already liked -> ignore
                 val outcome = serverContext.subunits.likes.isPostLikedBy(userId, replyId)
@@ -636,7 +682,9 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         timestamp = time,
                         metadata = mapOf(
                             "replyId" to replyId,
-                            "authorId" to userId
+                            "authorId" to userId,
+                            "displayName" to account.displayName,
+                            "replyAuthorDisplayName" to replyAuthorDisplayName
                         )
                     )
                 )
@@ -655,7 +703,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 val replyId = requireNotNull(call.request.pathVariables["replyId"])
-                val userId = call.attributes.getUserAccount().userId
+                val account = call.attributes.getUserAccount()
+                val userId = account.userId
                 val time = TimeCenter.now()
 
                 // like exist or not -> remove the like and decrement
@@ -678,7 +727,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         timestamp = time,
                         metadata = mapOf(
                             "replyId" to replyId,
-                            "authorId" to userId
+                            "authorId" to userId,
+                            "displayName" to account.displayName
                         )
                     )
                 )

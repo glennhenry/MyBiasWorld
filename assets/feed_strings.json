@@ -1,5 +1,9 @@
 [
   {
+    "type": "UsersActivity.UserRegistered",
+    "format": "{username} just joined the MyBiasWorld. Welcome!"
+  },
+  {
     "type": "CafeActivity.Topic.Created",
     "format": "{authorDisplayName} has created a topic in {sectionName}. Go check it out!"
   },

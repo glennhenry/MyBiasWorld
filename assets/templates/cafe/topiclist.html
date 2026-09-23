@@ -196,7 +196,7 @@
         event.preventDefault()
         const topicId = $(this).attr('data-topic-id')
 
-        fetch("/cafe/delete", {
+        fetch(`${window.location.href}/delete`, {
           method: "POST",
           body: topicId
         })

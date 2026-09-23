@@ -212,8 +212,14 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
             }
         }
 
-        post("/cafe/delete") {
+        post("/cafe/{section}/delete") {
             guard(call, requireAccountGuard) {
+                val section = requireNotNull(call.request.pathVariables["section"])
+                if (!Sections.contains(section)) {
+                    call.respond(HttpStatusCode.NotFound, "Section not found")
+                    return@guard
+                }
+
                 val topicId = call.receiveText()
 
                 when (val outcome = serverContext.subunits.topic.deleteTopic(topicId)) {

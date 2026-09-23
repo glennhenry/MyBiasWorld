@@ -3,15 +3,15 @@ package mbworld.context
 import encore.account.AccountRepository
 import encore.account.AccountSubunit
 import encore.account.BlankAccountRepository
-import encore.creation.UserCreationSubunit
-import encore.presence.UserPresenceSubunit
 import encore.acts.ActIdStore
 import encore.acts.StageActDirector
 import encore.auth.AuthSubunit
 import encore.backstage.command.CommandDispatcher
+import encore.creation.UserCreationSubunit
 import encore.datastore.BlankDataStore
 import encore.datastore.DataStore
 import encore.fancam.Fancam
+import encore.presence.UserPresenceSubunit
 import encore.session.SessionSubunit
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
@@ -20,25 +20,26 @@ import encore.time.source.TimeSource
 import encore.utils.support.className
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
-import mbworld.domain.cafe.collection.BlankCollectionRepository
-import mbworld.domain.cafe.collection.CollectionRepository
-import mbworld.domain.cafe.collection.CollectionSubunit
-import mbworld.domain.cafe.topic.InMemoryTopicRepository
-import mbworld.domain.cafe.topic.TopicRepository
-import mbworld.domain.cafe.topic.TopicSubunit
-import mbworld.domain.cafe.reply.InMemoryReplyRepository
-import mbworld.domain.cafe.reply.ReplyRepository
-import mbworld.domain.cafe.reply.ReplySubunit
-import mbworld.domain.profile.subunits.BlankProfileRepository
-import mbworld.domain.profile.subunits.ProfileRepository
-import mbworld.domain.profile.subunits.ProfileSubunit
+import mbworld.domain.activity.ActivitySubunit
 import mbworld.domain.auth.session.BlankSessionStore
 import mbworld.domain.auth.session.SessionStore
 import mbworld.domain.auth.session.WebsiteSessionSubunit
+import mbworld.domain.cafe.collection.BlankCollectionRepository
+import mbworld.domain.cafe.collection.CollectionRepository
+import mbworld.domain.cafe.collection.CollectionSubunit
 import mbworld.domain.cafe.likes.InMemoryLikesRepository
 import mbworld.domain.cafe.likes.LikesRepository
 import mbworld.domain.cafe.likes.LikesSubunit
-import mbworld.domain.activity.ActivitySubunit
+import mbworld.domain.cafe.reply.InMemoryReplyRepository
+import mbworld.domain.cafe.reply.ReplyRepository
+import mbworld.domain.cafe.reply.ReplySubunit
+import mbworld.domain.cafe.topic.InMemoryTopicRepository
+import mbworld.domain.cafe.topic.TopicRepository
+import mbworld.domain.cafe.topic.TopicSubunit
+import mbworld.domain.lobby.activityFeed.ActivityFeedSubunit
+import mbworld.domain.profile.subunits.BlankProfileRepository
+import mbworld.domain.profile.subunits.ProfileRepository
+import mbworld.domain.profile.subunits.ProfileSubunit
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -98,6 +99,7 @@ data class ServerContext(
             val reply = ReplySubunit.createForTest(replyRepository)
             val likes = LikesSubunit.createForTest(likesRepository)
             val activity = ActivitySubunit.createForTest()
+            val activityFeed = ActivityFeedSubunit.createForTest()
 
             return ServerContext(
                 dataStore = dataStore,
@@ -117,7 +119,8 @@ data class ServerContext(
                     topic = topic,
                     reply = reply,
                     likes = likes,
-                    activity = activity
+                    activity = activity,
+                    activityFeed = activityFeed
                 )
             )
         }
@@ -153,6 +156,7 @@ data class ServerContext(
  * @property likes Provides API related to likes.
  * @property collection Provides API related to cafe collection.
  * @property activity Provides API related to activity.
+ * @property activityFeed Provides API related to activity feed.
  */
 data class ServerSubunits(
     val account: AccountSubunit,
@@ -167,7 +171,8 @@ data class ServerSubunits(
     val reply: ReplySubunit,
     val likes: LikesSubunit,
     val collection: CollectionSubunit,
-    val activity: ActivitySubunit
+    val activity: ActivitySubunit,
+    val activityFeed: ActivityFeedSubunit
 ) {
     /**
      * Return all server subunit instances.
@@ -185,7 +190,8 @@ data class ServerSubunits(
             reply,
             likes,
             collection,
-            activity
+            activity,
+            activityFeed
         )
     }
 

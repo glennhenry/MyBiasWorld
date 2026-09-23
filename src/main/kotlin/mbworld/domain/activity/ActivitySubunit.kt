@@ -1,8 +1,9 @@
 package mbworld.domain.activity
 
+import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
-import encore.utils.support.safelySuspend
+import encore.utils.support.className
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
@@ -36,8 +37,10 @@ class ActivitySubunit(
                 toBeCalled.addAll(byTypes[activity.type].orEmpty())
                 toBeCalled.addAll(bySources[activity.source].orEmpty())
                 toBeCalled.forEach { receiver ->
-                    safelySuspend {
+                    runCatching {
                         receiver.onActivity(activity)
+                    }.onFailure {
+                        Fancam.error(it) { "Failure on activity receiver: ${receiver.className()}" }
                     }
                 }
             }

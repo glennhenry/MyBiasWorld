@@ -64,6 +64,13 @@ class InMemoryTopicRepository(
         return Result.success(Unit)
     }
 
+    override suspend fun getTopicLikes(topicId: String): Result<Int> {
+        val likes = topics.find { it.topicId == topicId }
+            ?.likes
+            ?: return Result.failure(DocumentNotFoundException("topicId=$topicId not found"))
+        return Result.success(likes)
+    }
+
     override suspend fun incrementLike(topicId: String): Result<Unit> {
         val topic = topics.find { it.topicId == topicId }
             ?.let { it.copy(likes = it.likes + 1) }

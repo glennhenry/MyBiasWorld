@@ -104,6 +104,16 @@ interface TopicRepository {
     suspend fun deleteAllTopics(): Result<Unit>
 
     /**
+     * Get the amount of likes the topic identified by [topicId] has.
+     *
+     * Returns:
+     * - [Result.success] with the likes count.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] if other error occurs while retrieving the data.
+     */
+    suspend fun getTopicLikes(topicId: String): Result<Int>
+
+    /**
      * Increment the like of the post identified by [topicId].
      *
      * Returns:

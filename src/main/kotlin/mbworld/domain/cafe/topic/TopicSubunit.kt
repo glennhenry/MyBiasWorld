@@ -162,6 +162,23 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     }
 
     /**
+     * Get the likes amount of [topicId].
+     *
+     * Returns:
+     * - [Outcome.Fail] when there is an internal repository error.
+     * - [Outcome.Ok] with the likes count.
+     */
+    suspend fun getTopicLikes(topicId: String): Outcome<Int> {
+        return topicRepository.getTopicLikes(topicId)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "getTopicLikes failed for topicId=$topicId"
+                }
+            }
+            .toOutcome { it }
+    }
+
+    /**
      * Increment the likes amount of [topicId].
      * @return [Report] type denoting success or failure.
      */

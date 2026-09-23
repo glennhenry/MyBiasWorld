@@ -65,6 +65,9 @@ class MongoTopicRepositoryTest {
         assertDoesNotFailSuspend { repo.deleteTopic("asdf").getOrThrow() }
         assertFailsWith<DocumentNotFoundException> { repo.getTopic("asdf").getOrThrow() }
 
+        // 9. getTopicLikes
+        assertEquals(0, repo.getTopicLikes(id).getOrThrow())
+
         // 9. incrementLike
         assertDoesNotFailSuspend { repo.incrementLike(id).getOrThrow() }
         assertEquals(1, repo.getTopic(id).getOrThrow().likes)

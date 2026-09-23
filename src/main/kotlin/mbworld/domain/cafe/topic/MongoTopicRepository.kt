@@ -115,6 +115,22 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
         return runMongoCatching { topicCollection.drop() }
     }
 
+    override suspend fun getTopicLikes(topicId: String): Result<Int> {
+        return runMongoCatching {
+            topicCollection
+                .withDocumentClass<QueryTopicLikes>()
+                .find(Filters.eq(FieldTopicId, topicId))
+                .projection(
+                    Projections.fields(
+                        Projections.include(FieldTopicLikes),
+                        Projections.excludeId()
+                    )
+                )
+                .firstOrNull()
+                ?.likes
+        }
+    }
+
     override suspend fun incrementLike(topicId: String): Result<Unit> {
         return runMongoCatching {
             val filter = Filters.eq(FieldTopicId, topicId)
@@ -144,4 +160,9 @@ data class SectionCount(
 data class QueryTopicId(
     @field:BsonId val id: String? = null,
     val topicId: String
+)
+
+data class QueryTopicLikes(
+    @field:BsonId val id: String? = null,
+    val likes: Int
 )

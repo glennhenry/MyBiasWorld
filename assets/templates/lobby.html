@@ -126,7 +126,7 @@
       fetchActivities().then((data) => { updateActivityFeed(data) })
       setInterval(() => {
         fetchActivities().then((data) => { updateActivityFeed(data) })
-      }, 3000);
+      }, 60000);
     })
 
     async function fetchActivities() {

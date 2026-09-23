@@ -58,6 +58,12 @@ class ReplySubunit(private val replyRepository: ReplyRepository) : Subunit<Serve
     suspend fun getReplyCount(topicId: String): Outcome<Int?> {
         return replyRepository.getReplyCount(topicId)
             .onFailure {
+                if (it is DocumentNotFoundException) {
+                    Fancam.warn("reply") {
+                        "getReplyCount topic not found for topicId=$topicId"
+                    }
+                    return Outcome.Ok(null)
+                }
                 Fancam.error(it, "reply") {
                     "getReplyCount query failed for topicId=$topicId"
                 }

@@ -25,6 +25,7 @@ import mbworld.utils.CircularList
  */
 class ActivityFeedSubunit(private val feedLimit: Int = 30) : Subunit<ServerScope>, ActivityReceiver {
     private val feeds = CircularList<ActivityFeedData>(feedLimit)
+    private val translator = ActivityFeedTranslator()
 
     override val sources: Set<ActivitySource> = AllActivitySources
     override val types: Set<String> = setOf()
@@ -42,7 +43,7 @@ class ActivityFeedSubunit(private val feedLimit: Int = 30) : Subunit<ServerScope
     }
 
     override fun onActivity(activity: Activity) {
-        feeds.add(ActivityFeedData(activity.timestamp, activity.type))
+        feeds.add(translator.translate(activity))
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> {

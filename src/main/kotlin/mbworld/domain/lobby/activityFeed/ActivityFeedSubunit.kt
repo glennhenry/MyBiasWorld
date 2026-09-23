@@ -1,5 +1,6 @@
 package mbworld.domain.lobby.activityFeed
 
+import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import mbworld.domain.activity.ActivityReceiver
@@ -26,24 +27,28 @@ import mbworld.utils.CircularList
 class ActivityFeedSubunit(private val feedLimit: Int = 30) : Subunit<ServerScope>, ActivityReceiver {
     private val feeds = CircularList<ActivityFeedData>(feedLimit)
     private val translator = ActivityFeedTranslator()
+    private var lastFeedAt = 0L
 
     override val sources: Set<ActivitySource> = AllActivitySources
     override val types: Set<String> = setOf()
 
     /**
-     * Retrieve the latest [amount] of feed.
+     * Retrieve the latest [amount] of feed with each activity
+     * to have occured at least [afterTimestamp].
      *
      * Feeds are sorted based on its occurence time, where the first element
      * is the latest.
      *
      * @return a list of [ActivityFeedData].
      */
-    fun retrieve(amount: Int): List<ActivityFeedData> {
-        return feeds.get(amount)
+    fun retrieve(amount: Int, afterTimestamp: Long): List<ActivityFeedData> {
+        if (lastFeedAt < afterTimestamp) return listOf()
+        return feeds.get(amount).filter { it.timestamp > afterTimestamp }
     }
 
     override fun onActivity(activity: Activity) {
         feeds.add(translator.translate(activity))
+        lastFeedAt = activity.timestamp
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> {

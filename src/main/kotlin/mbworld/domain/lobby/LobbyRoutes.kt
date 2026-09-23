@@ -6,6 +6,7 @@ import encore.route.guard
 import encore.route.guard.NoAuthGuard
 import encore.serialization.JSON
 import encore.time.TimeCenter
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
@@ -42,8 +43,13 @@ class LobbyRoutes(private val serverContext: ServerContext) : RouteHandler {
 
         get("/activity") {
             guard(call, NoAuthGuard) {
+                val afterTimestamp = call.queryParameters["after"]?.toLongOrNull() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@guard
+                }
+
                 val response = ActivityResponse(
-                    serverContext.subunits.activityFeed.retrieve(15).map {
+                    serverContext.subunits.activityFeed.retrieve(15, afterTimestamp).map {
                         LobbyActivityData(it.text, it.timestamp)
                     }
                 )

@@ -119,6 +119,8 @@
 
   <th:block th:replace="~{fragments/floating-toolbar :: floating-toolbar-script}"></th:block>
   <script>
+    let lastActivityTimestamp = 0
+
     $(document).ready(function () {
       // initial fetch and once a minute fetch
       fetchActivities().then((data) => { updateActivityFeed(data) })
@@ -129,7 +131,7 @@
 
     async function fetchActivities() {
       try {
-        const response = await fetch("/activity", { method: 'GET' })
+        const response = await fetch(`/activity?after=${lastActivityTimestamp}`, { method: 'GET' })
         if (response.ok) {
           return await response.json()
         } else {
@@ -142,7 +144,7 @@
     }
 
     function updateActivityFeed(data) {
-      if (data.length === 0) {
+      if (data.activities.length === 0) {
         return
       }
 
@@ -151,12 +153,19 @@
         activityFeed.children().first().remove()
       }
 
+      // feed's flexbox layout is column-reverse, meaning children appended first will show in the bottom while children appended last will show on top.
+      // the server response is latest -> oldest
+      // we sort the list ascending (oldest -> latest)
+      // this makes the loop below to append the old activity first to make them show in the bottom while making the newer activity show on top
+      data.activities.sort((a, b) => a.timestamp - b.timestamp);
+
       for (const activity of data.activities) {
         const item = $("<div></div>").addClass("activity-feed-item")
         const span = $("<span></span>").addClass("activity-item-span")
         const activityTimestamp = $("<p></p>").addClass("activity-timestamp").text(formatTime(activity.timestamp))
         const activityText = $("<p></p>").addClass("activity-text").text(activity.text)
         activityFeed.append(item.append(span.append(activityTimestamp).append(activityText)))
+        lastActivityTimestamp = Math.max(lastActivityTimestamp, activity.timestamp)
       }
 
       while (activityFeed.children().length > 15) {

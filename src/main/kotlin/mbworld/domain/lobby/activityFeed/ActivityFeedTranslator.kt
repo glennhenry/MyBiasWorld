@@ -17,12 +17,13 @@ class ActivityFeedTranslator {
     private val definition by lazy { DataReference.get<FeedStringsDefinition>() }
 
     fun translate(activity: Activity): ActivityFeedData {
+
         return ActivityFeedData(
             timestamp = activity.timestamp,
             format = definition.get(activity.type).format(
                 activity.type, activity.metadata
             )
-        )
+        ).also { Fancam.debug { it.toString() } }
     }
 
     private val regex = Regex("\\{(.*?)}")
@@ -32,24 +33,34 @@ class ActivityFeedTranslator {
         type: String, metadata: Map<String, Any?>
     ): List<FormatDefinition> {
         val result = mutableListOf<FormatDefinition>()
-
-        for (format in this) {
-            // find all formattable text inside {...}
-            val toBeFormatted = regex.findAll(format.text)
-                .map { it.groupValues[1] }
-                .toList()
-
-            // for each format, find its value on the metadata and replace it
-            var textResult = format.text
-            for (stringFormat in toBeFormatted) {
-                val value = metadata[stringFormat]
-                if (value == null) {
-                    Fancam.warn { "'$stringFormat' is missing on activity '$type' metadata." }
-                }
-                textResult = textResult.replace("{$stringFormat}", value.toString())
-            }
+        for ((style, link, color, text) in this) {
+            result.add(
+                FormatDefinition(
+                    style = style,
+                    link = link?.format(type, metadata),
+                    color = color,
+                    text = text.format(type, metadata)
+                )
+            )
         }
-
         return result
+    }
+
+    private fun String.format(type: String, metadata: Map<String, Any?>): String {
+        // find all formattable text inside {...}
+        val toBeFormatted = regex.findAll(this)
+            .map { it.groupValues[1] }
+            .toList()
+
+        // for each format, find its value on the metadata and replace it
+        var textResult = this
+        for (stringFormat in toBeFormatted) {
+            val value = metadata[stringFormat]
+            if (value == null) {
+                Fancam.warn { "'$stringFormat' is missing on activity '$type' metadata." }
+            }
+            textResult = textResult.replace("{$stringFormat}", value.toString())
+        }
+        return textResult
     }
 }

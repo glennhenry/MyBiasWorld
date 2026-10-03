@@ -206,7 +206,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "topicId" to id,
                             "authorId" to acc.userId,
                             "authorDisplayName" to acc.displayName,
-                            "authorProfileUrl" to "/profile/@${acc.username}",
+                            "authorProfileUrl" to "/profile/@${acc.username}/overview",
                             "sectionName" to Sections[section],
                             "topicTitle" to topic.title,
                             "topicUrl" to topicUrl
@@ -419,7 +419,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "replyId" to replyId,
                             "authorId" to account.userId,
                             "authorDisplayName" to account.displayName,
-                            "authorProfileUrl" to "/profile/@${account.username}",
+                            "authorProfileUrl" to "/profile/@${account.username}/overview",
                             "topicTitle" to title,
                             "topicUrl" to "/cafe/$section/$id/$title",
                             "replyAmount" to replyAmountNow
@@ -494,9 +494,9 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "commentId" to commentId,
                             "authorId" to account.userId,
                             "commentAuthorDisplayName" to account.displayName,
-                            "commentAuthorProfileUrl" to "/profile/@${account.username}",
+                            "commentAuthorProfileUrl" to "/profile/@${account.username}/overview",
                             "replyAuthorDisplayName" to replyAuthorSummary?.displayName,
-                            "replyAuthorProfileUrl" to "/profile/@${replyAuthorSummary?.username}"
+                            "replyAuthorProfileUrl" to "/profile/@${replyAuthorSummary?.username}/overview"
                         )
                     )
                 )
@@ -569,7 +569,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "topicId" to topicId,
                             "authorId" to userId,
                             "displayName" to account.displayName,
-                            "profileUrl" to "/profile/@${account.username}",
+                            "profileUrl" to "/profile/@${account.username}/overview",
                             "topicTitle" to title,
                             "topicUrl" to "/cafe/$section/$id/$title",
                             "amount" to likesNow
@@ -624,7 +624,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "topicId" to topicId,
                             "authorId" to userId,
                             "displayName" to account.displayName,
-                            "profileUrl" to "/profile/@${account.username}"
+                            "profileUrl" to "/profile/@${account.username}/overview"
                         )
                     )
                 )
@@ -693,9 +693,9 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "replyId" to replyId,
                             "authorId" to userId,
                             "displayName" to account.displayName,
-                            "profileUrl" to "/profile/@${account.username}",
+                            "profileUrl" to "/profile/@${account.username}/overview",
                             "replyAuthorDisplayName" to replyAuthorSummary?.displayName,
-                            "replyAuthorProfileUrl" to "/profile/@${replyAuthorSummary?.username}"
+                            "replyAuthorProfileUrl" to "/profile/@${replyAuthorSummary?.username}/overview"
                         )
                     )
                 )
@@ -740,7 +740,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "replyId" to replyId,
                             "authorId" to userId,
                             "displayName" to account.displayName,
-                            "profileUrl" to "/profile/@${account.username}"
+                            "profileUrl" to "/profile/@${account.username}/overview"
                         )
                     )
                 )

@@ -157,7 +157,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             "userId" to acc.userId,
                             "username" to acc.username,
                             "email" to acc.email,
-                            "authorProfileUrl" to "/profile/@${acc.username}"
+                            "authorProfileUrl" to "/profile/@${acc.username}/overview"
                         )
                     )
                 )
@@ -176,7 +176,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             "topicId" to topic.topicId,
                             "authorId" to topic.authorId,
                             "authorDisplayName" to accounts[topic.authorId]!!.displayName,
-                            "authorProfileUrl" to "/profile/@${accounts[topic.authorId]!!.username}",
+                            "authorProfileUrl" to "/profile/@${accounts[topic.authorId]!!.username}/overview",
                             "sectionName" to Sections[topic.sectionId],
                             "topicTitle" to topic.title,
                             "topicUrl" to topicUrl
@@ -203,7 +203,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             "replyId" to reply.replyId,
                             "authorId" to reply.authorId,
                             "authorDisplayName" to accounts[reply.authorId]!!.displayName,
-                            "authorProfileUrl" to "/profile/@${accounts[reply.authorId]!!.username}",
+                            "authorProfileUrl" to "/profile/@${accounts[reply.authorId]!!.username}/overview",
                             "topicTitle" to topic.title,
                             "topicUrl" to topicUrl,
                             "replyAmount" to replyAmount
@@ -226,9 +226,9 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                                 "commentId" to it.commentId,
                                 "authorId" to it.authorId,
                                 "commentAuthorDisplayName" to accounts[it.authorId]!!.displayName,
-                                "commentAuthorProfileUrl" to "/profile/@${accounts[it.authorId]!!.username}",
+                                "commentAuthorProfileUrl" to "/profile/@${accounts[it.authorId]!!.username}/overview",
                                 "replyAuthorDisplayName" to accounts[reply.authorId]!!.displayName,
-                                "replyAuthorProfileUrl" to "/profile/@${accounts[reply.authorId]!!.username}"
+                                "replyAuthorProfileUrl" to "/profile/@${accounts[reply.authorId]!!.username}/overview"
                             )
                         )
                     )
@@ -250,7 +250,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             "topicId" to likes.postId,
                             "authorId" to likes.userId,
                             "displayName" to accounts[likes.userId]!!.displayName,
-                            "profileUrl" to "/profile/@${accounts[likes.userId]!!.username}",
+                            "profileUrl" to "/profile/@${accounts[likes.userId]!!.username}/overview",
                             "topicTitle" to topic.title,
                             "topicUrl" to topicUrl,
                             "amount" to topic.likes

@@ -13,7 +13,6 @@ import io.ktor.server.thymeleaf.*
 import mbworld.context.ServerContext
 import mbworld.domain.Members
 import mbworld.domain.lobby.view.model.LobbyModel
-import mbworld.domain.lobby.view.response.LobbyActivityData
 import mbworld.domain.lobby.view.response.ActivityResponse
 import mbworld.routes.guard.OptionalAccountGuard
 import mbworld.routes.guard.getAccountData
@@ -48,13 +47,11 @@ class LobbyRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
-                val response = ActivityResponse(
-                    serverContext.subunits.activityFeed.retrieve(15, afterTimestamp).map {
-                        LobbyActivityData(it.text, it.timestamp)
-                    }
-                )
-
                 Fancam.debug { "Request to /activity" }
+
+                val response = ActivityResponse(
+                    serverContext.subunits.activityFeed.retrieve(15, afterTimestamp)
+                )
 
                 call.respond(JSON.encode(response))
             }

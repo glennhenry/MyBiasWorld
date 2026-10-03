@@ -19,28 +19,37 @@ class ActivityFeedTranslator {
     fun translate(activity: Activity): ActivityFeedData {
         return ActivityFeedData(
             timestamp = activity.timestamp,
-            text = definition.get(activity.type).format(
+            format = definition.get(activity.type).format(
                 activity.type, activity.metadata
             )
         )
     }
 
     private val regex = Regex("\\{(.*?)}")
-    private fun String.format(type: String, metadata: Map<String, Any?>): String {
-        // find all formattable text inside {...}
-        val toBeFormatted = regex.findAll(this)
-            .map { it.groupValues[1] }
-            .toList()
 
-        // for each format, find its value on the metadata and replace it
-        var result = this
-        for (stringFormat in toBeFormatted) {
-            val value = metadata[stringFormat]
-            if (value == null) {
-                Fancam.warn { "'$stringFormat' is missing on activity '$type' metadata." }
+    // parse FormatDefinition, update string format, return updated format
+    private fun List<FormatDefinition>.format(
+        type: String, metadata: Map<String, Any?>
+    ): List<FormatDefinition> {
+        val result = mutableListOf<FormatDefinition>()
+
+        for (format in this) {
+            // find all formattable text inside {...}
+            val toBeFormatted = regex.findAll(format.text)
+                .map { it.groupValues[1] }
+                .toList()
+
+            // for each format, find its value on the metadata and replace it
+            var textResult = format.text
+            for (stringFormat in toBeFormatted) {
+                val value = metadata[stringFormat]
+                if (value == null) {
+                    Fancam.warn { "'$stringFormat' is missing on activity '$type' metadata." }
+                }
+                textResult = textResult.replace("{$stringFormat}", value.toString())
             }
-            result = result.replace("{$stringFormat}", value.toString())
         }
+
         return result
     }
 }

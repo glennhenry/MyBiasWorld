@@ -1,6 +1,5 @@
 package mbworld.domain.lobby.activityFeed
 
-import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import mbworld.domain.activity.ActivityReceiver

@@ -1,6 +1,7 @@
 package mbworld.domain.lobby.view.response
 
 import kotlinx.serialization.Serializable
+import mbworld.domain.lobby.activityFeed.ActivityFeedData
 
 /**
  * Response model for the '/activity' route.
@@ -8,17 +9,5 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class ActivityResponse(
-    val activities: List<LobbyActivityData>
-)
-
-/**
- * Data of activity sent to client.
- *
- * @property text The text data of the activity.
- * @property timestamp Epoch millis when the activity happened.
- */
-@Serializable
-data class LobbyActivityData(
-    val text: String,
-    val timestamp: Long
+    val activities: List<ActivityFeedData>
 )

@@ -1,46 +1,236 @@
 [
   {
     "type": "UsersActivity.UserRegistered",
-    "format": "{username} just joined the MyBiasWorld. Welcome!"
+    "format": [
+      {
+        "style": "hyperlink",
+        "link": "{authorProfileUrl}",
+        "text": "{username}"
+      },
+      {
+        "style": "plain",
+        "text": " just joined MyBiasWorld. Welcome!"
+      }
+    ]
   },
   {
     "type": "CafeActivity.Topic.Created",
-    "format": "{authorDisplayName} has created a topic in {sectionName}. Go check it out!"
+    "format": [
+      {
+        "style": "hyperlink",
+        "link": "{authorProfileUrl}",
+        "text": "{authorDisplayName}"
+      },
+      {
+        "style": "plain",
+        "text": " has created a topic in "
+      },
+      {
+        "style": "bold",
+        "text": "{sectionName}"
+      },
+      {
+        "style": "plain",
+        "text": ". Go check out '"
+      },
+      {
+        "style": "hyperlink",
+        "link": "{topicUrl}",
+        "text": "{topicTitle}"
+      },
+      {
+        "style": "plain",
+        "text": "'."
+      }
+    ]
   },
   {
     "type": "CafeActivity.Topic.Deleted",
-    "format": "A topic has been deleted in {sectionName}."
+    "format": [
+      {
+        "style": "plain",
+        "text": "A topic has been deleted in "
+      },
+      {
+        "style": "bold",
+        "text": "{sectionName}"
+      },
+      {
+        "style": "plain",
+        "text": "."
+      }
+    ]
   },
   {
     "type": "CafeActivity.Topic.Liked",
-    "format": "{displayName} has liked the topic '{topicTitle}'."
+    "format": [
+      {
+        "style": "hyperlink",
+        "link": "{profileUrl}",
+        "text": "{displayName}"
+      },
+      {
+        "style": "plain",
+        "text": " has liked the topic '"
+      },
+      {
+        "style": "hyperlink",
+        "link": "{topicUrl}",
+        "text": "{topicTitle}"
+      },
+      {
+        "style": "plain",
+        "text": "'."
+      }
+    ]
   },
   {
     "type": "CafeActivity.Topic.Unliked",
-    "format": "{displayName} has unliked a topic."
+    "format": [
+      {
+        "style": "hyperlink",
+        "link": "{profileUrl}",
+        "text": "{displayName}"
+      },
+      {
+        "style": "plain",
+        "text": " has unliked a topic."
+      }
+    ]
   },
   {
     "type": "CafeActivity.Topic.Liked.Amount",
-    "format": "Topic '{topicTitle}' has reached {amount} likes!"
+    "format": [
+      {
+        "style": "plain",
+        "text": "Topic '"
+      },
+      {
+        "style": "hyperlink",
+        "link": "{topicUrl}",
+        "text": "{topicTitle}"
+      },
+      {
+        "style": "plain",
+        "text": "' has reached "
+      },
+      {
+        "style": "bold",
+        "text": "{amount}"
+      },
+      {
+        "style": "plain",
+        "text": " likes!"
+      }
+    ]
   },
   {
     "type": "CafeActivity.Reply.Added",
-    "format": "{authorDisplayName} replied to the topic '{topicTitle}'."
+    "format": [
+      {
+        "style": "hyperlink",
+        "link": "{authorProfileUrl}",
+        "text": "{authorDisplayName}"
+      },
+      {
+        "style": "plain",
+        "text": " replied to the topic '"
+      },
+      {
+        "style": "hyperlink",
+        "link": "{topicUrl}",
+        "text": "{topicTitle}"
+      },
+      {
+        "style": "plain",
+        "text": "'."
+      }
+    ]
   },
   {
     "type": "CafeActivity.Reply.Added.Amount",
-    "format": "'{topicTitle}' has reached {replyAmount} replies. Must be something interesting!"
+    "format": [
+      {
+        "style": "plain",
+        "text": "'"
+      },
+      {
+        "style": "hyperlink",
+        "link": "{topicUrl}",
+        "text": "{topicTitle}"
+      },
+      {
+        "style": "plain",
+        "text": "' has reached "
+      },
+      {
+        "style": "bold",
+        "text": "{replyAmount}"
+      },
+      {
+        "style": "plain",
+        "text": " replies, must be something interesting!"
+      }
+    ]
   },
   {
     "type": "CafeActivity.Reply.Liked",
-    "format": "{displayName} liked a reply made by {replyAuthorDisplayName}."
+    "format": [
+      {
+        "style": "hyperlink",
+        "link": "{profileUrl}",
+        "text": "{displayName}"
+      },
+      {
+        "style": "plain",
+        "text": " liked a reply made by "
+      },
+      {
+        "style": "hyperlink",
+        "link": "{replyAuthorProfileUrl}",
+        "text": "{replyAuthorDisplayName}"
+      },
+      {
+        "style": "plain",
+        "text": "."
+      }
+    ]
   },
   {
     "type": "CafeActivity.Reply.Unliked",
-    "format": "{displayName} has unliked a reply."
+    "format": [
+      {
+        "style": "hyperlink",
+        "link": "{profileUrl}",
+        "text": "{displayName}"
+      },
+      {
+        "style": "plain",
+        "text": " has unliked a reply."
+      }
+    ]
   },
   {
     "type": "CafeActivity.Comment.Added",
-    "format": "{commentAuthorDisplayName} commented on a reply made by {replyAuthorDisplayName}."
+    "format": [
+      {
+        "style": "hyperlink",
+        "link": "{commentAuthorProfileUrl}",
+        "text": "{commentAuthorDisplayName}"
+      },
+      {
+        "style": "plain",
+        "text": " commented on a reply made by "
+      },
+      {
+        "style": "hyperlink",
+        "link": "{replyAuthorProfileUrl}",
+        "text": "{replyAuthorDisplayName}"
+      },
+      {
+        "style": "plain",
+        "text": "."
+      }
+    ]
   }
 ]

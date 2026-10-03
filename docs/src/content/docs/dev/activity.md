@@ -172,3 +172,67 @@ fun onActivity(...) {
 - For example, the `TopicSubunit` is still called manually because it needs a `Topic` object from the client request, unlike `UserStatsSubunit` or `LevelSubunit` that only needs a simple call to be aware of the user's action.
 - It's not impossible to add the entire `Topic` object into the activity's metadata. This can be done if many subunits need the whole topic object rather than only few fields.
 - Most importantly, `newTopic` correspond to creating the topic itself. If `TopicSubunit` utilized the event system, it's possible that it does not become the first subunit to be called and `newTopic` failed when other subunits has been called.
+
+### Formatting
+
+The translation file can feature a formatting system for text in order to display styles like hyperlink, bold, colored, or italic texts. This is useful for those output that shows directly for users such as the activity feed output. Other output system that doesn't need formatting can simply ignore it.
+
+The formatting system should be made client-centered. In other word, while the strings file contains the format details, the server should only format the strings with data. The client will instead parse the format and create the corresponding styles in HTML.
+
+The format includes a `type`, which is an identifier to which type of activity does the following string entry belongs to. On the other hand, `format` will tell the detail of the format. The format is described as a list of styles-run.
+
+As of now, the format can be either plain, hyperlink, bold, italic, underline, or colored text. In JSON format:
+
+```json
+{
+  "type": "UsersActivity.UserRegistered",
+  "format": [
+    {
+      "style": "hyperlink",
+      "link": "/profile/@{username}",
+      "text": "{username}"
+    },
+    {
+      "style": "plain",
+      "text": " just joined MyBiasWorld. Welcome!"
+    }
+  ]
+}
+```
+
+- The server will parse any formattable part like `{username}` or `/profile/@{username}` and replace it with the username data.
+- The server returns a simpler format details (no type needed) and an already formatted text.
+- The client will parse the format details and create a hyperlink text like `[username](/profile/username) just joined MyBiasWorld. Welcome!`
+
+All format details:
+
+```json
+[
+  {
+    "style": "plain",
+    "text": "Plain text..."
+  },
+  {
+    "style": "hyperlink",
+    "link": "/link/here",
+    "text": "Display text of the link..."
+  },
+  {
+    "style": "bold",
+    "text": "Bolded text..."
+  },
+  {
+    "style": "italic",
+    "text": "Italic text..."
+  },
+  {
+    "style": "underline",
+    "text": "Underlined text..."
+  },
+  {
+    "style": "color",
+    "color": "#FFFF00",
+    "text": "Colored yellow text..."
+  }
+]
+```

@@ -49,6 +49,8 @@ class LobbyRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 Fancam.debug { "Request to /activity" }
 
+
+
                 val response = ActivityResponse(
                     serverContext.subunits.activityFeed.retrieve(15, afterTimestamp)
                 )

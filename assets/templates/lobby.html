@@ -67,13 +67,13 @@
       background-color: #eff7ff;
     }
 
-    .activity-item-span {
-      display: flex;
-      gap: 4px;
-    }
-
     .activity-timestamp {
       font-weight: bold;
+    }
+
+    .activity-text-link {
+      font-weight: bold;
+      color: #975396;
     }
   </style>
 </head>
@@ -161,10 +161,9 @@
 
       for (const activity of data.activities) {
         const item = $("<div></div>").addClass("activity-feed-item")
-        const span = $("<span></span>").addClass("activity-item-span")
         const activityTimestamp = $("<p></p>").addClass("activity-timestamp").text(formatTime(activity.timestamp))
-        const activityText = $("<p></p>").addClass("activity-text").text(activity.text)
-        activityFeed.append(item.append(span.append(activityTimestamp).append(activityText)))
+        const activityText = parseStyle(activity.format)
+        activityFeed.append(item.append(activityTimestamp).append(activityText))
         lastActivityTimestamp = Math.max(lastActivityTimestamp, activity.timestamp)
       }
 
@@ -178,6 +177,34 @@
       const hours = String(date.getHours()).padStart(2, "0");
       const minutes = String(date.getMinutes()).padStart(2, "0");
       return `${hours}:${minutes}`
+    }
+
+    function parseStyle(formats) {
+      const result = $("<p></p>")
+      for (const format of formats) {
+        result.append(parseRun(format))
+      }
+      return result
+    }
+
+    function parseRun(run) {
+      switch (run.style) {
+        case "plain":
+          return run.text
+        case "hyperlink":
+          return $("<a></a>").attr("href", run.link).addClass("activity-text-link").text(run.text)
+        case "bold":
+          return $("<strong></strong>").text(run.text)
+        case "italic":
+          return $("<em></em>").text(run.text)
+        case "underline":
+          return $("<u></u>").text(run.text)
+        case "color":
+          return $("<span></span>").css("color", run.color).text(run.text)
+        default:
+          console.warn("Unknown style: ", run.style)
+          break;
+      }
     }
   </script>
 </body>

@@ -80,6 +80,7 @@ class AuthApiRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "userId" to userId,
                             "username" to data.username,
                             "email" to data.email,
+                            "authorProfileUrl" to "/profile/@${data.username}"
                         )
                     )
                 )

@@ -196,6 +196,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         return@handle
                     }
 
+                val topicUrl = "/cafe/${Sections[section]}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,
@@ -205,7 +206,10 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "topicId" to id,
                             "authorId" to acc.userId,
                             "authorDisplayName" to acc.displayName,
-                            "sectionName" to Sections[section]
+                            "authorProfileUrl" to "/profile/@${acc.username}",
+                            "sectionName" to Sections[section],
+                            "topicTitle" to topic.title,
+                            "topicUrl" to topicUrl
                         )
                     )
                 )
@@ -415,7 +419,9 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "replyId" to replyId,
                             "authorId" to account.userId,
                             "authorDisplayName" to account.displayName,
+                            "authorProfileUrl" to "/profile/@${account.username}",
                             "topicTitle" to title,
+                            "topicUrl" to "/cafe/$section/$id/$title",
                             "replyAmount" to replyAmountNow
                         )
                     )
@@ -447,11 +453,10 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
-                val replyAuthorDisplayName = serverContext.subunits
+                val replyAuthorSummary = serverContext.subunits
                     .profile
                     .getUserSummary(reply.authorId)
                     .okOrNull()
-                    ?.displayName ?: "an unknown user"
 
                 val commentPayload = JSON.decode<CommentPayload>(call.receiveText())
                 if (commentPayload.comment.length < 10) {
@@ -489,7 +494,9 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "commentId" to commentId,
                             "authorId" to account.userId,
                             "commentAuthorDisplayName" to account.displayName,
-                            "replyAuthorDisplayName" to replyAuthorDisplayName
+                            "commentAuthorProfileUrl" to "/profile/@${account.username}",
+                            "replyAuthorDisplayName" to replyAuthorSummary?.displayName,
+                            "replyAuthorProfileUrl" to "/profile/@${replyAuthorSummary?.username}"
                         )
                     )
                 )
@@ -562,7 +569,9 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "topicId" to topicId,
                             "authorId" to userId,
                             "displayName" to account.displayName,
+                            "profileUrl" to "/profile/@${account.username}",
                             "topicTitle" to title,
+                            "topicUrl" to "/cafe/$section/$id/$title",
                             "amount" to likesNow
                         )
                     )
@@ -614,7 +623,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         metadata = mapOf(
                             "topicId" to topicId,
                             "authorId" to userId,
-                            "displayName" to account.displayName
+                            "displayName" to account.displayName,
+                            "profileUrl" to "/profile/@${account.username}"
                         )
                     )
                 )
@@ -638,11 +648,10 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
-                val replyAuthorDisplayName = serverContext.subunits
+                val replyAuthorSummary = serverContext.subunits
                     .profile
                     .getUserSummary(reply.authorId)
                     .okOrNull()
-                    ?.displayName ?: "an unknown user"
 
                 val account = call.attributes.getUserAccount()
                 val userId = account.userId
@@ -684,7 +693,9 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             "replyId" to replyId,
                             "authorId" to userId,
                             "displayName" to account.displayName,
-                            "replyAuthorDisplayName" to replyAuthorDisplayName
+                            "profileUrl" to "/profile/@${account.username}",
+                            "replyAuthorDisplayName" to replyAuthorSummary?.displayName,
+                            "replyAuthorProfileUrl" to "/profile/@${replyAuthorSummary?.username}"
                         )
                     )
                 )
@@ -728,7 +739,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         metadata = mapOf(
                             "replyId" to replyId,
                             "authorId" to userId,
-                            "displayName" to account.displayName
+                            "displayName" to account.displayName,
+                            "profileUrl" to "/profile/@${account.username}"
                         )
                     )
                 )

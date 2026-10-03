@@ -7,6 +7,7 @@ import encore.backstage.command.types.CommandResult
 import encore.creation.UserCreationSubunit
 import encore.fancam.Fancam
 import encore.time.TimeCenter
+import encore.utils.identifier.shortUuid
 import encore.utils.types.Report
 import encore.utils.types.okOrThrow
 import mbworld.context.ServerContext
@@ -17,12 +18,14 @@ import mbworld.domain.cafe.CafeActivity
 import mbworld.domain.cafe.Sections
 import mbworld.domain.cafe.likes.Likes
 import mbworld.domain.cafe.reply.Reply
+import mbworld.domain.cafe.toUrlSlug
 import mbworld.domain.cafe.topic.Topic
 import mbworld.domain.profile.model.Profile
 import mbworld.domain.profile.subunits.MongoProfileRepository
 import mbworld.mongo.RuntimeMongoCollections
 import mbworld.mongo.collection.UserAccount
 import mbworld.mongo.collection.UserId
+import kotlin.collections.mapOf
 import kotlin.random.Random
 
 /**
@@ -154,6 +157,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             "userId" to acc.userId,
                             "username" to acc.username,
                             "email" to acc.email,
+                            "authorProfileUrl" to "/profile/@${acc.username}"
                         )
                     )
                 )
@@ -161,6 +165,8 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
 
             // 5 topic posts
             addedTopics.shuffled().take(5).forEach { topic ->
+                val topicUrl =
+                    "/cafe/${Sections[topic.sectionId]}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,
@@ -170,7 +176,10 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             "topicId" to topic.topicId,
                             "authorId" to topic.authorId,
                             "authorDisplayName" to accounts[topic.authorId]!!.displayName,
-                            "sectionName" to Sections[topic.sectionId]
+                            "authorProfileUrl" to "/profile/@${accounts[topic.authorId]!!.username}",
+                            "sectionName" to Sections[topic.sectionId],
+                            "topicTitle" to topic.title,
+                            "topicUrl" to topicUrl
                         )
                     )
                 )
@@ -178,10 +187,12 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
 
             // 5 replies
             addedReplies.shuffled().take(5).forEach { reply ->
-                val topicTitle = serverContext.subunits.topic.getTopic(reply.topicId)
-                    .okOrThrow()?.title
+                val topic = serverContext.subunits.topic.getTopic(reply.topicId)
+                    .okOrThrow()!!
                 val replyAmount = serverContext.subunits.reply.getReplyCount(reply.topicId)
-                    .okOrThrow()
+                    .okOrThrow()!!
+                val topicUrl =
+                    "/cafe/${Sections[topic.sectionId]}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,
@@ -192,7 +203,9 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             "replyId" to reply.replyId,
                             "authorId" to reply.authorId,
                             "authorDisplayName" to accounts[reply.authorId]!!.displayName,
-                            "topicTitle" to topicTitle,
+                            "authorProfileUrl" to "/profile/@${accounts[reply.authorId]!!.username}",
+                            "topicTitle" to topic.title,
+                            "topicUrl" to topicUrl,
                             "replyAmount" to replyAmount
                         )
                     )
@@ -213,7 +226,9 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                                 "commentId" to it.commentId,
                                 "authorId" to it.authorId,
                                 "commentAuthorDisplayName" to accounts[it.authorId]!!.displayName,
-                                "replyAuthorDisplayName" to accounts[reply.authorId]!!.displayName
+                                "commentAuthorProfileUrl" to "/profile/@${accounts[it.authorId]!!.username}",
+                                "replyAuthorDisplayName" to accounts[reply.authorId]!!.displayName,
+                                "replyAuthorProfileUrl" to "/profile/@${accounts[reply.authorId]!!.username}"
                             )
                         )
                     )
@@ -224,6 +239,8 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
             addedTopicLikes.shuffled().take(5).forEach { likes ->
                 val topic = serverContext.subunits.topic.getTopic(likes.postId)
                     .okOrThrow()!!
+                val topicUrl =
+                    "/cafe/${Sections[topic.sectionId]}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,
@@ -233,7 +250,9 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             "topicId" to likes.postId,
                             "authorId" to likes.userId,
                             "displayName" to accounts[likes.userId]!!.displayName,
+                            "profileUrl" to "/profile/@${accounts[likes.userId]!!.username}",
                             "topicTitle" to topic.title,
+                            "topicUrl" to topicUrl,
                             "amount" to topic.likes
                         )
                     )

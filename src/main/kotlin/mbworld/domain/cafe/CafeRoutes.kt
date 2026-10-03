@@ -196,7 +196,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         return@handle
                     }
 
-                val topicUrl = "/cafe/${Sections[section]}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
+                val topicUrl = "/cafe/$section/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,

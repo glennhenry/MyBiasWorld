@@ -166,7 +166,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
             // 5 topic posts
             addedTopics.shuffled().take(5).forEach { topic ->
                 val topicUrl =
-                    "/cafe/${Sections[topic.sectionId]}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
+                    "/cafe/${topic.sectionId}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,
@@ -192,7 +192,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                 val replyAmount = serverContext.subunits.reply.getReplyCount(reply.topicId)
                     .okOrThrow()!!
                 val topicUrl =
-                    "/cafe/${Sections[topic.sectionId]}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
+                    "/cafe/${topic.sectionId}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,
@@ -240,7 +240,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                 val topic = serverContext.subunits.topic.getTopic(likes.postId)
                     .okOrThrow()!!
                 val topicUrl =
-                    "/cafe/${Sections[topic.sectionId]}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
+                    "/cafe/${topic.sectionId}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,

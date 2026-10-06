@@ -3,7 +3,7 @@
   --site-width: 1080px;
   --sidebar-width: 180px;
   --content-width: 700px;
-  --topbar-height: 50px;
+  --topbar-height: 80px;
   --content-min-height: 500px;
 
   /* Font size */
@@ -100,41 +100,6 @@ body {
   height: max-content;
   display: flex;
   flex-direction: column;
-}
-
-.topbar {
-  width: calc(var(--site-width) - var(--sidebar-width));
-  height: var(--topbar-height);
-  position: sticky;
-  top: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  border-bottom: 1px solid var(--border-color);
-  z-index: var(--topbar-zindex);
-}
-
-.menu {
-  display: flex;
-  flex: 1;
-  justify-content: end;
-  background: linear-gradient(
-    to bottom,
-    var(--menu-start-bg-color),
-    var(--menu-end-bg-color)
-  );
-}
-
-.account-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: end;
-  margin-right: 8px;
-}
-
-.account-username {
-  text-decoration: underline;
 }
 
 .content-container {

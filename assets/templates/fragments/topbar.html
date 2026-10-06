@@ -1,18 +1,137 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
+<head th:fragment="topbar-styles">
+  <style>
+    .topbar {
+      width: calc(var(--site-width) - var(--sidebar-width));
+      height: var(--topbar-height);
+      position: sticky;
+      top: 0;
+      overflow: hidden;
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      z-index: var(--topbar-zindex);
+      background-color: white;
+      font-size: 14px;
+    }
+
+    .topbar-grid {
+      display: grid;
+      grid-template-columns: 700px 200px;
+      grid-template-rows: 45px 35px;
+      grid-template-areas:
+        "links   account"
+        "notices search ";
+      flex: 1;
+    }
+
+    .links {
+      grid-area: links;
+      padding: 0px 8px;
+    }
+
+    .top-links {
+      display: flex;
+      gap: 50px;
+    }
+
+    .bottom-links {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .account-info {
+      grid-area: account;
+      display: flex;
+      padding: 0px 8px;
+      justify-content: end;
+      text-align: end;
+    }
+
+    .account-info-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notices {
+      grid-area: notices;
+      justify-content: end;
+      display: flex;
+      padding: 0px 8px;
+      margin-right: -32px;
+      align-items: center;
+    }
+
+    .notices-link {
+      display: flex;
+      gap: 40px;
+      margin-right: 40px;
+    }
+
+    .search {
+      grid-area: search;
+      display: flex;
+      gap: 4px;
+      justify-content: end;
+      padding: 0px 8px;
+      align-items: center;
+    }
+
+    .search-input {
+      all: unset;
+      width: 120px;
+      height: 25px;
+      border: 1px solid #ccc;
+      padding-left: 4px;
+      font-size: 12px;
+    }
+
+    .search-action {
+      background-color: #dcdcdc;
+      padding: 5px;
+    }
+  </style>
+</head>
+
 <body>
   <header class="topbar" th:fragment="topbar (account)">
-    <div class="menu">
-      <div class="account-info" th:if="${account != null}">
-        <span>
-          Hello, <span class="account-username" th:text="${account.username}"></span>
-        </span>
-        <a class="link" href="/logout">Logout</a>
+    <div class="topbar-grid">
+      <div class="links">
+        <nav class="top-links">
+          <a class="link" href="javascript:void(0)">[L] Lobby</a>
+          <a class="link" href="javascript:void(0)">[C] Cafe V</a>
+          <a class="link" href="javascript:void(0)">[W] Wiki V</a>
+          <a class="link" href="javascript:void(0)">[G] Games V</a>
+          <a class="link" href="javascript:void(0)">[S] Tools & Services V</a>
+        </nav>
+        <nav class="bottom-links">
+          <a class="link" href="javascript:void(0)">[S] Shop</a>
+          <a class="link" href="javascript:void(0)">[B] Board</a>
+        </nav>
       </div>
-      <div class="account-info" th:if="${account == null}">
-        <a class="link" href="/register">Register</a>
-        <a class="link" href="/login">Login</a>
+      <div class="account-info">
+        <div class="account-info-col" th:if="${account != null}">
+          <p>Hello, <u th:text="${account.username}"></u></p>
+          <a class="link" href="/logout">Logout</a>
+        </div>
+        <div class="account-info-col" th:if="${account == null}">
+          <a class="link" href="/register">Register</a>
+          <a class="link" href="/login">Login</a>
+        </div>
+      </div>
+      <div class="notices">
+        <div class="notices-link">
+          <a class="link" href="javascript:void(0)">Help</a>
+        </div>
+        <p class="server-time">Time: 12:10</p>
+      </div>
+      <div class="search">
+        <input class="search-input" type="text" placeholder="Search">
+        <a class="search-action" href="javascript:void(0)">
+          <img src="icons/search.png" width="16" alt="Search">
+        </a>
       </div>
     </div>
   </header>

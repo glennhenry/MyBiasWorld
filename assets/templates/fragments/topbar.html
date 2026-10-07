@@ -42,6 +42,18 @@
       gap: 40px;
     }
 
+    .icon-link {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      color: #2d72ad;
+      text-decoration: underline;
+    }
+
+    .icon-link:hover {
+      text-decoration-thickness: 2px;
+    }
+
     .account-info {
       grid-area: account;
       display: flex;
@@ -68,6 +80,12 @@
       display: flex;
       gap: 40px;
       margin-right: 40px;
+    }
+
+    .server-time-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .search {
@@ -100,15 +118,36 @@
     <div class="topbar-grid">
       <div class="links">
         <nav class="top-links">
-          <a class="link" href="javascript:void(0)">[L] Lobby</a>
-          <a class="link" href="javascript:void(0)">[C] Cafe V</a>
-          <a class="link" href="javascript:void(0)">[W] Wiki V</a>
-          <a class="link" href="javascript:void(0)">[G] Games V</a>
-          <a class="link" href="javascript:void(0)">[S] Tools & Services V</a>
+          <a class="icon-link" href="javascript:void(0)">
+            <img src="/icons/house.png" width="16px" alt="House">
+            <p>Lobby</p>
+          </a>
+          <a class="icon-link" href="javascript:void(0)">
+            <img src="/icons/coffee.png" width="20px" alt="Coffee">
+            <p>Cafe</p>
+          </a>
+          <a class="icon-link" href="javascript:void(0)">
+            <img src="/icons/book.png" width="20px" alt="Book">
+            <p>Wiki</p>
+          </a>
+          <a class="icon-link" href="javascript:void(0)">
+            <img style="margin-right:-4px;" src="/icons/dice.png" width="24px" alt="Dice">
+            <p>Games</p>
+          </a>
+          <a class="icon-link" href="javascript:void(0)">
+            <img src="/icons/tool.png" width="20px" alt="Tools">
+            <p>Tools & Services</p>
+          </a>
         </nav>
         <nav class="bottom-links">
-          <a class="link" href="javascript:void(0)">[S] Shop</a>
-          <a class="link" href="javascript:void(0)">[B] Board</a>
+          <a class="icon-link" href="javascript:void(0)">
+            <img src="/icons/shop.png" width="20px" alt="Shop">
+            <p>Shop</p>
+          </a>
+          <a class="icon-link" href="javascript:void(0)">
+            <img src="/icons/board.png" width="20px" alt="Board">
+            <p>Board</p>
+          </a>
         </nav>
       </div>
       <div class="account-info">
@@ -125,7 +164,10 @@
         <div class="notices-link">
           <a class="link" href="javascript:void(0)">Help</a>
         </div>
-        <p class="server-time">Time: 12:10</p>
+        <div class="server-time-row">
+          <p class="server-time">Time: 12:10</p>
+          <img src="/icons/clock-black.png" width="22px">
+        </div>
       </div>
       <div class="search">
         <input class="search-input" type="text" placeholder="Search">

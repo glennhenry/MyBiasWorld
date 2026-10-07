@@ -244,3 +244,7 @@ body {
 .space-y-md {
   height: 16px;
 }
+
+.hidden {
+  display: none;
+}

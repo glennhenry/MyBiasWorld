@@ -8,7 +8,6 @@
       height: var(--topbar-height);
       position: sticky;
       top: 0;
-      overflow: hidden;
       display: flex;
       border-bottom: 1px solid var(--border-color);
       z-index: var(--topbar-zindex);
@@ -36,12 +35,6 @@
       gap: 50px;
     }
 
-    .bottom-links {
-      display: flex;
-      align-items: center;
-      gap: 40px;
-    }
-
     .icon-link {
       display: flex;
       align-items: center;
@@ -52,6 +45,50 @@
 
     .icon-link:hover {
       text-decoration-thickness: 2px;
+    }
+
+    .down-arrow {
+      margin-left: 2px;
+    }
+
+    .dropdown-link {
+      position: relative;
+      display: flex;
+    }
+
+    .dropdown-link-items {
+      min-width: max-content;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      border: 1px solid #ccc;
+      background-color: #ffffff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+
+    .dropdown-link:hover .dropdown-link-items {
+      display: flex;
+    }
+
+    .dropdown-link-item {
+      display: flex;
+      align-items: center;
+      padding: 2px 6px;
+      white-space: nowrap;
+    }
+
+    .dropdown-link-item:not(:last-child) {
+      border-bottom: 1px solid #ccc;
+    }
+
+    .bottom-links {
+      display: flex;
+      align-items: center;
+      gap: 40px;
     }
 
     .account-info {
@@ -122,22 +159,70 @@
             <img src="/icons/house.png" width="16px" alt="House">
             <p>Lobby</p>
           </a>
-          <a class="icon-link" href="javascript:void(0)">
-            <img src="/icons/coffee.png" width="20px" alt="Coffee">
-            <p>Cafe</p>
-          </a>
-          <a class="icon-link" href="javascript:void(0)">
-            <img src="/icons/book.png" width="20px" alt="Book">
-            <p>Wiki</p>
-          </a>
-          <a class="icon-link" href="javascript:void(0)">
-            <img style="margin-right:-4px;" src="/icons/dice.png" width="24px" alt="Dice">
-            <p>Games</p>
-          </a>
-          <a class="icon-link" href="javascript:void(0)">
-            <img src="/icons/tool.png" width="20px" alt="Tools">
-            <p>Tools & Services</p>
-          </a>
+          <div class="dropdown-link" href="javascript:void(0)">
+            <a class="icon-link" href="javascript:void(0)">
+              <img src="/icons/coffee.png" width="20px" alt="Coffee">
+              <p>Cafe</p>
+              <img class="down-arrow" src="/icons/down-arrow.png" width="8px">
+            </a>
+            <div class="dropdown-link-items hidden">
+              <a class="dropdown-link-item icon-link" href="javascript:void(0)">
+                <img src="/icons/calculator.png" width="20px" alt="Calculator">
+                <p>Icon link placeholder</p>
+              </a>
+              <a class="dropdown-link-item link" href="javascript:void(0)">
+                <p>Link placeholder</p>
+              </a>
+            </div>
+          </div>
+          <div class="dropdown-link" href="javascript:void(0)">
+            <a class="icon-link" href="javascript:void(0)">
+              <img src="/icons/book.png" width="20px" alt="Book">
+              <p>Wiki</p>
+              <img class="down-arrow" src="/icons/down-arrow.png" width="8px">
+            </a>
+            <div class="dropdown-link-items hidden">
+              <a class="dropdown-link-item icon-link" href="javascript:void(0)">
+                <img src="/icons/calculator.png" width="20px" alt="Calculator">
+                <p>Icon link placeholder</p>
+              </a>
+              <a class="dropdown-link-item link" href="javascript:void(0)">
+                <p>Link placeholder</p>
+              </a>
+            </div>
+          </div>
+          <div class="dropdown-link" href="javascript:void(0)">
+            <a class="icon-link" href="javascript:void(0)">
+              <img style="margin-right:-4px;" src="/icons/dice.png" width="24px" alt="Dice">
+              <p>Games</p>
+              <img class="down-arrow" src="/icons/down-arrow.png" width="8px">
+            </a>
+            <div class="dropdown-link-items hidden">
+              <a class="dropdown-link-item icon-link" href="javascript:void(0)">
+                <img src="/icons/calculator.png" width="20px" alt="Calculator">
+                <p>Icon link placeholder</p>
+              </a>
+              <a class="dropdown-link-item link" href="javascript:void(0)">
+                <p>Link placeholder</p>
+              </a>
+            </div>
+          </div>
+          <div class="dropdown-link" href="javascript:void(0)">
+            <a class="icon-link" href="javascript:void(0)">
+              <img src="/icons/tool.png" width="20px" alt="Tools">
+              <p>Tools & Services</p>
+              <img class="down-arrow" src="/icons/down-arrow.png" width="8px">
+            </a>
+            <div class="dropdown-link-items hidden">
+              <a class="dropdown-link-item icon-link" href="javascript:void(0)">
+                <img src="/icons/calculator.png" width="20px" alt="Calculator">
+                <p>Icon link placeholder</p>
+              </a>
+              <a class="dropdown-link-item link" href="javascript:void(0)">
+                <p>Link placeholder</p>
+              </a>
+            </div>
+          </div>
         </nav>
         <nav class="bottom-links">
           <a class="icon-link" href="javascript:void(0)">
@@ -177,6 +262,11 @@
       </div>
     </div>
   </header>
+  <script th:fragment="topbar-scripts">
+    $(document).ready(function () {
+
+    })
+  </script>
 </body>
 
 </html>

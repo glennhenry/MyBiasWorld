@@ -6,12 +6,11 @@
     .topbar {
       width: var(--site-width);
       height: var(--topbar-height);
-      position: sticky;
       top: 0;
       display: flex;
       border-bottom: 1px solid var(--border-color);
       z-index: var(--topbar-zindex);
-      background-color: white;
+      background: linear-gradient(to bottom, white, var(--site-bg-color));
       font-size: 14px;
     }
 
@@ -40,11 +39,10 @@
       align-items: center;
       gap: 2px;
       color: #2d72ad;
-      text-decoration: underline;
     }
 
-    .icon-link:hover {
-      text-decoration-thickness: 2px;
+    .icon-link:hover p {
+      text-decoration: underline;
     }
 
     .down-arrow {
@@ -78,6 +76,7 @@
       display: flex;
       align-items: center;
       padding: 2px 6px;
+      gap: 2px;
       white-space: nowrap;
     }
 
@@ -138,6 +137,7 @@
       all: unset;
       width: 120px;
       height: 25px;
+      background-color: white;
       border: 1px solid #ccc;
       padding-left: 4px;
       font-size: 12px;
@@ -156,27 +156,73 @@
     <div class="topbar-grid">
       <div class="links">
         <nav class="top-links">
-          <a class="icon-link" href="javascript:void(0)">
+          <a class="icon-link" href="/">
             <img src="/icons/house.png" width="16px" alt="House">
             <p>Lobby</p>
           </a>
-          <div class="dropdown-link" href="javascript:void(0)">
-            <a class="icon-link" href="javascript:void(0)">
+          <div class="dropdown-link">
+            <a class="icon-link" href="/cafe">
               <img src="/icons/coffee.png" width="20px" alt="Coffee">
               <p>Cafe</p>
               <img class="down-arrow" src="/icons/down-arrow.png" width="8px">
             </a>
             <div class="dropdown-link-items hidden">
-              <a class="dropdown-link-item icon-link" href="javascript:void(0)">
-                <img src="/icons/calculator.png" width="20px" alt="Calculator">
-                <p>Icon link placeholder</p>
+              <a class="dropdown-link-item icon-link" href="/cafe/kep1er">
+                <img src="/icons/kep1er.png" width="20px" alt="Kep1er logo">
+                <p>Kep1er Discussion</p>
               </a>
-              <a class="dropdown-link-item link" href="javascript:void(0)">
-                <p>Link placeholder</p>
+              <a class="dropdown-link-item icon-link" href="/cafe/kpop">
+                🍿
+                <p>K-pop Discussion</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/yujin">
+                🐰
+                <p>Yujin's Space</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/xiaoting">
+                <!-- No deer face emoji so we use image -->
+                <img src="/icons/deer.png" width="16px" style="margin:2px;" alt="Deer">
+                <p>Xiaoting's Space</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/mashiro">
+                🦝
+                <p>Mashiro's Space</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/chaehyun">
+                🐯
+                <p>Chaehyun's Space</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/dayeon">
+                🐿️
+                <p>Dayeon's Space</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/hikaru">
+                🐶
+                <p>Hikaru's Space</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/hiyyih">
+                🦁
+                <p>Hiyyih's Space</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/youngeun">
+                🦊
+                <p>Youngeun's Space</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/yeseo">
+                🐰
+                <p>Yeseo's Space</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/media">
+                <img src="/icons/tv.png" width="20px" alt="TV">
+                <p>Media</p>
+              </a>
+              <a class="dropdown-link-item icon-link" href="/cafe/games">
+                <img src="/icons/controller.png" width="24px" style="margin:-2px;" alt="Controller">
+                <p>Games</p>
               </a>
             </div>
           </div>
-          <div class="dropdown-link" href="javascript:void(0)">
+          <div class="dropdown-link">
             <a class="icon-link" href="javascript:void(0)">
               <img src="/icons/book.png" width="20px" alt="Book">
               <p>Wiki</p>
@@ -192,7 +238,7 @@
               </a>
             </div>
           </div>
-          <div class="dropdown-link" href="javascript:void(0)">
+          <div class="dropdown-link">
             <a class="icon-link" href="javascript:void(0)">
               <img style="margin-right:-4px;" src="/icons/dice.png" width="24px" alt="Dice">
               <p>Games</p>
@@ -208,7 +254,7 @@
               </a>
             </div>
           </div>
-          <div class="dropdown-link" href="javascript:void(0)">
+          <div class="dropdown-link">
             <a class="icon-link" href="javascript:void(0)">
               <img src="/icons/tool.png" width="20px" alt="Tools">
               <p>Tools & Services</p>
@@ -252,13 +298,13 @@
         </div>
         <div class="server-time-row">
           <p class="server-time">Time: 12:10</p>
-          <img src="/icons/clock-black.png" width="22px">
+          <img src="/icons/clock-black.png" width="22px" alt="Clock">
         </div>
       </div>
       <div class="search">
         <input class="search-input" type="text" placeholder="Search">
         <a class="search-action" href="javascript:void(0)">
-          <img src="icons/search.png" width="16" alt="Search">
+          <img src="/icons/search.png" width="16" alt="Search">
         </a>
       </div>
     </div>

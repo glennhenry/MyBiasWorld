@@ -4,7 +4,7 @@
 <head th:fragment="topbar-styles">
   <style>
     .topbar {
-      width: calc(var(--site-width) - var(--sidebar-width));
+      width: var(--site-width);
       height: var(--topbar-height);
       position: sticky;
       top: 0;
@@ -17,7 +17,7 @@
 
     .topbar-grid {
       display: grid;
-      grid-template-columns: 700px 200px;
+      grid-template-columns: 600px 200px;
       grid-template-rows: 45px 35px;
       grid-template-areas:
         "links   account"
@@ -32,7 +32,7 @@
 
     .top-links {
       display: flex;
-      gap: 50px;
+      gap: 25px;
     }
 
     .icon-link {
@@ -110,13 +110,12 @@
       justify-content: end;
       display: flex;
       padding: 0px 8px;
-      margin-right: -32px;
       align-items: center;
     }
 
     .notices-link {
       display: flex;
-      gap: 40px;
+      gap: 20px;
       margin-right: 40px;
     }
 
@@ -153,6 +152,7 @@
 
 <body>
   <header class="topbar" th:fragment="topbar (account)">
+    <div th:replace="~{fragments/logo :: logo}"></div>
     <div class="topbar-grid">
       <div class="links">
         <nav class="top-links">

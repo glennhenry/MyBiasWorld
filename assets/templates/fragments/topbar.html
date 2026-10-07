@@ -102,6 +102,7 @@
     .account-info-col {
       display: flex;
       flex-direction: column;
+      align-items: flex-end;
     }
 
     .notices {
@@ -236,7 +237,7 @@
         </nav>
       </div>
       <div class="account-info">
-        <div class="account-info-col" th:if="${account != null}">
+        <div th:if="${account != null}">
           <p>Hello, <u th:text="${account.username}"></u></p>
           <a class="link" href="/logout">Logout</a>
         </div>
@@ -262,11 +263,6 @@
       </div>
     </div>
   </header>
-  <script th:fragment="topbar-scripts">
-    $(document).ready(function () {
-
-    })
-  </script>
 </body>
 
 </html>

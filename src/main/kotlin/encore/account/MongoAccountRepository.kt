@@ -30,7 +30,7 @@ val FieldLastActive = UserAccount::lastActiveAt.name
  * [AccountRepository] implementation using MongoDB.
  */
 class MongoAccountRepository(val accountCollection: MongoCollection<UserAccount>) : AccountRepository {
-    override suspend fun getAccountByUserId(userId: String): Result<UserAccount?> {
+    override suspend fun getAccountByUserId(userId: UserId): Result<UserAccount> {
         return runMongoCatching {
             accountCollection
                 .find(Filters.eq(FieldUserId, userId))
@@ -38,7 +38,7 @@ class MongoAccountRepository(val accountCollection: MongoCollection<UserAccount>
         }
     }
 
-    override suspend fun getAccountByUsername(username: String): Result<UserAccount?> {
+    override suspend fun getAccountByUsername(username: String): Result<UserAccount> {
         return runMongoCatching {
             accountCollection
                 .find(Filters.eq(FieldUsername, username))

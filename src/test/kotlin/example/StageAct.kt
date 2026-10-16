@@ -6,6 +6,7 @@ import encore.acts.choreo.Choreography
 import encore.acts.choreo.PerformMode
 import encore.acts.template.runTimer
 import encore.fancam.Fancam
+import encore.time.TimeCenter
 import encore.time.source.TimeSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.NonCancellable
@@ -24,18 +25,18 @@ class ExampleStageAct {
      * Simple example of testing a persistent act
      *  > Construct building for some amount of time
      *      > during onStart, progress is saved
-     *  > User disconnects, act is cancelled
-     *  > User reconnects, user check for saved progress manually
+     *  > Player disconnects, act is cancelled
+     *  > Player reconnects, user check for saved progress manually
      *      > If there is progress saved, that means act is not finished and must be finished
      *      > Read progress, produce updated timing data
      *  > Resume act with the updated data
-     *      > Turns out that the act is already finished whilst user is offline
+     *      > Turns out that the act is already finished whilst player is offline
      *      > Act will execute directly and finish the building construction
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `example running building construction act`() = runTest {
-        val pid = "userABC"
+        val pid = "playerABC"
         val bid = "outpost"
 
         val time = virtualTimeSource(this)
@@ -54,7 +55,7 @@ class ExampleStageAct {
             scope = scope
         )
 
-        // 3 minutes pass, user disconnects and act is stopped
+        // 3 minutes pass, player disconnects and act is stopped
         director.runTimer(3.minutes, scope) {
             assertTrue(director.stop(id))
             advanceUntilIdle()
@@ -65,7 +66,7 @@ class ExampleStageAct {
             assertNull(repo.constructedBuildings.find { it == bid })
         }
 
-        // 8 minutes after, user comebacks when act should be finished
+        // 8 minutes after, player comebacks when act should be finished
         // time is continuous because building construction is supposed to be active
         advanceTimeBy(8.minutes)
 
@@ -119,13 +120,26 @@ class BuildingConstructionAct(
     private val repo: BuildingRepo,
     private val timeSource: TimeSource
 ) : StageAct<BuildingConstructionConcept> {
-    override val enableLogging: Boolean = true
+    override val logScheduling: Boolean = true
 
     override fun choreography(concept: BuildingConstructionConcept): Choreography<BuildingConstructionConcept> {
         // building construction only perform once when build duration finish
         return BasicChoreography(
             initialDelay = concept.buildDuration,
             performMode = PerformMode.Once
+        )
+    }
+
+    override fun metadata(concept: BuildingConstructionConcept): Map<String, String> {
+        return mapOf(
+            "userId" to concept.userId,
+            "buildingId" to concept.buildingId,
+            "duration" to TimeCenter.formatToDurationString(concept.buildDuration),
+            "describe" to "Building '${concept.buildingId}' construction for userId '${concept.userId}' buildTime: ${
+                TimeCenter.formatToDurationString(
+                    concept.buildDuration
+                )
+            }"
         )
     }
 

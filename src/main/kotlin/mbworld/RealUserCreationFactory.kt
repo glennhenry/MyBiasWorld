@@ -19,7 +19,7 @@ import mbworld.mongo.collection.UserId
  */
 class RealUserCreationFactory : UserCreationFactory {
     override fun userId(isAdmin: Boolean): UserId {
-        if (isAdmin) return Globals.ADMIN_PLAYER_ID
+        if (isAdmin) return Globals.ADMIN_USER_ID
         return Ids.uuid()
     }
 

@@ -10,27 +10,29 @@ import encore.backstage.command.CommandDispatcher
 import encore.context.ContextFactory
 import encore.creation.UserCreationSubunit
 import encore.datastore.MongoDataStore
-import encore.presence.UserPresenceSubunit
+import encore.extra.MongoServerExtraRepository
+import encore.extra.ServerExtraSubunit
 import encore.session.SessionSubunit
+import encore.subunit.SubunitLocator
 import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
 import mbworld.RealUserCreationFactory
-import mbworld.domain.cafe.collection.CollectionSubunit
-import mbworld.domain.cafe.collection.MongoCollectionRepository
-import mbworld.domain.cafe.topic.MongoTopicRepository
-import mbworld.domain.cafe.topic.TopicSubunit
-import mbworld.domain.cafe.reply.MongoReplyRepository
-import mbworld.domain.cafe.reply.ReplySubunit
-import mbworld.domain.profile.subunits.MongoProfileRepository
-import mbworld.domain.profile.subunits.ProfileSubunit
+import mbworld.domain.activity.ActivitySubunit
 import mbworld.domain.auth.session.MongoSessionStore
 import mbworld.domain.auth.session.WebsiteSessionSubunit
+import mbworld.domain.cafe.collection.CollectionSubunit
+import mbworld.domain.cafe.collection.MongoCollectionRepository
 import mbworld.domain.cafe.likes.LikesSubunit
 import mbworld.domain.cafe.likes.MongoLikesRepository
-import mbworld.domain.activity.ActivitySubunit
+import mbworld.domain.cafe.reply.MongoReplyRepository
+import mbworld.domain.cafe.reply.ReplySubunit
+import mbworld.domain.cafe.topic.MongoTopicRepository
+import mbworld.domain.cafe.topic.TopicSubunit
 import mbworld.domain.lobby.activityFeed.ActivityFeedSubunit
+import mbworld.domain.profile.subunits.MongoProfileRepository
+import mbworld.domain.profile.subunits.ProfileSubunit
 import mbworld.mongo.MongoCollections
 
 /**
@@ -44,7 +46,7 @@ import mbworld.mongo.MongoCollections
 class RealContextFactory(
     private val collections: MongoCollections,
     private val mongoDatabase: MongoDatabase
-): ContextFactory {
+) : ContextFactory {
     override suspend fun serverContext(
         appScope: CoroutineScope,
         serverSubunitScope: ServerScope
@@ -69,7 +71,9 @@ class RealContextFactory(
 
         // setup ServerSubunits
         val accountSubunit = AccountSubunit(accountRepository)
-        val userPresenceSubunit = UserPresenceSubunit()
+        val extraSubunit = ServerExtraSubunit(
+            MongoServerExtraRepository(mongoDatabase.getCollection(collections.serverObjects))
+        )
         val sessionSubunit = SessionSubunit(appScope, TimeCenter.source)
 
         val profileRepository = MongoProfileRepository(
@@ -106,10 +110,9 @@ class RealContextFactory(
 
         val subunits = ServerSubunits(
             account = accountSubunit,
-            presence = userPresenceSubunit,
             auth = authSubunit,
+            extra = extraSubunit,
             session = sessionSubunit,
-            creation = userCreationSubunit,
 
             websiteSession = websiteSession,
             profile = profileSubunit,
@@ -125,11 +128,13 @@ class RealContextFactory(
         subunits.debut(serverSubunitScope)
 
         val serverContext = ServerContext(
+            appScope = appScope,
             dataStore = dataStore,
             stageActDirector = stageActDirector,
             commandDispatcher = commandDispatcher,
             webSocketManager = webSocketManager,
-            subunits = subunits
+            subunits = subunits,
+            locator = SubunitLocator()
         )
 
         return serverContext

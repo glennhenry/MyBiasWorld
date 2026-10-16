@@ -2,7 +2,8 @@ package mbworld.domain.dummy
 
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import encore.backstage.command.Command
-import encore.backstage.command.types.ArgumentCollection
+import encore.backstage.command.types.Argument
+import encore.backstage.command.types.ArgumentInputs
 import encore.backstage.command.types.CommandResult
 import encore.creation.UserCreationSubunit
 import encore.fancam.Fancam
@@ -25,7 +26,6 @@ import mbworld.domain.profile.subunits.MongoProfileRepository
 import mbworld.mongo.RuntimeMongoCollections
 import mbworld.mongo.collection.UserAccount
 import mbworld.mongo.collection.UserId
-import kotlin.collections.mapOf
 import kotlin.random.Random
 
 /**
@@ -46,13 +46,17 @@ import kotlin.random.Random
  * No arguments are needed.
  */
 class DummySetupCommand(private val db: MongoDatabase) : Command {
-    override val commandId: String = "dummy-setup"
-    override val description: String = "Prepare dummy activities for the website. " +
-            "This will make use the DummyActivitySetup class."
+    override val id: String = "dummy-setup"
+    override val name: String = "Dummy setup"
+    override val description: String = """
+        Prepare dummy activities for the website.
+        This will make use the DummyActivitySetup class.
+    """.trimIndent()
+    override val arguments: List<Argument> = emptyList()
 
     override suspend fun execute(
         serverContext: ServerContext,
-        args: ArgumentCollection
+        args: ArgumentInputs
     ): CommandResult {
         val numAccounts = (15..20).random()
 
@@ -264,6 +268,6 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
         }
 
         Fancam.info { "Dummy setup completed." }
-        return CommandResult.Executed("Dummy setup completed.")
+        return CommandResult.Success("Dummy setup completed.")
     }
 }

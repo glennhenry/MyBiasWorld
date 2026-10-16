@@ -27,7 +27,7 @@ interface AccountRepository {
      *
      * Returns [Result.failure] if an error occurs while retrieving the data.
      */
-    suspend fun getAccountByUserId(userId: String): Result<UserAccount?>
+    suspend fun getAccountByUserId(userId: UserId): Result<UserAccount>
 
     /**
      * Returns [UserAccount] associated with the given [username], if it exists.
@@ -38,7 +38,7 @@ interface AccountRepository {
      *
      * Returns [Result.failure] if an error occurs while retrieving the data.
      */
-    suspend fun getAccountByUsername(username: String): Result<UserAccount?>
+    suspend fun getAccountByUsername(username: String): Result<UserAccount>
 
     /**
      * Returns [UserId] associated with the given [username], if it exists.
@@ -49,13 +49,13 @@ interface AccountRepository {
      *
      * Returns [Result.failure] if an error occurs while retrieving the data.
      */
-    suspend fun getUserIdByUsername(username: String): Result<UserId?>
+    suspend fun getUserIdByUsername(username: String): Result<UserId>
 
 
     /**
      * Returns the [Credentials] of the provided [username], if the account exists.
      */
-    suspend fun getCredentials(username: String): Result<Credentials?>
+    suspend fun getCredentials(username: String): Result<encore.account.Credentials?>
 
     /**
      * Update [UserAccount] of [userId] with the new [account].

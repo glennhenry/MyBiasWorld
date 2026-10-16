@@ -7,9 +7,9 @@ import mbworld.mongo.collection.UserId
  * No-operation implementation of [AccountRepository] used for testing purposes.
  */
 class BlankAccountRepository : AccountRepository {
-    override suspend fun getAccountByUserId(userId: String): Result<UserAccount?> = TODO("NO OPERATION")
-    override suspend fun getAccountByUsername(username: String): Result<UserAccount?> = TODO("NO OPERATION")
-    override suspend fun getUserIdByUsername(username: String): Result<UserId?> = TODO("NO OPERATION")
+    override suspend fun getAccountByUserId(userId: String): Result<UserAccount> = TODO("NO OPERATION")
+    override suspend fun getAccountByUsername(username: String): Result<UserAccount> = TODO("NO OPERATION")
+    override suspend fun getUserIdByUsername(username: String): Result<UserId> = TODO("NO OPERATION")
     override suspend fun getCredentials(username: String): Result<Credentials?> = TODO("NO OPERATION")
     override suspend fun updateUserAccount(userId: UserId, account: UserAccount): Result<Unit> = TODO("NO OPERATION")
     override suspend fun updateLastActivity(userId: UserId, lastActivity: Long): Result<Unit> = Result.success(Unit)

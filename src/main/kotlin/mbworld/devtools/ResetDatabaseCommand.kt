@@ -3,7 +3,9 @@ package mbworld.devtools
 import bootstrap.CodecRegistry
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import encore.backstage.command.Command
-import encore.backstage.command.types.ArgumentCollection
+import encore.backstage.command.types.Argument
+import encore.backstage.command.types.ArgumentInputs
+import encore.backstage.command.types.CommandRequest
 import encore.backstage.command.types.CommandResult
 import encore.venue.Venue
 import mbworld.context.ServerContext
@@ -23,7 +25,8 @@ import mbworld.mongo.collection.ServerObjects
  * For full re-setup, restart the server instead.
  */
 class ResetDatabaseCommand(private val mongoClient: MongoClient) : Command {
-    override val commandId: String = "resetdb"
+    override val id: String = "resetdb"
+    override val name: String = "Reset DB"
     override val description: String = """
     This command can be used to reset the database and re-setup it after.
     
@@ -36,17 +39,19 @@ class ResetDatabaseCommand(private val mongoClient: MongoClient) : Command {
     every collection of the server, such as the [ServerObjects] collection.
     For full re-setup, restart the server instead.
     """.trimIndent()
+    override val arguments: List<Argument> = emptyList()
 
     override suspend fun execute(
         serverContext: ServerContext,
-        args: ArgumentCollection
+        args: ArgumentInputs
     ): CommandResult {
         val db = mongoClient.getDatabase(Venue.encore.database.dbName)
             .withCodecRegistry(CodecRegistry)
         db.drop()
-
-        val res = serverContext.commandDispatcher.handleRawCommand("setupdb", serverContext)
-        return CommandResult.Executed(
+        val res = serverContext.commandDispatcher.handleCommand(
+            CommandRequest("setupdb", emptyMap()), serverContext
+        )
+        return CommandResult.Success(
             "Dropped successfully; setup=${res.message}"
         )
     }

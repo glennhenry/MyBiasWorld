@@ -3,7 +3,8 @@ package mbworld.devtools
 import bootstrap.CodecRegistry
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import encore.backstage.command.Command
-import encore.backstage.command.types.ArgumentCollection
+import encore.backstage.command.types.Argument
+import encore.backstage.command.types.ArgumentInputs
 import encore.backstage.command.types.CommandResult
 import encore.serialization.JSON
 import encore.utils.types.onFail
@@ -27,7 +28,8 @@ import java.io.File
  * after the entire database is dropped.
  */
 class SetupDatabaseCommand(private val mongoClient: MongoClient) : Command {
-    override val commandId: String = "setupdb"
+    override val id: String = "setupdb"
+    override val name: String = "Setup DB"
     override val description: String = """
     This command can be used to setup the database for MyBiasWorld.
 
@@ -41,10 +43,11 @@ class SetupDatabaseCommand(private val mongoClient: MongoClient) : Command {
     This command is typically used to re-setup the database for cafe compatibility
     after the entire database is dropped.
     """.trimIndent()
+    override val arguments: List<Argument> = emptyList()
 
     override suspend fun execute(
         serverContext: ServerContext,
-        args: ArgumentCollection
+        args: ArgumentInputs
     ): CommandResult {
         val db = mongoClient.getDatabase(Venue.encore.database.dbName)
             .withCodecRegistry(CodecRegistry)
@@ -73,6 +76,6 @@ class SetupDatabaseCommand(private val mongoClient: MongoClient) : Command {
         serverContext.subunits.collection.refreshCollection()
             .onFail { error("Error during call to CollectionSubunit.refreshCollection") }
 
-        return CommandResult.Executed("Inserted space and sections successfully")
+        return CommandResult.Success("Inserted space and sections successfully")
     }
 }

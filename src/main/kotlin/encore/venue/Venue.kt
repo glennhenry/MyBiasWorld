@@ -100,6 +100,13 @@ object Venue {
     }
 
     /**
+     * Returns `true` if `Venue` is already initialized.
+     */
+    fun isInitialized(): Boolean {
+        return _encore != null
+    }
+
+    /**
      * Returns the raw value of an environment variable.
      *
      * This method does not read values from `venue.xml`. It only accesses

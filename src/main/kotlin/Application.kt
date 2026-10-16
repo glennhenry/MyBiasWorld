@@ -8,13 +8,14 @@ import encore.EncoreIdentity
 import encore.EncoreIdentity.celebrate
 import encore.backstage.BackstageRoutes
 import encore.backstage.command.ExampleCommand
+import encore.backstage.command.core.*
 import encore.definition.DataReference
+import encore.fancam.impl.OfficialFancam
 import encore.route.guard.DefaultSecurity
 import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
 import encore.time.source.SystemTimeSource
 import encore.venue.Venue
-import encore.websocket.handler.WsCommandHandler
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -40,9 +41,12 @@ import mbworld.domain.profile.ProfileRoutes
 import mbworld.mongo.RuntimeMongoCollections
 import mbworld.routes.SiteRoutes
 import mbworld.routes.fileRoutes
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.concurrent.ConcurrentHashMap
+
+var runningSince: Long = 0
 
 fun main() {
     Venue.prepare()
@@ -59,6 +63,10 @@ fun main() {
 }
 
 val SystemTimezone: ZoneId = ZoneId.systemDefault()
+val basicDateFormatter = SimpleDateFormat("HH:mm:ss")
+val preciseBasicDateFormatter = SimpleDateFormat("HH:mm:ss.SSS")
+val detailedDateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+val preciseDetailedDateFormatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 
 /**
  * Main configuration and wiring code for the application.
@@ -67,12 +75,16 @@ suspend fun Application.configureApplication() {
     // install system time
     TimeCenter.update(source = SystemTimeSource())
 
+    // configure fancam (logger)
+    val fancam = OfficialFancam(Venue.encore.fancam)
+
     // configure security
     val bannedAddresses = mutableSetOf<String>()
     val security = DefaultSecurity(bannedAddresses, TimeCenter.source)
 
     // setup the framework
     val (mongoc, db) = installEncore(
+        fancam = fancam,
         module = SerializersModule { },
         security = security
     )
@@ -89,7 +101,7 @@ suspend fun Application.configureApplication() {
     websocketHandlers(serverContext)
 
     // register commands
-    commandHandlers(serverContext, mongoc, db)
+    commandHandlers(fancam, serverContext, mongoc, db)
 
     // register activity receivers
     activityReceivers(serverContext)
@@ -122,6 +134,7 @@ suspend fun Application.configureApplication() {
     // prints encore banner
     println(EncoreIdentity.banner(ProjectIdentity))
     celebrate(LocalDate.now(SystemTimezone))
+    runningSince = TimeCenter.now()
 
     // install shutdown hook
     shutdownHook(appScope, serverSubunitScope, serverContext.subunits)
@@ -129,13 +142,28 @@ suspend fun Application.configureApplication() {
 
 fun websocketHandlers(serverContext: ServerContext) {
     with(serverContext.webSocketManager) {
-        registerHandler(WsCommandHandler(serverContext))
+        // registerHandler()
     }
 }
 
-fun commandHandlers(serverContext: ServerContext, mongoc: MongoClient, db: MongoDatabase) {
+fun commandHandlers(fancam: OfficialFancam, serverContext: ServerContext, mongoc: MongoClient, db: MongoDatabase) {
     with(serverContext.commandDispatcher) {
         register(ExampleCommand())
+        register(GetLogsCommand(fancam))
+        register(GetRuntimeInfoCommand())
+        register(MemoryStatsCommand())
+        register(ShutdownCommand())
+        register(GetVenueCommand())
+        register(ServerTimeCommand())
+        register(ListSessionCommand())
+        register(VerifySessionCommand())
+        register(ListWebSocketClientCommand())
+        register(ListActsCommand())
+        register(GetActsCommand())
+        register(StopActsCommand())
+        register(GetEasyStorageItemCommand())
+        register(PeekEasyStorageCommand())
+        // project
         register(DummySetupCommand(db))
         register(SetupDatabaseCommand(mongoc))
         register(ResetDatabaseCommand(mongoc))
@@ -143,7 +171,7 @@ fun commandHandlers(serverContext: ServerContext, mongoc: MongoClient, db: Mongo
 }
 
 fun activityReceivers(serverContext: ServerContext) {
-    with (serverContext.subunits.activity) {
+    with(serverContext.subunits.activity) {
         serverContext.subunits.all().forEach {
             if (it is ActivityReceiver) {
                 register(it)

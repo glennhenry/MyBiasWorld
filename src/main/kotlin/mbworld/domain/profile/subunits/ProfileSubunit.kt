@@ -5,12 +5,12 @@ import mbworld.mongo.collection.UserId
 import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
+import encore.utils.peek
 import encore.utils.types.Outcome
 import encore.utils.types.toOutcome
 import mbworld.domain.profile.model.FanProfileSummary
 import mbworld.domain.profile.model.OverviewSummary
 import mbworld.domain.profile.model.Profile
-import mbworld.utils.peek
 
 class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit<ServerScope> {
     /**

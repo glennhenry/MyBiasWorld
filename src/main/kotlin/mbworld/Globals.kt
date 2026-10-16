@@ -9,7 +9,7 @@ package mbworld
  */
 object Globals {
     const val ADMIN_RESERVED_NAME = "givemeadmin"
-    const val ADMIN_PLAYER_ID = "adm-id-123456"
+    const val ADMIN_USER_ID = "adm-id-123456"
     const val ADMIN_USERNAME = "AdminUser"
     const val ADMIN_EMAIL = "admin@admin.com"
     const val ADMIN_PASSWORD = "admin"

@@ -171,9 +171,9 @@ class TestAuthSubunit {
 
         val db = MongoDataStore(mongoDb, TestCollections)
         val repo = object : AccountRepository {
-            override suspend fun getAccountByUserId(userId: String): Result<UserAccount?> = TODO()
-            override suspend fun getAccountByUsername(username: String): Result<UserAccount?> = TODO()
-            override suspend fun getUserIdByUsername(username: String): Result<UserId?> = TODO()
+            override suspend fun getAccountByUserId(userId: String): Result<UserAccount> = TODO()
+            override suspend fun getAccountByUsername(username: String): Result<UserAccount> = TODO()
+            override suspend fun getUserIdByUsername(username: String): Result<UserId> = TODO()
             override suspend fun getCredentials(username: String): Result<Credentials?> =
                 Result.failure(RuntimeException("xiaoting"))
             override suspend fun updateUserAccount(userId: UserId, account: UserAccount): Result<Unit> = TODO()

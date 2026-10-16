@@ -2,11 +2,11 @@ package mbworld.domain.lobby.activityFeed
 
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
+import encore.utils.dataStructure.CircularList
 import mbworld.domain.activity.ActivityReceiver
 import mbworld.domain.activity.model.Activity
 import mbworld.domain.activity.model.ActivitySource
 import mbworld.domain.activity.model.AllActivitySources
-import mbworld.utils.CircularList
 
 /**
  * Subunit that handles the activity feed of lobby.

@@ -7,7 +7,7 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.fancam.formatter.colorizeSegmentFg
-import encore.fancam.impl.OfficialFancam
+import encore.fancam.impl.FancamTemplate
 import encore.route.colorizeHttpMethod
 import encore.route.guard.GuardResult
 import encore.route.guard.SecurityGuard
@@ -19,10 +19,10 @@ import encore.venue.Venue
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
-import io.ktor.server.plugins.doublereceive.DoubleReceive
-import io.ktor.server.plugins.origin
+import io.ktor.server.plugins.doublereceive.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -60,13 +60,13 @@ import kotlin.time.Duration.Companion.seconds
  * @param security Configure API security with [SecurityGuard].
  * @return A pair of [MongoClient] and [MongoDatabase] for application usage.
  */
-@OptIn(ExperimentalSerializationApi::class)
 suspend fun Application.installEncore(
+    fancam: FancamTemplate,
     module: SerializersModule = SerializersModule { },
     security: SecurityGuard
 ): Pair<MongoClient, MongoDatabase> {
-    configureSerialization()
-    configureFancam()
+    configureSerialization(module)
+    configureFancam(fancam)
     configureCors()
     configureStatusPages()
     configureDoubleReceive()
@@ -93,12 +93,26 @@ fun Application.configureSerialization(module: SerializersModule = SerializersMo
     JSON.initialize(json)
 }
 
-fun configureFancam() {
-    Fancam.initialize(OfficialFancam(Venue.encore.fancam))
+fun configureFancam(fancam: FancamTemplate) {
+    Fancam.initialize(fancam)
     if (Venue.encore.devMode) {
-        Fancam.info(Tags.Startup) { "Running server on developmentMode" }
+        Fancam.info(Tags.Startup) {
+            "Running server on ${
+                colorizeSegmentFg(
+                    33,
+                    "development mode"
+                )
+            } (developmentMode=true)"
+        }
     } else {
-        Fancam.info(Tags.Startup) { "developmentMode is off" }
+        Fancam.info(Tags.Startup) {
+            "Running server on ${
+                colorizeSegmentFg(
+                    130,
+                    "production mode"
+                )
+            } (developmentMode=false)"
+        }
     }
 }
 

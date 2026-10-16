@@ -10,10 +10,13 @@ import encore.backstage.command.CommandDispatcher
 import encore.creation.UserCreationSubunit
 import encore.datastore.BlankDataStore
 import encore.datastore.DataStore
+import encore.extra.InMemoryServerExtraRepository
+import encore.extra.ServerExtraRepository
+import encore.extra.ServerExtraSubunit
 import encore.fancam.Fancam
-import encore.presence.UserPresenceSubunit
 import encore.session.SessionSubunit
 import encore.subunit.Subunit
+import encore.subunit.SubunitLocator
 import encore.subunit.scope.ServerScope
 import encore.time.source.SystemTimeSource
 import encore.time.source.TimeSource
@@ -48,18 +51,22 @@ import kotlin.coroutines.EmptyCoroutineContext
  * `ServerContext` includes various server-side components needed on the server.
  * It acts as a dependency container which is distributed across the server code.
  *
+ * @property appScope Root coroutine scope system components can use.
  * @property dataStore [DataStore] instance of the server.
  * @property commandDispatcher Tracks and executes server commands.
  * @property stageActDirector Provide API to start and stop stage acts.
  * @property webSocketManager Manages client websocket connections.
  * @property subunits Container for server subunit instances.
+ * @property locator Component to store subunits.
  */
 data class ServerContext(
+    val appScope: CoroutineScope,
     val dataStore: DataStore,
     val commandDispatcher: CommandDispatcher,
     val stageActDirector: StageActDirector,
     val webSocketManager: WebSocketManager,
-    val subunits: ServerSubunits
+    val subunits: ServerSubunits,
+    val locator: SubunitLocator
 ) {
     companion object {
         /**
@@ -81,6 +88,7 @@ data class ServerContext(
             timeSource: TimeSource = SystemTimeSource(),
             dataStore: DataStore = BlankDataStore(),
             accountRepository: AccountRepository = BlankAccountRepository(),
+            serverExtraRepository: ServerExtraRepository = InMemoryServerExtraRepository(),
             sessionStore: SessionStore = BlankSessionStore(),
             profileRepository: ProfileRepository = BlankProfileRepository(),
             collectionRepository: CollectionRepository = BlankCollectionRepository(),
@@ -102,6 +110,7 @@ data class ServerContext(
             val activityFeed = ActivityFeedSubunit.createForTest()
 
             return ServerContext(
+                appScope = parentScope,
                 dataStore = dataStore,
                 commandDispatcher = CommandDispatcher(),
                 stageActDirector = StageActDirector(timeSource, ActIdStore),
@@ -109,8 +118,7 @@ data class ServerContext(
                 subunits = ServerSubunits(
                     account = account,
                     auth = AuthSubunit(account, creation),
-                    creation = creation,
-                    presence = UserPresenceSubunit(),
+                    extra = ServerExtraSubunit(serverExtraRepository),
                     session = session,
 
                     websiteSession = websiteSession,
@@ -121,7 +129,8 @@ data class ServerContext(
                     likes = likes,
                     activity = activity,
                     activityFeed = activityFeed
-                )
+                ),
+                locator = SubunitLocator(),
             )
         }
     }
@@ -138,15 +147,14 @@ data class ServerContext(
  *
  * Examples:
  * - An infra-related component providing session creation and verification.
- * - A leaderboard representing global state is not owned by any single user.
+ * - A leaderboard representing global state is not owned by any single player.
  *   A `LeaderboardSubunit` may expose operations to query or update rankings.
  * - A matchmaking system may not persist data, but can maintain in-memory
  *   state and provide matchmaking-specific functionality.
  *
  * @property account Provides API related to accounts.
  * @property auth Provides authentication functions.
- * @property creation Provides user creation mechanism.
- * @property presence Tracks user's presence.
+ * @property extra Provides server extra data service.
  * @property session Manages session of users.
 
  * @property websiteSession Provides API related to [WebsiteSessionSubunit].
@@ -161,8 +169,7 @@ data class ServerContext(
 data class ServerSubunits(
     val account: AccountSubunit,
     val auth: AuthSubunit,
-    val creation: UserCreationSubunit,
-    val presence: UserPresenceSubunit,
+    val extra: ServerExtraSubunit,
     val session: SessionSubunit,
 
     val websiteSession: WebsiteSessionSubunit,
@@ -181,9 +188,8 @@ data class ServerSubunits(
         return setOf(
             account,
             auth,
-            creation,
-            presence,
             session,
+            extra,
             websiteSession,
             profile,
             topic,

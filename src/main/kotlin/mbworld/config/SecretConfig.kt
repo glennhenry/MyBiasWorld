@@ -1,6 +1,7 @@
 package mbworld.config
 
 import encore.annotation.runtime.VenueKey
+import kotlinx.serialization.Serializable
 
 /**
  * Application secret config definition.
@@ -11,6 +12,7 @@ import encore.annotation.runtime.VenueKey
  *
  * All field is preferred to be immutable.
  */
+@Serializable
 data class SecretConfig(
     val dummy: Int = 0
 )

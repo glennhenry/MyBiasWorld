@@ -30,17 +30,17 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
      * - [Outcome.Ok] with `null` if account does not exist.
      * - [Outcome.Ok] with the account otherwise.
      */
-    suspend fun getAccountByUserId(userId: String): Outcome<UserAccount?> {
+    suspend fun getAccountByUserId(userId: UserId): Outcome<UserAccount?> {
         return accountRepository.getAccountByUserId(userId)
             .onFailure {
-                if (it !is DocumentNotFoundException) {
-                    Fancam.error(it, "topic") {
-                        "getAccountByUserId failed: repository scandal for '$userId'"
+                if (it is DocumentNotFoundException) {
+                    Fancam.warn(tag = Tags.Account) {
+                        "getAccountByUserId not found for userId=$userId"
                     }
-                } else {
-                    Fancam.warn("topic") {
-                        "getAccountByUserId userId not found '$userId'"
-                    }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, Tags.Account) {
+                    "getAccountByUserId failed: repository scandal for '$userId'"
                 }
             }
             .toOutcome { account -> return Outcome.Ok(account) }
@@ -55,6 +55,12 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
     suspend fun getAccountByUsername(username: String): Outcome<UserAccount?> {
         return accountRepository.getAccountByUsername(username)
             .onFailure {
+                if (it is DocumentNotFoundException) {
+                    Fancam.warn(tag = Tags.Account) {
+                        "getAccountByUsername not found for username=$username"
+                    }
+                    return Outcome.Ok(null)
+                }
                 Fancam.error(it, Tags.Account) {
                     "getAccountByUsername failed: repository scandal for '$username'"
                 }
@@ -71,14 +77,14 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
     suspend fun getUserIdByUsername(username: String): Outcome<UserId?> {
         return accountRepository.getUserIdByUsername(username)
             .onFailure {
-                if (it !is DocumentNotFoundException) {
-                    Fancam.error(it, Tags.Account) {
-                        "getUserIdByUsername failed: repository scandal for '$username'"
-                    }
-                } else {
+                if (it is DocumentNotFoundException) {
                     Fancam.warn(tag = Tags.Account) {
-                        "getUserIdByUsername failed: userId not found for '$username'"
+                        "getUserIdByUsername not found for username=$username"
                     }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, Tags.Account) {
+                    "getUserIdByUsername failed: repository scandal for '$username'"
                 }
             }
             .toOutcome { userId -> return Outcome.Ok(userId) }

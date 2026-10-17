@@ -72,14 +72,15 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
 
         get("/cafe/{section}") {
             guard(call, optionalAccountGuard) {
-                val section = requireNotNull(call.request.pathVariables["section"])
+                val sectionId = requireNotNull(call.request.pathVariables["section"])
+                val sectionName = Sections[sectionId]
 
-                if (!Sections.contains(section)) {
+                if (sectionName == null) {
                     call.sectionNotFound()
                     return@guard
                 }
 
-                val topics = serverContext.subunits.topic.getTopicsOfSection(section).okOrNull()
+                val topics = serverContext.subunits.topic.getTopicsOfSection(sectionId).okOrNull()
                 if (topics == null) {
                     call.respond(HttpStatusCode.InternalServerError, "internal server error")
                     return@guard
@@ -109,7 +110,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 val data = TopicListModel(
                     account = call.attributes.getAccountData(),
-                    sectionId = section,
+                    sectionId = sectionId,
+                    sectionName = sectionName,
                     topics = topics.map {
                         val authorDisplayName = summaries[it.authorId]?.displayName ?: run {
                             Fancam.warn { "authorDisplayName of ${it.topicId} (title=${it.title}) is null" }
@@ -121,7 +123,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         }
                         TopicListItemData(
                             topicId = it.topicId,
-                            link = "${section}/${it.topicId.shortUuid()}/${it.title.toUrlSlug()}",
+                            link = "${sectionId}/${it.topicId.shortUuid()}/${it.title.toUrlSlug()}",
                             title = it.title,
                             authorName = authorDisplayName,
                             authorProfileUrl = "/profile/@${authorUsername}/overview",

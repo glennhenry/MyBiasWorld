@@ -9,11 +9,13 @@ import mbworld.routes.common.AccountData
  *
  * @property account Optional [AccountData] of the user.
  * @property sectionId The unique identifier of the section. Uses [SectionItem.id].
+ * @property sectionName Display name of the section. Uses [SectionItem.name].
  * @property topics The list of topics that this section contains.
  */
 data class TopicListModel(
     val account: AccountData?,
     val sectionId: String,
+    val sectionName: String,
     val topics: List<TopicListItemData> = emptyList()
 )
 

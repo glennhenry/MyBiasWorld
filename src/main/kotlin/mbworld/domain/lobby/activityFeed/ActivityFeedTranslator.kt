@@ -2,6 +2,7 @@ package mbworld.domain.lobby.activityFeed
 
 import encore.definition.DataReference
 import encore.fancam.Fancam
+import encore.fancam.INDENT
 import mbworld.domain.activity.model.Activity
 
 /**
@@ -17,13 +18,12 @@ class ActivityFeedTranslator {
     private val definition by lazy { DataReference.get<FeedStringsDefinition>() }
 
     fun translate(activity: Activity): ActivityFeedData {
-
         return ActivityFeedData(
             timestamp = activity.timestamp,
             format = definition.get(activity.type).format(
                 activity.type, activity.metadata
             )
-        ).also { Fancam.debug { it.toString() } }
+        )
     }
 
     private val regex = Regex("\\{(.*?)}")
@@ -57,7 +57,13 @@ class ActivityFeedTranslator {
         for (stringFormat in toBeFormatted) {
             val value = metadata[stringFormat]
             if (value == null) {
-                Fancam.warn { "'$stringFormat' is missing on activity '$type' metadata." }
+                Fancam.warn {
+                    buildString {
+                        appendLine("'$stringFormat' is missing on activity '$type' metadata.")
+                        appendLine("$INDENT available metadata: $metadata")
+                    }
+
+                }
             }
             textResult = textResult.replace("{$stringFormat}", value.toString())
         }

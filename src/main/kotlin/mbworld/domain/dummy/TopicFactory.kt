@@ -3,6 +3,7 @@ package mbworld.domain.dummy
 import encore.time.TimeCenter
 import encore.utils.identifier.Ids
 import mbworld.domain.Members
+import mbworld.domain.cafe.Sections
 import mbworld.domain.cafe.topic.Topic
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
@@ -11,20 +12,12 @@ import kotlin.time.Duration.Companion.milliseconds
  * Utilities to create dummy topics.
  */
 object TopicFactory {
-    private val sections = listOf(
-        "kep1er", "kpop",
-        "yujin", "xiaoting", "mashiro",
-        "chaehyun", "dayeon", "hikaru",
-        "hiyyih", "youngeun", "yeseo",
-        "media", "games"
-    )
-
     fun topics(authorId: String, amount: Int): List<Topic> {
         return List(amount) {
             val member = Members.all.random()
             Topic(
                 topicId = Ids.uuid(),
-                sectionId = sections.random(),
+                sectionId = Sections.keys.random(),
                 title = title(member),
                 authorId = authorId,
                 content = content(member),

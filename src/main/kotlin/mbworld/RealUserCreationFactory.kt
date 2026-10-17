@@ -57,7 +57,7 @@ class RealUserCreationFactory : UserCreationFactory {
                 favoriteSong = "",
                 favoriteEra = "",
                 bias = emptyList(),
-                story = "Write your story about Kep1er!"
+                story = "Write a story about your favorite group!"
             ),
             gameProfile = GameProfile(
                 level = UserLevel(1, 0),

@@ -35,17 +35,12 @@ import mbworld.routes.guard.getUserAccount
 import mbworld.routes.utils.serverError
 
 val Sections = mapOf(
-    "kep1er" to "Kep1er Discussion",
     "kpop" to "K-pop Discussion",
-    "yujin" to "Yujin's Space",
-    "xiaoting" to "Xiaoting's Space",
-    "mashiro" to "Mashiro's Space",
-    "chaehyun" to "Chaehyun's Space",
-    "dayeon" to "Dayeon's Space",
-    "hikaru" to "Hikaru's Space",
-    "hiyyih" to "Hiyyih's Space",
-    "youngeun" to "Youngeun's Space",
-    "yeseo" to "Yeseo's Space",
+    "releases" to "K-pop Releases",
+    "bgroup" to "Boy Groups Discussion",
+    "ggroup" to "Girl Groups Discussion",
+    "oldkpop" to "Old K-pop Discussion",
+    "kep1er" to "Kep1er Discussion",
     "media" to "Media",
     "games" to "Games"
 )

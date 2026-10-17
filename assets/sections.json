@@ -1,80 +1,45 @@
 [
   {
-    "id": "kep1er",
-    "spaceId": "lounge",
-    "name": "Kep1er Discussion",
-    "description": "Talk anything about Kep1er",
-    "order": 0
-  },
-  {
     "id": "kpop",
     "spaceId": "lounge",
     "name": "K-pop Discussion",
-    "description": "K-pop general discussion",
-    "order": 1
-  },
-  {
-    "id": "yujin",
-    "spaceId": "bias-corner",
-    "name": "Yujin's Space",
-    "description": "Talk about Yujin, ...<description>...",
+    "description": "Talk anything about K-pop here",
     "order": 0
   },
   {
-    "id": "xiaoting",
-    "spaceId": "bias-corner",
-    "name": "Xiaoting's Space",
-    "description": "Talk about Xiaoting, ...<description>...",
+    "id": "releases",
+    "spaceId": "lounge",
+    "name": "K-pop Releases",
+    "description": "Discuss about new K-pop releases",
     "order": 1
   },
   {
-    "id": "mashiro",
-    "spaceId": "bias-corner",
-    "name": "Mashiro's Space",
-    "description": "Talk about Mashiro, ...<description>...",
+    "id": "bgroup",
+    "spaceId": "lounge",
+    "name": "Boy Groups Discussion",
+    "description": "Only boy groups",
     "order": 2
   },
   {
-    "id": "chaehyun",
-    "spaceId": "bias-corner",
-    "name": "Chaehyun's Space",
-    "description": "Talk about Chaehyun, ...<description>...",
+    "id": "ggroup",
+    "spaceId": "lounge",
+    "name": "Girl Groups Discussion",
+    "description": "Only girl groups",
     "order": 3
   },
   {
-    "id": "dayeon",
-    "spaceId": "bias-corner",
-    "name": "Dayeon's Space",
-    "description": "Talk about Dayeon, ...<description>...",
+    "id": "oldkpop",
+    "spaceId": "lounge",
+    "name": "Old K-pop Discussion",
+    "description": "Old K-pop discussion",
     "order": 4
   },
   {
-    "id": "hikaru",
+    "id": "kep1er",
     "spaceId": "bias-corner",
-    "name": "Hikaru's Space",
-    "description": "Talk about Hikaru, ...<description>...",
-    "order": 5
-  },
-  {
-    "id": "hiyyih",
-    "spaceId": "bias-corner",
-    "name": "Hiyyih's Space",
-    "description": "Talk about Hiyyih, ...<description>...",
-    "order": 6
-  },
-  {
-    "id": "youngeun",
-    "spaceId": "bias-corner",
-    "name": "Youngeun's Space",
-    "description": "Talk about Youngeun, ...<description>...",
-    "order": 7
-  },
-  {
-    "id": "yeseo",
-    "spaceId": "bias-corner",
-    "name": "Yeseo's Space",
-    "description": "Talk about Yeseo, ...<description>...",
-    "order": 8
+    "name": "Kep1er Discussion",
+    "description": "Talk anything about Kep1er",
+    "order": 0
   },
   {
     "id": "media",

@@ -4,13 +4,13 @@
 
 ## About
 
-**MyBiasWorld** is a fan social portal platform for fan communities. It reimagines plain social applications of the old internet as a fan-centered environment.
+**MyBiasWorld** is a social portal platform for K-pop fans. It reimagines plain social applications of the old internet as a K-pop fan-centered environment.
 
 Inspired by the look and culture of old-school websites, forum, and services from the late 2000s and 2010s, the project seek to discover the engineering aspect behind them and explore old-school web design.
 
-The fan thematic layer is the heart of the platform. Particularly, this instance of platform focuses on creating a fan-centered environment around the K-pop girl group **Kep1er**.
+The fan thematic layer is the heart of the platform. The platform focuses on representing various fandom and culture in the K-pop ecosystem.
 
-_This is a fan-made community project and is not affiliated with or endorsed by the aforementioned brand. It's used only as a reference and to add personal meaning._
+_This is a fan-made community project and is not affiliated or endorsed by any of the used brands. It's used only as a reference and to add personal meaning._
 
 Latest progress:
 
@@ -30,7 +30,7 @@ Made with [Encore](https://github.com/glennhenry/Encore).
 
 1. Run the server as instructed below.
 2. Go to `http://localhost:8080/backstage` and head to the command section.
-3. Type the command 'setupdb' and click "Send" to setup the database for cafe compatibility.
+3. Execute the command 'setupdb' to setup the database for cafe compatibility.
 
 # Server Manual
 

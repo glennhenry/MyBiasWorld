@@ -4,9 +4,7 @@ slug: introduction
 description: Introduction docs
 ---
 
-**MyBiasWorld** is a fan social portal platform for fan communities. The platform combines noisy social content and fan necessity to create a lively, cozy, yet warm environment for fans. The fan element, which answers why the website exist, also catalyze social experience around the platform.
-
-Our instance of platform focuses on the K-pop girl group **Kep1er**.
+**MyBiasWorld** is a social portal platform for K-pop fans. The platform combines noisy social content and fan necessity to create a lively, cozy, yet warm environment for fans. The fan element, which answers why the website exist, also catalyze social experience around the platform.
 
 ### Objectives
 
@@ -14,21 +12,21 @@ The platform features a fusion between old social portal applications such as Ya
 
 It's a combination from multiple sites:
 
-- A fan website where it's dedicatedly made for introducing a particular group or members.
-- A fan community for sharing news, guide, and space for discussion.
+- A K-pop website where it's dedicatedly made for introducing a particular group or members.
+- A K-pop community for sharing news, guide, schedule, activity, and space for discussion.
 - A website people visit repeatedly to hangout and feel social presence.
 
 The platform strives to be:
 
-- A place where fans go to find a community or get help to be a fan.
+- A place where fans go to find a community.
 - Expand beyond to be a cozy destination that people come back to often.
 
 The objectives:
 
 - The platform must be lively. It should rely on noisy contents that aren't necessarily important to users, but add atmospheric value to the website.
-- The platform must be fan-relevant. One of the constraint is: the addition of features and contents must contribute to the social aspect while also not making it look out of context from a fan perspective. Typically, social features are small, extracullicular contents rather than a fully fledged startup idea.
+- The platform must be K-pop relevant. One of the constraint is: the addition of features and contents must contribute to the social aspect while also not making it look out of context from a K-pop fan perspective. Typically, social features are small, extracullicular contents rather than a fully fledged startup idea.
 
-In other word, it's the all-in-one place to get to know, discuss, get around a particular K-pop group, while also featuring lively aspect to turn it into a cozy destination to make people stay.
+In other word, it's the all-in-one place to get to know and discuss about the K-pop ecosystem, while also featuring lively aspect to turn it into a cozy destination to make people stay.
 
 ### Overview
 
@@ -38,30 +36,32 @@ The platform is supported by 5 pillars.
 
 The community serve as the place for fans to interact, discuss, and share thoughts.
 
-- Cafe: the cafe is a forum for discussion. The forum is structured with sections that contains a section for general Kep1er and K-pop discussion, a section for each of Kep1er members, and off-topic sections.
+- Cafe: the cafe is a forum for discussion. The forum is structured with sections that contains a section general K-pop discussion, fandom specific discussion, off-topic sections, and other discussion about the platform itself.
 - Profile: users profile can be customized and it will be used across the entire site, including the cafe for posting. The profile describe user's information such as username, display name, bio, avatar, bias, favorite songs, etc.
 - Mailbox: user can talk to each other privately via private message (as mailbox and letters).
-- Bulettin Board: the bulettin board system used as news for announcements made by the system, group/members, and admin or moderators.
+- Bulettin Board: the bulettin board system used as news for announcements made by the system, group/members, and admin or moderators. Board exist only within each specific fandom cafe section.
 - Guestbook: user may leave a post for others in their profile.
 
-#### Fan
+#### K-pop
 
-The fan aspect is the most important pillar of the platform. This should be emphasized heavily in order for the platform to be distinct than a typical social platform and be relevant to a fan.
+The K-pop aspect is the most important pillar of the platform. This should be emphasized heavily in order for the platform to be distinct than a typical social platform and be relevant to a K-pop fan.
 
 Example of integration:
 
 - Bias entries or favorite song in the profile
-- As a "stanning guide":
-  - A place introducing the group and members
-  - Get to know the group and members history
-  - Guide to group's contents and discography
+- A lightweight wiki-like system which provides information about a particular group:
+  - Each artists or groups has a dedicated page.
+  - The page contains sections:
+    - Main section: introduces the group.
+    - Members section: introduces each members and random facts.
+    - Timeline section: a visual graph of what happening to the group.
+    - Discography section: a discography explorer.
 - As widgets:
-  - Group schedule calendar
-  - MV views counter
-  - Chart tracker
-  - Live event countdown
-- Gallery, an arbitrary collection uploaded by users
-- A watching room for live reaction of ongoing livestream or concert
+  - Calendar containing various idols birthday, anniversary, live K-pop events, and other commemoration.
+  - Chart and MV views tracker.
+  - Live event countdown.
+- A watching room for live reaction of an ongoing K-pop events.
+- Possibly data of past K-pop events such as music shows lineup and wins.
 
 Most importantly, fan aspect should come first and be prioritized more to make the website really feels like a fan platform.
 
@@ -72,7 +72,6 @@ Gamification essence of the platform adds liveliness and enhance the social aspe
 For instance:
 
 - Logging in on a specific day gives an exclusive badge
-- Decorating your profile with a specific bias gives a special badge of that bias
 - Coins can be spent to purchase stuffs used in other part of the website
 
 #### Liveliness
@@ -85,7 +84,7 @@ Liveliness of the website can be achieved by adding noisey contents such as:
   - News
 - As "On this day" contents:
   - "... was released"
-  - "Kep1er won award at ..."
+  - "... won award at ..."
 - To tell you surrounding activities
   - Currently online users
   - Recently registered users
@@ -102,10 +101,9 @@ Liveliness of the website can be achieved by adding noisey contents such as:
 
 #### Portal
 
-A portal application implements a gateway to various internet services. This fan platform can inherit principles of portal applications by making it relevant to fan:
+A portal application implements a gateway to various internet services. This fan platform can inherit principles of portal applications by making it provides anything you would need as a fan.
 
-- Implemented as widgets such as schedule calendar, chart tracker, event countdown.
-- Provides guide to watch group's contents, shared as a summarized playlist and links.
+For example, calendar containing schedule, comeback date, anniversary, or chart updates, live events countdown, all can be implemented as a lobby widget.
 
 Other portal features:
 

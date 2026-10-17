@@ -80,6 +80,9 @@ object ProfileFactory {
         "lorem ipsum dolor sit amet 💤💤",
         "everybody should stan kep1er 😎",
         "I like to downvote people post in random 😀😀😀",
+        "I like K-pop",
+        "Please don't hate my group",
+        "If you are reading this, please stan {groupName}"
     )
 
     fun bio(displayName: String, memberName: String): String {

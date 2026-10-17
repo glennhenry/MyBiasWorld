@@ -15,3 +15,5 @@ For example:
 [2026-06-18 12:31:12]: New post on bulletin board posted by "System" (Hotfix version 1.3.4)
 [2026-06-17 12:31:12]: New post on bulletin board posted by "Kep1er" (Schedule announcement)
 ```
+
+In the [cafe](/docs/cafe), fandom specific section exists. Board would only exist within that section.

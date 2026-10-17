@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 /**
  * Profile data related to the one's identity being a fan.
  *
+ * TODO() update into generic fan profile
+ *
  * @property startedStan Date when the profile started being a stan.
  * @property favoriteSong The favorite song.
  * @property favoriteEra The favorite era.

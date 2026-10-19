@@ -4,7 +4,7 @@ import encore.definition.DataDefinition
 
 /**
  * Defines the strings used for activity feed translation.
- * @param entries Entries of `feed_strings.json` produced by [FeedStringsEntry].
+ * @param entries Entries of `feed-strings.xml` produced by [FeedStringsEntry].
  */
 class FeedStringsDefinition(entries: List<FeedStringsEntry>) : DataDefinition {
     // map of each activity type into its text formatting
@@ -19,7 +19,7 @@ class FeedStringsDefinition(entries: List<FeedStringsEntry>) : DataDefinition {
         return strings[type]
             ?: error(
                 "Type '$type' doesn't exist in FeedStringsDefinition. " +
-                        "Please check feed_strings.json"
+                        "Please check feed-strings.xml"
             )
     }
 }

@@ -4,11 +4,11 @@ import encore.definition.FileDataSource
 import java.io.File
 
 /**
- * Data source for `.json` files.
+ * Data source for `.xml` files.
  * - Load file located at [filePath] as-is.
  * - [readText] simply reads the file as UTF-8 string.
  */
-class JsonDataSource(private val filePath: String) : FileDataSource {
+class XmlDataSource(private val filePath: String) : FileDataSource {
     override val path: String = filePath
 
     override fun readText(): String {

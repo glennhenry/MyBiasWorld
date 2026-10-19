@@ -175,64 +175,35 @@ fun onActivity(...) {
 
 ### Formatting
 
-The translation file can feature a formatting system for text in order to display styles like hyperlink, bold, colored, or italic texts. This is useful for those output that shows directly for users such as the activity feed output. Other output system that doesn't need formatting can simply ignore it.
+The translation file features a formatting system for text in order to display styles like hyperlink, bold, colored, or italic texts. This is useful for those output that shows directly for users such as the activity feed output. Other output system that doesn't need formatting can simply ignore it.
 
 The formatting system should be made client-centered. In other word, while the strings file contains the format details, the server should only format the strings with data. The client will instead parse the format and create the corresponding styles in HTML.
 
-The format includes a `type`, which is an identifier to which type of activity does the following string entry belongs to. On the other hand, `format` will tell the detail of the format. The format is described as a list of styles-run.
+The authoring format is done in XML. Each entry has a `type` attribute, which is an identifier to which type of activity does the following string entry belongs to. Content of entry includes a combined format of text and style which is similar to HTML.
 
-As of now, the format can be either plain, hyperlink, bold, italic, underline, or colored text. In JSON format:
+As of now, the format can be either plain, hyperlink, bold, italic, underline, or colored text.
 
-```json
-{
-  "type": "UsersActivity.UserRegistered",
-  "format": [
-    {
-      "style": "hyperlink",
-      "link": "/profile/@{username}",
-      "text": "{username}"
-    },
-    {
-      "style": "plain",
-      "text": " just joined MyBiasWorld. Welcome!"
-    }
-  ]
-}
+```xml
+<strings>
+  <entry type="CafeActivity.Topic.Created">
+		<link url="{authorProfileUrl}">{authorDisplayName}</link> has created a topic in <bold>{sectionName}</bold>. Go check out '<link url="{topicUrl}">{topicTitle}</link>'.
+	</entry>
+</strings>
 ```
 
-- The server will parse any formattable part like `{username}` or `/profile/@{username}` and replace it with the username data.
-- The server returns a simpler format details (no type needed) and an already formatted text.
-- The client will parse the format details and create a hyperlink text like `[username](/profile/username) just joined MyBiasWorld. Welcome!`
+- The server will parse any formattable part like `{username}` or `/profile/@{username}` and replace it with the username data included in the event's metadata.
+- The server returns a simpler format for client to parse and a formatted text.
+- The client will parse the format and create a hyperlink text like `[username](/profile/username) just joined MyBiasWorld. Welcome!`
+
+Currently the format does not support nested styling. For example, a hyperlink can't be bolded or colored.
 
 All format details:
 
-```json
-[
-  {
-    "style": "plain",
-    "text": "Plain text..."
-  },
-  {
-    "style": "hyperlink",
-    "link": "/link/here",
-    "text": "Display text of the link..."
-  },
-  {
-    "style": "bold",
-    "text": "Bolded text..."
-  },
-  {
-    "style": "italic",
-    "text": "Italic text..."
-  },
-  {
-    "style": "underline",
-    "text": "Underlined text..."
-  },
-  {
-    "style": "color",
-    "color": "#FFFF00",
-    "text": "Colored yellow text..."
-  }
-]
-```
+- `plain`: No tags needed. On each entry, any texts that aren't inside a tag element is considered as plain text.
+- `link`: Use the tag `<link>` and attribute `url` like `<link url=""></link>`.
+- `bold`: Use the tag `<b>` like `<b></b>`.
+- `italic`: Use the tag `<i>` like `<i></i>`.
+- `underline`: Use the tag `<u>` like `<u></u>`.
+- `color`: Use the tag `<color>` and attribute `code` of hex color like `<color code=""></color>`.
+
+On each style, texts that are inside the tag is the styled texts.

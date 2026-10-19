@@ -27,7 +27,7 @@ import kotlinx.serialization.modules.SerializersModule
 import mbworld.ProjectIdentity
 import mbworld.context.RealContextFactory
 import mbworld.context.ServerContext
-import mbworld.definition.JsonDataSource
+import mbworld.definition.XmlDataSource
 import mbworld.devtools.ResetDatabaseCommand
 import mbworld.devtools.SetupDatabaseCommand
 import mbworld.domain.activity.ActivityReceiver
@@ -183,6 +183,6 @@ fun activityReceivers(serverContext: ServerContext) {
 
 fun dataReference() {
     DataReference.initialize {
-        add(JsonDataSource("assets/feed_strings.json"), FeedStringsLoader())
+        add(XmlDataSource("assets/feed-strings.xml"), FeedStringsLoader())
     }
 }

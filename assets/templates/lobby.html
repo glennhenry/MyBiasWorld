@@ -26,7 +26,7 @@
     }
 
     .activity-feed-container {
-      width: 300px;
+      width: 400px;
       max-height: 300px;
       overflow-y: scroll;
       border: 1px solid #ccc;
@@ -51,6 +51,9 @@
     }
 
     .activity-feed-item {
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
       padding: 4px;
       padding-right: 12px;
       font-size: 12px;
@@ -191,13 +194,13 @@
       switch (run.style) {
         case "plain":
           return run.text
-        case "hyperlink":
+        case "link":
           return $("<a></a>").attr("href", run.link).addClass("activity-text-link").text(run.text)
-        case "bold":
+        case "b":
           return $("<strong></strong>").text(run.text)
-        case "italic":
+        case "i":
           return $("<em></em>").text(run.text)
-        case "underline":
+        case "u":
           return $("<u></u>").text(run.text)
         case "color":
           return $("<span></span>").css("color", run.color).text(run.text)

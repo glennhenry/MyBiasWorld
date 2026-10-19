@@ -1,0 +1,35 @@
+<strings>
+	<entry type="UsersActivity.UserRegistered">
+		<link url="{authorProfileUrl}">{username}</link> just joined MyBiasWorld. Welcome!
+	</entry>
+	<entry type="CafeActivity.Topic.Created">
+		<link url="{authorProfileUrl}">{authorDisplayName}</link> has created a topic in <b>{sectionName}</b>. Go check out '<link url="{topicUrl}">{topicTitle}</link>'.
+	</entry>
+	<entry type="CafeActivity.Topic.Deleted">
+		A topic has been deleted in <b>{sectionName}</b>.
+	</entry>
+	<entry type="CafeActivity.Topic.Liked">
+		<link url="{profileUrl}">{displayName}</link> has liked the topic '<link url="{topicUrl}">{topicTitle}</link>'.
+	</entry>
+	<entry type="CafeActivity.Topic.Unliked">
+		<link url="{profileUrl}">{displayName}</link> has unliked a topic.
+	</entry>
+	<entry type="CafeActivity.Topic.Liked.Amount">
+		Topic '<link url="{topicUrl}">{topicTitle}</link>' has reached <b>{amount}</b> likes!
+	</entry>
+	<entry type="CafeActivity.Reply.Added">
+		<link url="{authorProfileUrl}">{authorDisplayName}</link> replied to the topic '<link url="{topicUrl}">{topicTitle}</link>'.
+	</entry>
+	<entry type="CafeActivity.Reply.Added.Amount">
+		'		<link url="{topicUrl}">{topicTitle}</link>' has reached <b>{replyAmount}</b> replies, must be something interesting!
+	</entry>
+	<entry type="CafeActivity.Reply.Liked">
+		<link url="{profileUrl}">{displayName}</link> liked a reply made by <link url="{replyAuthorProfileUrl}">{replyAuthorDisplayName}</link>.
+	</entry>
+	<entry type="CafeActivity.Reply.Unliked">
+		<link url="{profileUrl}">{displayName}</link> has unliked a reply.
+	</entry>
+	<entry type="CafeActivity.Comment.Added">
+		<link url="{commentAuthorProfileUrl}">{commentAuthorDisplayName}</link> commented on a reply made by <link url="{replyAuthorProfileUrl}">{replyAuthorDisplayName}</link>.	
+	</entry>
+</strings>

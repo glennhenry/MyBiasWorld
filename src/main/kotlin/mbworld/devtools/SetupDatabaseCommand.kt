@@ -6,14 +6,17 @@ import encore.backstage.command.Command
 import encore.backstage.command.types.Argument
 import encore.backstage.command.types.ArgumentInputs
 import encore.backstage.command.types.CommandResult
-import encore.serialization.JSON
 import encore.utils.types.onFail
 import encore.venue.Venue
 import mbworld.context.ServerContext
 import mbworld.domain.cafe.collection.Section
 import mbworld.domain.cafe.collection.Space
 import mbworld.mongo.RuntimeMongoCollections
+import org.w3c.dom.Element
+import org.xml.sax.InputSource
 import java.io.File
+import java.io.StringReader
+import javax.xml.parsers.DocumentBuilderFactory
 
 /**
  * This command can be used to setup the database for MyBiasWorld.
@@ -53,23 +56,23 @@ class SetupDatabaseCommand(private val mongoClient: MongoClient) : Command {
             .withCodecRegistry(CodecRegistry)
 
         // setup spaces
-        val spaceFile = File("assets/spaces.json").also {
+        val spaceFile = File("assets/spaces.xml").also {
             if (!it.exists()) {
-                return CommandResult.ExecutionFailure("assets/spaces.json does not exist")
+                return CommandResult.ExecutionFailure("assets/spaces.xml does not exist")
             }
         }
+        val spaces = readSpacesXml(spaceFile)
         val spaceCollection = db.getCollection<Space>(RuntimeMongoCollections.spaces)
-        val spaces = JSON.decode<List<Space>>(spaceFile.readText())
         spaceCollection.insertMany(spaces)
 
         // setup sections
-        val sectionFile = File("assets/sections.json").also {
+        val sectionFile = File("assets/sections.xml").also {
             if (!it.exists()) {
-                return CommandResult.ExecutionFailure("assets/sections.json does not exist")
+                return CommandResult.ExecutionFailure("assets/sections.xml does not exist")
             }
         }
+        val sections = readSectionsXml(sectionFile)
         val sectionCollection = db.getCollection<Section>(RuntimeMongoCollections.sections)
-        val sections = JSON.decode<List<Section>>(sectionFile.readText())
         sectionCollection.insertMany(sections)
 
         // refresh collection subunit
@@ -77,5 +80,47 @@ class SetupDatabaseCommand(private val mongoClient: MongoClient) : Command {
             .onFail { error("Error during call to CollectionSubunit.refreshCollection") }
 
         return CommandResult.Success("Inserted space and sections successfully")
+    }
+
+    private val builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+
+    private fun readSpacesXml(file: File): List<Space> {
+        val document = builder.parse(InputSource(StringReader(file.readText())))
+        val spaces = document.getElementsByTagName("space")
+        val result = mutableListOf<Space>()
+
+        for (i in 0 until spaces.length) {
+            val space = spaces.item(i) as Element
+            result.add(
+                Space(
+                    id = space.getAttribute("id"),
+                    name = space.textContent,
+                    order = space.getAttribute("order").toInt()
+                )
+            )
+        }
+
+        return result
+    }
+
+    private fun readSectionsXml(file: File): List<Section> {
+        val document = builder.parse(InputSource(StringReader(file.readText())))
+        val sections = document.getElementsByTagName("section")
+        val result = mutableListOf<Section>()
+
+        for (i in 0 until sections.length) {
+            val space = sections.item(i) as Element
+            result.add(
+                Section(
+                    id = space.getAttribute("id"),
+                    spaceId = space.getAttribute("spaceId"),
+                    name = space.getElementsByTagName("name").item(0).textContent,
+                    description = space.getElementsByTagName("description").item(0).textContent,
+                    order = space.getAttribute("order").toInt()
+                )
+            )
+        }
+
+        return result
     }
 }

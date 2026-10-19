@@ -1,0 +1,34 @@
+<sections>
+	<section id="kpop" spaceId="lounge" order="0">
+		<name>K-pop Discussion</name>
+		<description>Talk anything about K-pop here</description>
+	</section>
+	<section id="releases" spaceId="lounge" order="1">
+		<name>K-pop Releases</name>
+		<description>Discuss about new K-pop releases</description>
+	</section>
+	<section id="bgroup" spaceId="lounge" order="2">
+		<name>Boy Groups Discussion</name>
+		<description>Only boy groups</description>
+	</section>
+	<section id="ggroup" spaceId="lounge" order="3">
+		<name>Girl Groups Discussion</name>
+		<description>Only girl groups</description>
+	</section>
+	<section id="oldkpop" spaceId="lounge" order="4">
+		<name>Old K-pop Discussion</name>
+		<description>Old K-pop discussion</description>
+	</section>
+	<section id="kep1er" spaceId="bias-corner" order="0">
+		<name>Kep1er Discussion</name>
+		<description>Talk anything about Kep1er</description>
+	</section>
+	<section id="media" spaceId="terrace" order="0">
+		<name>Media</name>
+		<description>Talk about others media</description>
+	</section>
+	<section id="games" spaceId="terrace" order="1">
+		<name>Games</name>
+		<description>Gaming talk</description>
+	</section>
+</sections>

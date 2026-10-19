@@ -45,11 +45,9 @@ class CollectionSubunit(
     /**
      * Refresh the internal collection model of spaces and sections.
      *
+     * The subunit only query collection once at application startup.
      * Use this to refresh the `spaces` and `sections` collection,
-     * forcing this subunit to re-query the [CollectionRepository].
-     *
-     * This is typically used when `spaces` or `sections` collections
-     * are empty before the application is run, so they could be updated.
+     * forcing [CollectionSubunit] to re-query the [CollectionRepository].
      *
      * Use this when you see "No spaces have been made yet ㅠㅠ" while opening the cafe.
      */

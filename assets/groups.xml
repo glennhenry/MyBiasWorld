@@ -1,0 +1,19 @@
+<groups>
+	<group id="kep1er" name="Kep1er" description="Kep1er group description">
+		<members>
+			<member id="choi-yujin">
+				<name>Yujin</name>
+				<realName>Choi Yujin</realName>
+				<birthday></birthday>
+				<emoji></emoji>
+				<role></role>
+			</member>
+		</members>
+
+		<achievements>
+		</achievements>
+
+		<discography>
+		</discography>
+	</group>
+</groups>

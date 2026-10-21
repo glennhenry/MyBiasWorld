@@ -19,10 +19,19 @@
   --border-color: #dadada;
   --site-bg-color: #f2f2f2;
   --content-bg-color: #ffffff;
+  --primary-gradient-start: #477eb8;
+  --primary-gradient-end: #3a6899;
   --primary-gradient: linear-gradient(
     to bottom,
-    rgb(71, 126, 184),
-    rgb(58, 104, 153)
+    var(--primary-gradient-start),
+    var(--primary-gradient-end)
+  );
+  --white-to-gray-gradient-start: #ffffff;
+  --white-to-gray-gradient-end: #eee;
+  --white-to-gray-gradient: linear-gradient(
+    to bottom,
+    var(--white-to-gray-gradient-start),
+    var(--white-to-gray-gradient-end)
   );
 
   --toolbar-item-color: #e5e5e5;
@@ -201,6 +210,17 @@ body {
 
 .link:hover {
   text-decoration-thickness: 2px;
+}
+
+.icon-link {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #2d72ad;
+}
+
+.icon-link:hover p {
+  text-decoration: underline;
 }
 
 .space-y-xs {

@@ -109,18 +109,23 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     sectionName = sectionName,
                     topics = topics.map {
                         val authorDisplayName = summaries[it.authorId]?.displayName ?: run {
-                            Fancam.warn { "authorDisplayName of ${it.topicId} (title=${it.title}) is null" }
+                            Fancam.warn { "authorDisplayName of topicId '${it.topicId}' (title=${it.title}) is null (authorId '${it.authorId}')" }
                             "<authorDisplayName:null>"
                         }
                         val authorUsername = summaries[it.authorId]?.username ?: run {
-                            Fancam.warn { "authorUsername of ${it.topicId} (title=${it.title}) is null" }
+                            Fancam.warn { "authorUsername of topicId '${it.topicId}' (title=${it.title}) is null (authorId '${it.authorId}')" }
                             "<authorUsername:null>"
+                        }
+                        val authorAvatarUrl = summaries[it.authorId]?.avatarUrl ?: run {
+                            Fancam.warn { "authorAvatarUrl of topicId '${it.topicId}' (title=${it.title}) is null (authorId '${it.authorId}')" }
+                            "/images/unknown.png"
                         }
                         TopicListItemData(
                             topicId = it.topicId,
                             link = "${sectionId}/${it.topicId.shortUuid()}/${it.title.toUrlSlug()}",
                             title = it.title,
                             authorName = authorDisplayName,
+                            authorAvatarUrl = authorAvatarUrl,
                             authorProfileUrl = "/profile/@${authorUsername}/overview",
                             replyCount = replyCounts[it.topicId] ?: 0,
                             likesCount = it.likes,

@@ -13,36 +13,79 @@
   <title>Cafe.TopicList</title>
   <th:block th:replace="~{fragments/topbar :: topbar-styles}"></th:block>
   <style>
-    .topic-lists {
-      display: flex;
-      flex-direction: column;
+    .content {
+      padding-left: 0;
+      padding-top: 4px;
     }
 
-    .posted-text {
-      width: 500px;
+    .back-link {
+      padding-left: 4px;
     }
+
+    .topic-lists-container {
+      padding: 8px;
+    }
+
+    .topic-lists-header {
+      padding: 4px 0px;
+      color: white;
+      background: var(--primary-gradient);
+    }
+
+    .section-title {
+      padding-left: 8px;
+      font-size: 18px;
+    }
+
+    .cafe-actions {
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      padding-left: 2px;
+      background: linear-gradient(to bottom, white, #eaf5ff);
+      border-left: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .topic-lists {}
 
     .post-list-item {
-      border: 1px solid black;
-      list-style: none;
-      padding: 4px;
+      display: grid;
+      grid-template-columns: 440px 42px 200px;
+      padding: 4px 0px;
+      background: var(--white-to-gray-gradient);
+      border-left: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
       line-height: 1.3;
     }
 
-    .post-list-item+.post-list-item {
-      border-top: none;
+    .topic-details {
+      display: flex;
+      align-items: center;
+      padding-left: 4px;
+      gap: 4px;
     }
 
-    .topic-title-row {
+    .author-avatar {
+      border: 1px solid #ccc;
+    }
+
+    .author-avatar img {
+      padding: 1px;
+    }
+
+    .topic-title-column {
       display: flex;
-      flex-direction: row;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .topic-title {
-      margin-bottom: 4px;
+      width: max-content;
       color: var(--sea-blue-600);
-      font-size: 18px;
+      font-size: 14px;
       font-weight: bold;
     }
 
@@ -50,26 +93,12 @@
       color: var(--sea-blue-550);
     }
 
-    .topic-author-row {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding-bottom: 4px;
-      font-size: 14px;
-    }
-
-    .topic-author-left {
-      flex-grow: 1;
-    }
-
     .topic-author-name {
-      font-weight: bold;
-      font-style: italic;
       color: var(--sea-blue-500);
     }
 
-    .reply-likes-column {
-      text-align: end;
+    .topic-stats {
+      padding-right: 8px;
     }
 
     .topic-stat-row {
@@ -77,6 +106,22 @@
       align-items: center;
       justify-content: end;
       gap: 4px;
+    }
+
+    .topic-last-post {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 4px;
+      padding-left: 4px;
+      border-left: 2px solid var(--muted-blue-500);
+    }
+
+    .last-post-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -88,46 +133,55 @@
         <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
         <main class="content-container">
           <div class="content">
-            <a class="link" href="/cafe">← Back to Cafe</a>
-            <h1 th:text="${#strings.capitalize(data.sectionName)}"></h1>
-            <hr>
-            <div class="posted-text">
-              <div class="space-y-s"></div>
-              <a class="link" th:href="${data.sectionId} + '/write'">Write a topic</a>
-              <div class="space-y-xs"></div>
+            <a class="link back-link" href="/cafe">← Back to Cafe</a>
+            <div class="topic-lists-container">
+              <div class="topic-lists-header">
+                <p class="section-title" th:text="${#strings.capitalize(data.sectionName)}"></p>
+              </div>
+              <div class="cafe-actions">
+                <a class="icon-link" th:href="${data.sectionId} + '/write'">
+                  <img src="/icons/pencil.png" width="24px" alt="House">
+                  <p>Write a topic</p>
+                </a>
+              </div>
               <ul class="topic-lists" th:if="${not #lists.isEmpty(data.topics)}">
                 <li class="post-list-item" th:each="topic : ${data.topics}">
-                  <div>
-                    <div class="topic-title-row">
-                      <a class="topic-title" th:href="${topic.link}" th:text="${topic.title}"></a>
-                      <a class="delete-post" href="#" title="Delete post" th:data-topic-id="${topic.topicId}">
-                        <img src="/icons/delete.png" alt="delete" width="16">
-                      </a>
+                  <div class="topic-details">
+                    <div class="author-avatar">
+                      <img th:src="'/' + ${topic.authorAvatarUrl}" width="40px">
                     </div>
-                    <div class="topic-author-row">
-                      <div>
-                        <span class="topic-author-left">
-                          Posted by <a class="topic-author-name" th:text="${topic.authorName}"
-                            th:href="${topic.authorProfileUrl}"></a>
-                        </span>
-                        <p class="topic-posted-date js-format-date" th:data-raw-date="${topic.postedDate}"></p>
-                      </div>
-                      <div class="reply-likes-column">
-                        <span class="topic-stat-row">
-                          <img src="/icons/chat.png" alt="Chat bubble" title="Reply" width="20px">
-                          <p th:text="${topic.replyCount}"></p>
-                        </span>
-                        <span class="topic-stat-row">
-                          <img src="/icons/heart.png" alt="Heart" title="Likes" width="20px">
-                          <p th:text="${topic.likesCount}"></p>
-                        </span>
-                      </div>
+                    <div class="topic-title-column">
+                      <a class="topic-title" th:href="${topic.link}" th:text="${topic.title}"></a>
+                      <p>
+                        Posted by <a class="topic-author-name" th:text="${topic.authorName}"
+                          th:href="${topic.authorProfileUrl}"></a>,
+                        <span class="topic-posted-date js-format-date" th:data-raw-date="${topic.postedDate}"></span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="topic-stats">
+                    <span class="topic-stat-row">
+                      <img src="/icons/chat.png" alt="Chat bubble" title="Reply" width="20px">
+                      <p th:text="${topic.replyCount}"></p>
+                    </span>
+                    <span class="topic-stat-row">
+                      <img src="/icons/heart.png" alt="Heart" title="Likes" width="20px">
+                      <p th:text="${topic.likesCount}"></p>
+                    </span>
+                  </div>
+                  <div class="topic-last-post">
+                    <div class="last-post-details">
+                      <p>Last post by ...</p>
+                      <p>2026 Oct 21 03:40</p>
+                    </div>
+                    <div class="author-avatar">
+                      <img th:src="'/' + ${topic.authorAvatarUrl}" width="40px">
                     </div>
                   </div>
                 </li>
               </ul>
-              <p th:if="${#lists.isEmpty(data.topics)}">No posted texts available.</p>
             </div>
+            <p th:if="${#lists.isEmpty(data.topics)}">No posted texts available.</p>
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>
@@ -142,7 +196,7 @@
   <script>
     /**
      * Get formatted date, returning two strings in an array:
-     * - minimal date; e.g., "Today 10:57" or "Yesterday 10:57" or "2026 Jul 28 10:57"
+     * - minimal date; e.g., "Today 10:57" or "Yesterday 10:57" or "2026 Jul 28"
      * - full date; "2026 Jul 28 10:57"
      */
     function getFormattedDate(millis) {
@@ -174,13 +228,14 @@
       const isYesterday = now.getDate() - 1 == datePosted.getDate()
 
       const fullFormat = `${year} ${monthName} ${day} ${hours}:${minutes}`
+      const simpleFullFormat = `${year} ${monthName} ${day}`
 
       if (isToday) {
         return [`Today ${hours}:${minutes}`, fullFormat]
       } else if (isYesterday) {
         return [`Yesterday ${hours}:${minutes}`, fullFormat]
       } else {
-        return [fullFormat, fullFormat]
+        return [simpleFullFormat, fullFormat]
       }
     }
 

@@ -13,22 +13,28 @@
   <title>Cafe.Home</title>
   <th:block th:replace="~{fragments/topbar :: topbar-styles}"></th:block>
   <style>
+    li {
+      padding-left: 0;
+    }
+
+    .content {
+      padding-top: 8px;
+    }
+
     .space-lists {
       display: flex;
       flex-direction: column;
-      gap: 50px;
       width: 500px;
     }
 
-    .space-item {
-      padding: 8px;
-    }
+    .space-item {}
 
     .space-name-row {
       padding: 2px;
       padding-left: 8px;
       color: white;
       background: var(--primary-gradient);
+      border: 1px solid var(--primary-gradient-end);
       font-size: 14px;
       font-weight: bold;
     }
@@ -36,6 +42,9 @@
     .section-lists {
       display: flex;
       flex-direction: column;
+      border-left: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
     }
 
     .section-item {
@@ -45,7 +54,7 @@
     }
 
     .section-item:not(:last-child) {
-      border-bottom: 1px solid #d4d4d4;
+      border-bottom: 1px solid var(--border-color);
     }
 
     .section-name {

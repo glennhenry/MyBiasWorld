@@ -27,37 +27,40 @@
     .space-name-row {
       padding: 2px;
       padding-left: 8px;
-      background-color: rgb(210, 171, 212);
-      font-size: 20px;
+      color: white;
+      background: var(--primary-gradient);
+      font-size: 14px;
       font-weight: bold;
     }
 
     .section-lists {
       display: flex;
       flex-direction: column;
-      background-color: rgb(227, 212, 228);
     }
 
     .section-item {
       padding: 4px;
       padding-left: 24px;
+      background: linear-gradient(to bottom, rgb(255, 255, 255), #eee);
     }
 
     .section-item:not(:last-child) {
-      border-bottom: 1px solid black;
+      border-bottom: 1px solid #d4d4d4;
     }
 
     .section-name {
-      font-size: 18px;
+      color: var(--muted-blue-500);
+      font-size: 14px;
       font-weight: bold;
     }
 
     .section-name:hover {
-      color: #545248;
+      color: var(--muted-blue-400);
     }
 
     .section-description {
-      font-size: 14px;
+      color: black;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -69,8 +72,6 @@
         <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
         <main class="content-container">
           <div class="content">
-            <h1>Cafe.Home</h1>
-            <p th:text="'Hello. Welcome back.'"></p>
             <ul class="space-lists" th:if="${not #lists.isEmpty(data.spaces)}">
               <li class="space-item" th:each="space : ${data.spaces}">
                 <div>

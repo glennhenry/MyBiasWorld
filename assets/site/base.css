@@ -11,16 +11,22 @@
   --footer-font-size: 0.75rem;
 
   /* UI colors */
-  --border-color: #ccc;
-  --site-bg-color: #fbf4ff;
-  --logo-color: #ad7ec5;
-  --menu-start-bg-color: #f7f7f7;
-  --menu-end-bg-color: #e7e7e7;
-  --nav-link-hover-color: #ddd3e3;
+  --sea-blue-500: #3d6db8;
+  --sea-blue-550: #3d65af;
+  --sea-blue-600: #254c95;
+  --muted-blue-400: #4c6d97;
+  --muted-blue-500: #445979;
+  --border-color: #dadada;
+  --site-bg-color: #f2f2f2;
   --content-bg-color: #ffffff;
+  --primary-gradient: linear-gradient(
+    to bottom,
+    rgb(71, 126, 184),
+    rgb(58, 104, 153)
+  );
 
-  --toolbar-item-color: #ede8ff;
-  --toolbar-item-hover-color: #e2d9ff;
+  --toolbar-item-color: #e5e5e5;
+  --toolbar-item-hover-color: #cfcfcf;
 
   /* Text colors */
   --footer-text-color: #999;
@@ -56,7 +62,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background-color: var(--logo-color);
+  background: var(--primary-gradient);
 }
 
 .core {

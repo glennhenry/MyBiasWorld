@@ -20,6 +20,8 @@ Latest progress:
 
 <img src="progress3.png" alt="website image" style="border:1px black solid;" width=500/>
 
+<img src="progress4.png" alt="website image" style="border:1px black solid;" width=500/>
+
 _(fake generated posts)_
 
 Still establishing the core system...

@@ -104,46 +104,47 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     account = call.attributes.getAccountData(),
                     sectionId = sectionId,
                     sectionName = sectionName,
-                    topics = topics.map {
-                        val authorSummary = summaries[it.authorId]
+                    topics = topics.map { topic ->
+                        val authorSummary = summaries[topic.authorId]
                         if (authorSummary == null) {
                             Fancam.warn {
-                                "authorSummary of topicId '${it.topicId}' " +
-                                        "(title=${it.title}) is null (authorId '${it.authorId}')"
+                                "authorSummary of topicId '${topic.topicId}' " +
+                                        "(title=${topic.title}) is null (authorId '${topic.authorId}')"
                             }
                         }
 
-                        val latestPostData = if (it.latestPost != null) {
-                            val latestPostAuthorSummary = summaries[it.authorId]
+                        val latestPostData = if (topic.latestPost != null) {
+                            val latestPostAuthorSummary = summaries[topic.latestPost.authorId]
                             if (latestPostAuthorSummary == null) {
                                 Fancam.warn {
-                                    "latestPostAuthorSummary of postType '${it.latestPost.postType}' " +
-                                            "with postId '${it.latestPost.postId}' is null (authorId '${it.latestPost.authorId}')"
+                                    "latestPostAuthorSummary of postType '${topic.latestPost.postType}' " +
+                                            "with postId '${topic.latestPost.postId}' is null (authorId '${topic.latestPost.authorId}')"
                                 }
                             }
 
                             LatestPostData(
-                                postId = it.latestPost.postId,
-                                authorName = latestPostAuthorSummary?.displayName ?: "<unknown>",
+                                postId = topic.latestPost.postId,
+                                postType = topic.latestPost.postType,
+                                authorDisplayName = latestPostAuthorSummary?.displayName ?: "<unknown>",
                                 authorAvatarUrl = latestPostAuthorSummary?.avatarUrl ?: "images/unknown.png",
                                 authorProfileUrl = latestPostAuthorSummary?.username?.let { a -> "/profile/@$a/overview" }
                                     ?: "",
-                                postedDate = it.latestPost.postedDate,
+                                postedDate = topic.latestPost.postedDate,
                             )
                         } else {
                             null
                         }
 
                         TopicListItemData(
-                            topicId = it.topicId,
-                            link = "${sectionId}/${it.topicId.shortUuid()}/${it.title.toUrlSlug()}",
-                            title = it.title,
+                            topicId = topic.topicId,
+                            link = "${sectionId}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}",
+                            title = topic.title,
                             authorName = authorSummary?.displayName ?: "<unknown>",
                             authorAvatarUrl = authorSummary?.avatarUrl ?: "images/unknown.png",
                             authorProfileUrl = authorSummary?.username?.let { a -> "/profile/@$a/overview" } ?: "",
-                            replyCount = it.replies,
-                            likesCount = it.likes,
-                            postedDate = it.postedDate,
+                            replyCount = topic.replies,
+                            likesCount = topic.likes,
+                            postedDate = topic.postedDate,
                             latestPostData = latestPostData
                         )
                     }

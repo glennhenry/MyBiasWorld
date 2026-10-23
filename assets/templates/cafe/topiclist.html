@@ -35,6 +35,7 @@
     .section-title {
       padding-left: 8px;
       font-size: 18px;
+      font-weight: bold;
     }
 
     .cafe-actions {
@@ -142,12 +143,17 @@
       font-size: 12px;
     }
 
-    .last-post-details p {
+    .last-post-details a {
       /* last-post-details is 200px grid, minus padding, gap, and avatar size */
       max-width: 140px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      color: var(--sea-blue-500);
+    }
+
+    .last-post-details p {
+      font-size: 10px;
     }
   </style>
 </head>
@@ -181,7 +187,7 @@
                       <p class="topic-description">
                         Posted by <a class="topic-author-name" th:text="${topic.authorName}"
                           th:href="${topic.authorProfileUrl}"></a>—
-                        <span class="topic-posted-date js-format-date" th:data-raw-date="${topic.postedDate}"></span>
+                        <span class="js-format-date" th:data-raw-date="${topic.postedDate}"></span>
                       </p>
                     </div>
                   </div>
@@ -196,13 +202,22 @@
                     </span>
                   </div>
                   <div class="topic-last-post">
-                    <div class="last-post-details">
-                      <p>Last post by ...</p>
-                      <p>2026 Oct 21 03:40</p>
+                    <div class="last-post-details" th:if="${topic.latestPostData != null}">
+                      <a th:href="${topic.latestPostData.authorProfileUrl}"
+                        th:text="${topic.latestPostData.authorDisplayName}"></a>
+                      <p th:if="${topic.latestPostData.postType == 'reply'}">
+                        replied — <span class="js-format-date"
+                          th:data-raw-date="${topic.latestPostData.postedDate}"></span>
+                      </p>
+                      <p th:if="${topic.latestPostData.postType == 'comment'}">
+                        commented — <span class="js-format-date"
+                          th:data-raw-date="${topic.latestPostData.postedDate}"></span>
+                      </p>
                     </div>
-                    <div class="author-avatar">
-                      <img th:src="'/' + ${topic.authorAvatarUrl}" width="40px">
+                    <div class="author-avatar" th:if="${topic.latestPostData != null}">
+                      <img th:src="'/' + ${topic.latestPostData.authorAvatarUrl}" width="40px">
                     </div>
+                    <p th:if="${topic.latestPostData == null}">No latest post yet...</p>
                   </div>
                 </li>
               </ul>

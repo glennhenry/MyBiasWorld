@@ -48,14 +48,16 @@ data class TopicListItemData(
 
 /**
  * @property postId
- * @property authorName
+ * @property postType
+ * @property authorDisplayName
  * @property authorAvatarUrl
  * @property authorProfileUrl
  * @property postedDate
  */
 data class LatestPostData(
     val postId: String,
-    val authorName: String,
+    val postType: String,
+    val authorDisplayName: String,
     val authorAvatarUrl: String,
     val authorProfileUrl: String,
     val postedDate: Long

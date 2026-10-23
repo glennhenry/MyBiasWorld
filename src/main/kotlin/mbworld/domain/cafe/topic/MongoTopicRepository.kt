@@ -9,6 +9,7 @@ import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.associate
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
+import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 
 /** `topicId`*/
@@ -78,10 +79,21 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
 
     override suspend fun getTopicsOfSection(sectionId: String): Result<List<Topic>> {
         return runMongoCatching {
-            topicCollection
-                .find(Filters.eq(FieldSectionId, sectionId))
-                .sort(Sorts.descending(FieldPostedDate))
-                .toList()
+            topicCollection.aggregate<Topic>(
+                listOf(
+                    Aggregates.match(Filters.eq(FieldSectionId, sectionId)),
+                    Aggregates.addFields(
+                        Field(
+                            "sortDate",
+                            Document(
+                                $$"$ifNull",
+                                listOf($$"$latestPost.postedDate", $$"$postedDate")
+                            )
+                        )
+                    ),
+                    Aggregates.sort(Sorts.descending("sortDate"))
+                )
+            ).toList()
         }
     }
 

@@ -137,11 +137,13 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                     var latestCommentDate = -1L
                     var latestComment: Comment? = null
 
-                    replies.forEach {
-                        val comment = it.comments.maxBy { it.postedDate }
-                        if (comment.postedDate > latestCommentDate) {
-                            latestComment = comment
-                            latestCommentDate = comment.postedDate
+                    replies.forEach { reply ->
+                        if (reply.comments.isNotEmpty()) {
+                            val comment = reply.comments.maxBy { it.postedDate }
+                            if (comment.postedDate > latestCommentDate) {
+                                latestComment = comment
+                                latestCommentDate = comment.postedDate
+                            }
                         }
                     }
 

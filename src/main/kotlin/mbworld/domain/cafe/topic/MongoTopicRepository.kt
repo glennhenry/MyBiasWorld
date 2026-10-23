@@ -23,6 +23,9 @@ val FieldSectionId = Topic::sectionId.name
 /** `likes` */
 val FieldTopicLikes = Topic::likes.name
 
+/** `replies` */
+val FieldTopicReplies = Topic::replies.name
+
 class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) : TopicRepository {
     override suspend fun awaitInit() {
         topicCollection.createIndex(Indexes.text())
@@ -148,6 +151,26 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
 
             topicCollection.updateOne(filter, update)
                 .throwIfNothingModified("decrementLike", { filter }, { update })
+        }
+    }
+
+    override suspend fun incrementReply(topicId: String): Result<Unit> {
+        return runMongoCatching {
+            val filter = Filters.eq(FieldTopicId, topicId)
+            val update = Updates.inc(FieldTopicReplies, 1)
+
+            topicCollection.updateOne(filter, update)
+                .throwIfNothingModified("incrementReply", { filter }, { update })
+        }
+    }
+
+    override suspend fun decrementReply(topicId: String): Result<Unit> {
+        return runMongoCatching {
+            val filter = Filters.eq(FieldTopicId, topicId)
+            val update = Updates.inc(FieldTopicReplies, -1)
+
+            topicCollection.updateOne(filter, update)
+                .throwIfNothingModified("decrementReply", { filter }, { update })
         }
     }
 }

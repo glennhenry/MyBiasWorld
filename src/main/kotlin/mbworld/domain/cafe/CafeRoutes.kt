@@ -94,13 +94,6 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
-                val replyCounts = serverContext.subunits.reply
-                    .getReplyCounts(topicIds)
-                    .okOrNull() ?: run {
-                    call.respond(HttpStatusCode.InternalServerError, "internal server error")
-                    return@guard
-                }
-
                 val data = TopicListModel(
                     account = call.attributes.getAccountData(),
                     sectionId = sectionId,
@@ -125,7 +118,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                             authorName = authorDisplayName,
                             authorAvatarUrl = authorAvatarUrl,
                             authorProfileUrl = "/profile/@${authorUsername}/overview",
-                            replyCount = replyCounts[it.topicId] ?: 0,
+                            replyCount = it.replies,
                             likesCount = it.likes,
                             postedDate = it.postedDate
                         )
@@ -187,6 +180,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     authorId = acc.userId,
                     content = post.content,
                     likes = 0,
+                    replies = 0,
                     postedDate = time
                 )
 

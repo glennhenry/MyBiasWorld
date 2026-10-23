@@ -90,4 +90,24 @@ class InMemoryTopicRepository(
         topics.add(topic)
         return Result.success(Unit)
     }
+
+    override suspend fun incrementReply(topicId: String): Result<Unit> {
+        val topic = topics.find { it.topicId == topicId }
+            ?.let { it.copy(replies = it.replies + 1) }
+            ?: return Result.failure(DocumentNotFoundException("topicId=$topicId not found"))
+
+        topics.removeIf { it.topicId == topicId }
+        topics.add(topic)
+        return Result.success(Unit)
+    }
+
+    override suspend fun decrementReply(topicId: String): Result<Unit> {
+        val topic = topics.find { it.topicId == topicId }
+            ?.let { it.copy(replies = max(0, it.replies - 1)) }
+            ?: return Result.failure(DocumentNotFoundException("topicId=$topicId not found"))
+
+        topics.removeIf { it.topicId == topicId }
+        topics.add(topic)
+        return Result.success(Unit)
+    }
 }

@@ -134,4 +134,26 @@ interface TopicRepository {
      * - [Result.failure] if other error occurs during the operation.
      */
     suspend fun decrementLike(topicId: String): Result<Unit>
+
+    /**
+     * Increment the reply of the post identified by [topicId].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
+     * - [Result.failure] if other error occurs during the operation.
+     */
+    suspend fun incrementReply(topicId: String): Result<Unit>
+
+    /**
+     * Decrement the reply of the post identified by [topicId].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
+     * - [Result.failure] if other error occurs during the operation.
+     */
+    suspend fun decrementReply(topicId: String): Result<Unit>
 }

@@ -30,7 +30,7 @@ class MongoTopicRepositoryTest {
 
         // setup
         val id = "5ab0980c-e2cb-990a-427a-5ad9b0311b7f"
-        val targetTopic = Topic(id, "sectionId123", "title123", "author123", "content123", 0, 0)
+        val targetTopic = Topic(id, "sectionId123", "title123", "author123", "content123", 0, 0, 0)
         collection.insertMany(createTopic(20) + targetTopic)
 
         // tests
@@ -57,7 +57,7 @@ class MongoTopicRepositoryTest {
         assertEquals(1, repo.getTopicsCountForEachSection().getOrThrow()["sectionId123"])
 
         // 7. addTopic
-        val t = Topic("asdf", "asdf", "asdf", "asdf", "asdf", 0, 0)
+        val t = Topic("asdf", "asdf", "asdf", "asdf", "asdf", 0, 0, 0)
         assertDoesNotFailSuspend { repo.addTopic(t).getOrThrow() }
         assertDoesNotFailSuspend { repo.getTopic("asdf").getOrThrow() }
 
@@ -68,18 +68,26 @@ class MongoTopicRepositoryTest {
         // 9. getTopicLikes
         assertEquals(0, repo.getTopicLikes(id).getOrThrow())
 
-        // 9. incrementLike
+        // 10. incrementLike
         assertDoesNotFailSuspend { repo.incrementLike(id).getOrThrow() }
         assertEquals(1, repo.getTopic(id).getOrThrow().likes)
 
-        // 10. decrementLike
+        // 11. decrementLike
         assertDoesNotFailSuspend { repo.decrementLike(id).getOrNull() }
         assertEquals(0, repo.getTopic(id).getOrThrow().likes)
+
+        // 12. incrementReply
+        assertDoesNotFailSuspend { repo.incrementReply(id).getOrThrow() }
+        assertEquals(1, repo.getTopic(id).getOrThrow().replies)
+
+        // 12. decrementReply
+        assertDoesNotFailSuspend { repo.decrementReply(id).getOrNull() }
+        assertEquals(0, repo.getTopic(id).getOrThrow().replies)
     }
 
     private fun createTopic(amount: Int): List<Topic> {
         return List(amount) {
-            Topic(randstr(), randstr(), randstr(), randstr(), randstr(), 0, getTimeMillis())
+            Topic(randstr(), randstr(), randstr(), randstr(), randstr(), 0, 0, getTimeMillis())
         }
     }
 

@@ -22,6 +22,7 @@ object TopicFactory {
                 authorId = authorId,
                 content = content(member),
                 likes = 0,
+                replies = 0,
                 postedDate = postedDate()
             )
         }

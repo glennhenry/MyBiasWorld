@@ -123,6 +123,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                     replies.forEach {
                         addedReplies.add(it)
                         serverContext.subunits.reply.addReply(it)
+                        serverContext.subunits.topic.incrementReply(it.topicId)
                     }
                 }
             }

@@ -206,6 +206,34 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
             .toReport()
     }
 
+    /**
+     * Increment the reply amount of [topicId].
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun incrementReply(topicId: String): Report {
+        return topicRepository.incrementReply(topicId)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "incrementReply failed for topicId=$topicId"
+                }
+            }
+            .toReport()
+    }
+
+    /**
+     * Decrement the reply amount of [topicId].
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun decrementReply(topicId: String): Report {
+        return topicRepository.decrementReply(topicId)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "decrementReply failed for topicId=$topicId"
+                }
+            }
+            .toReport()
+    }
+
     override suspend fun debut(scope: ServerScope): Result<Unit> {
         return runCatching { }
     }

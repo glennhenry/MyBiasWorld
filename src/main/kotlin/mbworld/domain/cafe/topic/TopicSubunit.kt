@@ -238,9 +238,9 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
      * Get the latest post information of [topicId].
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with `null` if topic is not found.
-     * - [Outcome.Ok] with the [PostInfo] otherwise.
+     * - [Outcome.Ok] with the [LatestPostInfo] otherwise.
      */
-    suspend fun getLatestPost(topicId: String): Outcome<PostInfo?> {
+    suspend fun getLatestPost(topicId: String): Outcome<LatestPostInfo?> {
         return topicRepository.getLatestPost(topicId)
             .onFailure {
                 if (it is DocumentNotFoundException) {
@@ -260,7 +260,7 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
      * Update the latest post information of [topicId].
      * @return [Report] denoting success or failure.
      */
-    suspend fun updateLatestPost(topicId: String, postInfo: PostInfo): Report {
+    suspend fun updateLatestPost(topicId: String, postInfo: LatestPostInfo): Report {
         return topicRepository.updateLatestPost(topicId, postInfo)
             .onFailure {
                 Fancam.error(it, "topic") {

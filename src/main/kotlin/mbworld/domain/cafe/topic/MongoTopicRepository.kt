@@ -177,7 +177,7 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
         }
     }
 
-    override suspend fun getLatestPost(topicId: String): Result<PostInfo> {
+    override suspend fun getLatestPost(topicId: String): Result<LatestPostInfo> {
         return runMongoCatching {
             topicCollection
                 .withDocumentClass<QueryTopicLatestPost>()
@@ -195,7 +195,7 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
 
     override suspend fun updateLatestPost(
         topicId: String,
-        postInfo: PostInfo
+        postInfo: LatestPostInfo
     ): Result<Unit> {
         return runMongoCatching {
             val filter = Filters.eq(FieldTopicId, topicId)
@@ -224,5 +224,5 @@ data class QueryTopicLikes(
 
 data class QueryTopicLatestPost(
     @field:BsonId val id: String? = null,
-    val latestPost: PostInfo
+    val latestPost: LatestPostInfo
 )

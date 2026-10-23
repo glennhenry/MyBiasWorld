@@ -7,7 +7,7 @@ import initMongo
 import io.ktor.util.date.*
 import kotlinx.coroutines.test.runTest
 import mbworld.domain.cafe.topic.MongoTopicRepository
-import mbworld.domain.cafe.topic.PostInfo
+import mbworld.domain.cafe.topic.LatestPostInfo
 import mbworld.domain.cafe.topic.Topic
 import testUtils.assertDoesNotFailSuspend
 import testUtils.randomString
@@ -31,7 +31,8 @@ class MongoTopicRepositoryTest {
 
         // setup
         val id = "5ab0980c-e2cb-990a-427a-5ad9b0311b7f"
-        val targetTopic = Topic(id, "sectionId123", "title123", "author123", "content123", 0, 0, 0, PostInfo("yes", ""))
+        val targetTopic =
+            Topic(id, "sectionId123", "title123", "author123", "content123", 0, 0, 0, LatestPostInfo("yes", "", "", 0))
         collection.insertMany(createTopic(20) + targetTopic)
 
         // tests
@@ -58,7 +59,7 @@ class MongoTopicRepositoryTest {
         assertEquals(1, repo.getTopicsCountForEachSection().getOrThrow()["sectionId123"])
 
         // 7. addTopic
-        val t = Topic("asdf", "asdf", "asdf", "asdf", "asdf", 0, 0, 0, PostInfo("", ""))
+        val t = Topic("asdf", "asdf", "asdf", "asdf", "asdf", 0, 0, 0, LatestPostInfo("", "", "", 0))
         assertDoesNotFailSuspend { repo.addTopic(t).getOrThrow() }
         assertDoesNotFailSuspend { repo.getTopic("asdf").getOrThrow() }
 
@@ -89,13 +90,13 @@ class MongoTopicRepositoryTest {
         assertEquals("yes", repo.getLatestPost(id).getOrThrow().postType)
 
         // 15. updateLatestPost
-        assertDoesNotFailSuspend { repo.updateLatestPost(id, PostInfo("no", "1")).getOrNull() }
+        assertDoesNotFailSuspend { repo.updateLatestPost(id, LatestPostInfo("no", "1", "", 0)).getOrNull() }
         assertEquals("no", repo.getLatestPost(id).getOrThrow().postType)
     }
 
     private fun createTopic(amount: Int): List<Topic> {
         return List(amount) {
-            Topic(randstr(), randstr(), randstr(), randstr(), randstr(), 0, 0, getTimeMillis(), PostInfo("", ""))
+            Topic(randstr(), randstr(), randstr(), randstr(), randstr(), 0, 0, getTimeMillis(), LatestPostInfo("", "", "", 0))
         }
     }
 

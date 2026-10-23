@@ -31,6 +31,7 @@ data class TopicListModel(
  * @property replyCount The amount of reply posted within this topic.
  * @property likesCount The amount of likes this topic has.
  * @property postedDate The date of when this topic was posted. Uses [Topic.postedDate].
+ * @property latestPostData The data of the latest post this topic has, if any.
  */
 data class TopicListItemData(
     val topicId: String,
@@ -41,5 +42,21 @@ data class TopicListItemData(
     val authorProfileUrl: String,
     val replyCount: Int,
     val likesCount: Int,
+    val postedDate: Long,
+    val latestPostData: LatestPostData?
+)
+
+/**
+ * @property postId
+ * @property authorName
+ * @property authorAvatarUrl
+ * @property authorProfileUrl
+ * @property postedDate
+ */
+data class LatestPostData(
+    val postId: String,
+    val authorName: String,
+    val authorAvatarUrl: String,
+    val authorProfileUrl: String,
     val postedDate: Long
 )

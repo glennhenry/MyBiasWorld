@@ -20,7 +20,7 @@ import mbworld.domain.activity.model.Activity
 import mbworld.domain.activity.model.ActivitySource
 import mbworld.domain.cafe.reply.Comment
 import mbworld.domain.cafe.reply.Reply
-import mbworld.domain.cafe.topic.PostInfo
+import mbworld.domain.cafe.topic.LatestPostInfo
 import mbworld.domain.cafe.topic.PostInfoType
 import mbworld.domain.cafe.topic.Topic
 import mbworld.domain.cafe.topic.TopicDeletionOutcome
@@ -84,9 +84,13 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 val authorIds = mutableListOf<String>()
                 val topicIds = mutableListOf<String>()
 
-                for ((topicId, _, _, authorId) in topics) {
+                for ((topicId, _, _, authorId, _, _, _, _, latestPost) in topics) {
                     authorIds.add(authorId)
                     topicIds.add(topicId)
+                    // author of topic's latest post
+                    latestPost?.authorId?.let {
+                        authorIds.add(it)
+                    }
                 }
 
                 val summaries = serverContext.subunits.profile
@@ -101,28 +105,46 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     sectionId = sectionId,
                     sectionName = sectionName,
                     topics = topics.map {
-                        val authorDisplayName = summaries[it.authorId]?.displayName ?: run {
-                            Fancam.warn { "authorDisplayName of topicId '${it.topicId}' (title=${it.title}) is null (authorId '${it.authorId}')" }
-                            "<authorDisplayName:null>"
+                        val authorSummary = summaries[it.authorId]
+                        if (authorSummary == null) {
+                            Fancam.warn {
+                                "authorSummary of topicId '${it.topicId}' " +
+                                        "(title=${it.title}) is null (authorId '${it.authorId}')"
+                            }
                         }
-                        val authorUsername = summaries[it.authorId]?.username ?: run {
-                            Fancam.warn { "authorUsername of topicId '${it.topicId}' (title=${it.title}) is null (authorId '${it.authorId}')" }
-                            "<authorUsername:null>"
+
+                        val latestPostData = if (it.latestPost != null) {
+                            val latestPostAuthorSummary = summaries[it.authorId]
+                            if (latestPostAuthorSummary == null) {
+                                Fancam.warn {
+                                    "latestPostAuthorSummary of postType '${it.latestPost.postType}' " +
+                                            "with postId '${it.latestPost.postId}' is null (authorId '${it.latestPost.authorId}')"
+                                }
+                            }
+
+                            LatestPostData(
+                                postId = it.latestPost.postId,
+                                authorName = latestPostAuthorSummary?.displayName ?: "<unknown>",
+                                authorAvatarUrl = latestPostAuthorSummary?.avatarUrl ?: "images/unknown.png",
+                                authorProfileUrl = latestPostAuthorSummary?.username?.let { a -> "/profile/@$a/overview" }
+                                    ?: "",
+                                postedDate = it.latestPost.postedDate,
+                            )
+                        } else {
+                            null
                         }
-                        val authorAvatarUrl = summaries[it.authorId]?.avatarUrl ?: run {
-                            Fancam.warn { "authorAvatarUrl of topicId '${it.topicId}' (title=${it.title}) is null (authorId '${it.authorId}')" }
-                            "/images/unknown.png"
-                        }
+
                         TopicListItemData(
                             topicId = it.topicId,
                             link = "${sectionId}/${it.topicId.shortUuid()}/${it.title.toUrlSlug()}",
                             title = it.title,
-                            authorName = authorDisplayName,
-                            authorAvatarUrl = authorAvatarUrl,
-                            authorProfileUrl = "/profile/@${authorUsername}/overview",
+                            authorName = authorSummary?.displayName ?: "<unknown>",
+                            authorAvatarUrl = authorSummary?.avatarUrl ?: "images/unknown.png",
+                            authorProfileUrl = authorSummary?.username?.let { a -> "/profile/@$a/overview" } ?: "",
                             replyCount = it.replies,
                             likesCount = it.likes,
-                            postedDate = it.postedDate
+                            postedDate = it.postedDate,
+                            latestPostData = latestPostData
                         )
                     }
                 )
@@ -387,12 +409,13 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
+                val account = call.attributes.getUserAccount()
                 val time = TimeCenter.now()
                 val replyId = Ids.uuid()
                 val reply = Reply(
                     replyId = replyId,
                     topicId = topicId,
-                    authorId = call.attributes.getUserAccount().userId,
+                    authorId = account.userId,
                     content = replyPayload.reply,
                     likes = 0,
                     postedDate = time,
@@ -407,13 +430,12 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 serverContext.subunits.topic.updateLatestPost(
                     topicId = topicId,
-                    postInfo = PostInfo(PostInfoType.Reply, replyId)
+                    postInfo = LatestPostInfo(PostInfoType.Reply, replyId, account.userId, time)
                 )
 
                 val replyAmountNow = serverContext.subunits.reply.getReplyCount(topicId)
                     .okOrNull() ?: "an unknown amount"
 
-                val account = call.attributes.getUserAccount()
                 serverContext.subunits.activity.publish(
                     Activity(
                         source = ActivitySource.Cafe,
@@ -490,7 +512,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 serverContext.subunits.topic.updateLatestPost(
                     topicId = topicId,
-                    postInfo = PostInfo(PostInfoType.Comment, commentId)
+                    postInfo = LatestPostInfo(PostInfoType.Comment, commentId, account.userId, time)
                 )
 
                 serverContext.subunits.activity.publish(

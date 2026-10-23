@@ -166,7 +166,7 @@ interface TopicRepository {
      * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
      * - [Result.failure] if other error occurs during the operation.
      */
-    suspend fun getLatestPost(topicId: String): Result<PostInfo>
+    suspend fun getLatestPost(topicId: String): Result<LatestPostInfo>
 
     /**
      * Update the [topicId]'s [Topic.latestPost] with [postInfo].
@@ -177,5 +177,5 @@ interface TopicRepository {
      * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
      * - [Result.failure] if other error occurs during the operation.
      */
-    suspend fun updateLatestPost(topicId: String, postInfo: PostInfo): Result<Unit>
+    suspend fun updateLatestPost(topicId: String, postInfo: LatestPostInfo): Result<Unit>
 }

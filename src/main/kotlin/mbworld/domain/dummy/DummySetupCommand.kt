@@ -21,7 +21,7 @@ import mbworld.domain.cafe.likes.Likes
 import mbworld.domain.cafe.reply.Comment
 import mbworld.domain.cafe.reply.Reply
 import mbworld.domain.cafe.toUrlSlug
-import mbworld.domain.cafe.topic.PostInfo
+import mbworld.domain.cafe.topic.LatestPostInfo
 import mbworld.domain.cafe.topic.PostInfoType
 import mbworld.domain.cafe.topic.Topic
 import mbworld.domain.profile.model.Profile
@@ -148,12 +148,12 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                     if (latestReply.postedDate > latestCommentDate) {
                         serverContext.subunits.topic.updateLatestPost(
                             topicId = topicId,
-                            postInfo = PostInfo(PostInfoType.Reply, latestReply.replyId)
+                            postInfo = LatestPostInfo(PostInfoType.Reply, latestReply.replyId, latestReply.authorId, latestReply.postedDate)
                         )
                     } else {
                         serverContext.subunits.topic.updateLatestPost(
                             topicId = topicId,
-                            postInfo = PostInfo(PostInfoType.Comment, latestComment!!.commentId)
+                            postInfo = LatestPostInfo(PostInfoType.Comment, latestComment!!.commentId, latestComment.authorId, latestCommentDate)
                         )
                     }
                 }

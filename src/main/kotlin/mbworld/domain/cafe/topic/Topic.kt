@@ -27,5 +27,5 @@ data class Topic(
     val likes: Int,
     val replies: Int,
     val postedDate: Long,
-    val latestPost: PostInfo?,
+    val latestPost: LatestPostInfo?,
 )

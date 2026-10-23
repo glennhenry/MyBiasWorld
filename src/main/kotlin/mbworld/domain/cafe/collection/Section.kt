@@ -14,6 +14,7 @@ import kotlinx.serialization.Serializable
  *                   Refer to an existing [Space.id].
  * @property name Display name of the section.
  * @property order The order of how each sections are displayed within the same space.
+ * @property topicCounts The amount of topic this section have.
  */
 @Serializable
 data class Section(
@@ -21,5 +22,7 @@ data class Section(
     val spaceId: String,
     val name: String,
     val description: String,
-    val order: Int
+    val order: Int,
+
+    val topicCounts: Int,
 )

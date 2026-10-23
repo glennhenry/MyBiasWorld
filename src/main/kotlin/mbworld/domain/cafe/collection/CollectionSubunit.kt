@@ -1,8 +1,12 @@
 package mbworld.domain.cafe.collection
 
+import encore.datastore.DocumentNotFoundException
+import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
+import encore.utils.types.Outcome
 import encore.utils.types.Report
+import encore.utils.types.toOutcome
 import encore.utils.types.toReport
 import mbworld.domain.cafe.view.model.SectionItem
 import mbworld.domain.cafe.view.model.SpaceItem
@@ -57,6 +61,78 @@ class CollectionSubunit(
             sections = collectionRepository.getSections().getOrThrow()
             landingModel = createLandingModel()
         }.toReport()
+    }
+
+    /**
+     * Get the [Space] identified by its `spaceId`.
+     * Returns an [Outcome]:
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with null if space is not found.
+     * - [Outcome.Ok] with the [Space] otherwise.
+     */
+    suspend fun getSpace(spaceId: String): Outcome<Space?> {
+        return collectionRepository.getSpace(spaceId)
+            .onFailure {
+                if (it is DocumentNotFoundException) {
+                    Fancam.warn("collection") {
+                        "getSpace space not found for spaceId=$spaceId"
+                    }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, "topic") {
+                    "getSpace query failed for spaceId=$spaceId"
+                }
+            }
+            .toOutcome { it }
+    }
+
+    /**
+     * Get the [Section] identified by its `sectionId`.
+     * Returns an [Outcome]:
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with null if space is not found.
+     * - [Outcome.Ok] with the [Section] otherwise.
+     */
+    suspend fun getSection(sectionId: String): Outcome<Section?> {
+        return collectionRepository.getSection(sectionId)
+            .onFailure {
+                if (it is DocumentNotFoundException) {
+                    Fancam.warn("collection") {
+                        "getSection space not found for sectionId=$sectionId"
+                    }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, "topic") {
+                    "getSection query failed for sectionId=$sectionId"
+                }
+            }
+            .toOutcome { it }
+    }
+
+    /**
+     * Increment the topic count of [sectionId] by 1.
+     * `sectionId` refers to the [Section.id].
+     * @return Report type indicating success or failure.
+     */
+    suspend fun incrementTopicCount(sectionId: String): Report {
+        return collectionRepository.incrementTopicCount(sectionId)
+            .onFailure {
+                Fancam.error(it) { "incrementTopicCount failed for $sectionId" }
+            }
+            .toReport()
+    }
+
+    /**
+     * Decrement the topic count of [sectionId] by 1.
+     * `sectionId` refers to the [Section.id].
+     * @return Report type indicating success or failure.
+     */
+    suspend fun decrementTopicCount(sectionId: String): Report {
+        return collectionRepository.decrementTopicCount(sectionId)
+            .onFailure {
+                Fancam.error(it) { "decrementTopicCount failed for $sectionId" }
+            }
+            .toReport()
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> {

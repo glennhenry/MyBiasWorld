@@ -1,12 +1,10 @@
 package mbworld.domain.cafe.collection
 
-import encore.datastore.DocumentNotFoundException
 import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.utils.types.Outcome
 import encore.utils.types.Report
-import encore.utils.types.toOutcome
 import encore.utils.types.toReport
 import mbworld.domain.cafe.view.model.SectionItem
 import mbworld.domain.cafe.view.model.SpaceItem
@@ -22,17 +20,30 @@ import mbworld.domain.cafe.view.model.SpaceItem
 class CollectionSubunit(
     private val collectionRepository: CollectionRepository
 ) : Subunit<ServerScope> {
-    private lateinit var spaces: List<Space>
-    private lateinit var sections: List<Section>
-    private lateinit var landingModel: List<SpaceItem>
+    private lateinit var spaces: MutableList<Space>
+    private lateinit var sections: MutableList<Section>
 
     fun getSpaces() = spaces
     fun getSections() = sections
-    fun getSpacesForLandingModel(): List<SpaceItem> = landingModel
 
-    fun createLandingModel(): List<SpaceItem> {
+    /**
+     * Get space by its [spaceId].
+     * @return [Outcome.Ok] with the space or `null` if not found.
+     */
+    fun getSpace(spaceId: String): Outcome<Space?> {
+        return Outcome.Ok(spaces.find { it.id == spaceId })
+    }
+
+    /**
+     * Get section by its [sectionId].
+     * @return [Outcome.Ok] with the section or `null` if not found.
+     */
+    fun getSection(sectionId: String): Outcome<Section?> {
+        return Outcome.Ok(sections.find { it.id == sectionId })
+    }
+
+    fun getSpacesForLandingModel(): List<SpaceItem> {
         val sectionsBySpace = sections.groupBy { it.spaceId }
-
         return spaces
             .sortedBy { it.order }
             .map { space ->
@@ -41,72 +52,9 @@ class CollectionSubunit(
                     sections = sectionsBySpace[space.id]
                         .orEmpty()
                         .sortedBy { it.order }
-                        .map { SectionItem(it.id, it.name, it.description) }
+                        .map { SectionItem(it.id, it.name, it.description, it.topicCounts) }
                 )
             }
-    }
-
-    /**
-     * Refresh the internal collection model of spaces and sections.
-     *
-     * The subunit only query collection once at application startup.
-     * Use this to refresh the `spaces` and `sections` collection,
-     * forcing [CollectionSubunit] to re-query the [CollectionRepository].
-     *
-     * Use this when you see "No spaces have been made yet ㅠㅠ" while opening the cafe.
-     */
-    suspend fun refreshCollection(): Report {
-        return runCatching {
-            spaces = collectionRepository.getSpaces().getOrThrow()
-            sections = collectionRepository.getSections().getOrThrow()
-            landingModel = createLandingModel()
-        }.toReport()
-    }
-
-    /**
-     * Get the [Space] identified by its `spaceId`.
-     * Returns an [Outcome]:
-     * - [Outcome.Fail] when there is internal repository error.
-     * - [Outcome.Ok] with null if space is not found.
-     * - [Outcome.Ok] with the [Space] otherwise.
-     */
-    suspend fun getSpace(spaceId: String): Outcome<Space?> {
-        return collectionRepository.getSpace(spaceId)
-            .onFailure {
-                if (it is DocumentNotFoundException) {
-                    Fancam.warn("collection") {
-                        "getSpace space not found for spaceId=$spaceId"
-                    }
-                    return Outcome.Ok(null)
-                }
-                Fancam.error(it, "topic") {
-                    "getSpace query failed for spaceId=$spaceId"
-                }
-            }
-            .toOutcome { it }
-    }
-
-    /**
-     * Get the [Section] identified by its `sectionId`.
-     * Returns an [Outcome]:
-     * - [Outcome.Fail] when there is internal repository error.
-     * - [Outcome.Ok] with null if space is not found.
-     * - [Outcome.Ok] with the [Section] otherwise.
-     */
-    suspend fun getSection(sectionId: String): Outcome<Section?> {
-        return collectionRepository.getSection(sectionId)
-            .onFailure {
-                if (it is DocumentNotFoundException) {
-                    Fancam.warn("collection") {
-                        "getSection space not found for sectionId=$sectionId"
-                    }
-                    return Outcome.Ok(null)
-                }
-                Fancam.error(it, "topic") {
-                    "getSection query failed for sectionId=$sectionId"
-                }
-            }
-            .toOutcome { it }
     }
 
     /**
@@ -118,6 +66,11 @@ class CollectionSubunit(
         return collectionRepository.incrementTopicCount(sectionId)
             .onFailure {
                 Fancam.error(it) { "incrementTopicCount failed for $sectionId" }
+            }
+            .onSuccess {
+                // not thread safe: may modified concurrently resulting in inconsistent number
+                // but topic counts aren't very important
+                sections.find { it.id == sectionId }?.topicCounts += 1
             }
             .toReport()
     }
@@ -132,14 +85,32 @@ class CollectionSubunit(
             .onFailure {
                 Fancam.error(it) { "decrementTopicCount failed for $sectionId" }
             }
+            .onSuccess {
+                sections.find { it.id == sectionId }?.topicCounts -= 1
+            }
             .toReport()
+    }
+
+    /**
+     * Refresh the internal collection model of spaces and sections.
+     *
+     * The subunit only query collection once at application startup.
+     * Use this to refresh the `spaces` and `sections` collection,
+     * forcing [CollectionSubunit] to re-query the [CollectionRepository].
+     *
+     * Use this when you see "No spaces have been made yet ㅠㅠ" while opening the cafe.
+     */
+    suspend fun refreshCollection(): Report {
+        return runCatching {
+            spaces = collectionRepository.getSpaces().getOrThrow().toMutableList()
+            sections = collectionRepository.getSections().getOrThrow().toMutableList()
+        }.toReport()
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> {
         return runCatching {
-            spaces = collectionRepository.getSpaces().getOrThrow()
-            sections = collectionRepository.getSections().getOrThrow()
-            landingModel = createLandingModel()
+            spaces = collectionRepository.getSpaces().getOrThrow().toMutableList()
+            sections = collectionRepository.getSections().getOrThrow().toMutableList()
         }
     }
 

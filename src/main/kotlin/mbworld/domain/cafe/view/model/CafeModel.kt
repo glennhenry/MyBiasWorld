@@ -7,12 +7,10 @@ import mbworld.routes.common.AccountData
  *
  * @property account Optional [AccountData] of the user.
  * @property spaces A unit that groups together related sections in the cafe.
- * @property topicCounts The amount of topic that exists on each section.
  */
 data class CafeModel(
     val account: AccountData?,
     val spaces: List<SpaceItem>,
-    val topicCounts: Map<String, Int>
 )
 
 /**
@@ -32,9 +30,11 @@ data class SpaceItem(
  * @property id Unique identifier of the section. This is used for page's slug.
  * @property name Display name of the section (e.g., "Kep1er Discussion")
  * @property description Text describing the purpose of the section.
+ * @property topicCounts The amount of topic that exists within this section.
  */
 data class SectionItem(
     val id: String,
     val name: String,
-    val description: String
+    val description: String,
+    val topicCounts: Int,
 )

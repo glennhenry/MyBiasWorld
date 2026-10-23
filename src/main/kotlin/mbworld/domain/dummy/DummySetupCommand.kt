@@ -101,6 +101,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                     for (topic in topics) {
                         serverContext.subunits.topic.addTopic(topic)
                         addedTopics.add(topic)
+                        serverContext.subunits.collection.incrementTopicCount(topic.sectionId)
                     }
                 }
             }

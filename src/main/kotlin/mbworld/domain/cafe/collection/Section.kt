@@ -24,5 +24,6 @@ data class Section(
     val description: String,
     val order: Int,
 
-    val topicCounts: Int,
+    // not thread safe
+    var topicCounts: Int,
 )

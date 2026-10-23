@@ -87,14 +87,12 @@
                   <p class="space-name-row" th:text="${space.name}"></p>
                   <ul class="section-lists">
                     <li class="section-item" th:each="section : ${space.sections}">
-                      <div>
-                        <span th:inline="text">
-                          <a th:href="'cafe/' + ${section.id}" class="section-name" th:text="${section.name}">
-                          </a>
-                          ([[${data.topicCounts.getOrDefault(section.id, 0)}]] posts)
-                        </span>
-                        <p class="section-description" th:text="${section.description}"></p>
-                      </div>
+                      <p>
+                        <a th:href="'cafe/' + ${section.id}" class="section-name" th:text="${section.name}">
+                        </a>
+                        <span th:inline="text">([[${section.topicCounts}]] posts)</span>
+                      </p>
+                      <p class="section-description" th:text="${section.description}"></p>
                     </li>
                   </ul>
                 </div>

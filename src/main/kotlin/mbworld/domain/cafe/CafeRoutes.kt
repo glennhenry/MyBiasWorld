@@ -53,12 +53,10 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
         get("/cafe") {
             guard(call, optionalAccountGuard) {
                 val spaces = serverContext.subunits.collection.getSpacesForLandingModel()
-                val counts = serverContext.subunits.topic.getTopicsCountForEachSection().okOrThrow()
 
                 val data = CafeModel(
                     account = call.attributes.getAccountData(),
-                    spaces = spaces,
-                    topicCounts = counts
+                    spaces = spaces
                 )
 
                 call.respond(ThymeleafContent("cafe/cafe", mapOf("data" to data)))
@@ -198,6 +196,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         return@handle
                     }
 
+                serverContext.subunits.collection.incrementTopicCount(section)
+
                 val topicUrl = "/cafe/$section/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
                     Activity(
@@ -237,6 +237,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                     is Outcome.Ok -> when (outcome.value) {
                         TopicDeletionOutcome.Success -> {
+                            serverContext.subunits.collection.decrementTopicCount(section)
                             serverContext.subunits.activity.publish(
                                 Activity(
                                     source = ActivitySource.Cafe,

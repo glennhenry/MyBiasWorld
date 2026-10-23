@@ -97,6 +97,9 @@ suspend fun Application.configureApplication() {
     val serverContext = RealContextFactory(RuntimeMongoCollections, db)
         .serverContext(appScope, serverSubunitScope)
 
+    // initialize fancam's ws manager
+    fancam.wsManager = serverContext.webSocketManager
+
     // register handlers for WebSocket
     websocketHandlers(serverContext)
 

@@ -52,7 +52,7 @@
 
     .post-list-item {
       display: grid;
-      grid-template-columns: 440px 42px 200px;
+      grid-template-columns: 420px 62px 200px;
       padding: 4px 0px;
       background: var(--white-to-gray-gradient);
       border-left: 1px solid var(--border-color);
@@ -83,21 +83,38 @@
     }
 
     .topic-title {
-      width: max-content;
+      /* topic-details is 420px grid, minus padding and gap */
+      width: 370px;
       color: var(--sea-blue-600);
       font-size: 14px;
       font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .topic-title:hover {
       color: var(--sea-blue-550);
     }
 
+    .topic-description {
+      display: flex;
+      gap: 4px;
+    }
+
     .topic-author-name {
+      /* topic-details is 420px grid, minus padding and gap, and preserve space for date */
+      max-width: 190px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
       color: var(--sea-blue-500);
     }
 
     .topic-stats {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       padding-right: 8px;
     }
 
@@ -105,7 +122,8 @@
       display: flex;
       align-items: center;
       justify-content: end;
-      gap: 4px;
+      gap: 2px;
+      font-size: 12px;
     }
 
     .topic-last-post {
@@ -122,6 +140,14 @@
       flex-direction: column;
       gap: 4px;
       font-size: 12px;
+    }
+
+    .last-post-details p {
+      /* last-post-details is 200px grid, minus padding, gap, and avatar size */
+      max-width: 140px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   </style>
 </head>
@@ -152,9 +178,9 @@
                     </div>
                     <div class="topic-title-column">
                       <a class="topic-title" th:href="${topic.link}" th:text="${topic.title}"></a>
-                      <p>
+                      <p class="topic-description">
                         Posted by <a class="topic-author-name" th:text="${topic.authorName}"
-                          th:href="${topic.authorProfileUrl}"></a>,
+                          th:href="${topic.authorProfileUrl}"></a>—
                         <span class="topic-posted-date js-format-date" th:data-raw-date="${topic.postedDate}"></span>
                       </p>
                     </div>
@@ -162,11 +188,11 @@
                   <div class="topic-stats">
                     <span class="topic-stat-row">
                       <img src="/icons/chat.png" alt="Chat bubble" title="Reply" width="20px">
-                      <p th:text="${topic.replyCount}"></p>
+                      <p class="js-format-num" th:data-raw-num="${topic.replyCount}"></p>
                     </span>
                     <span class="topic-stat-row">
                       <img src="/icons/heart.png" alt="Heart" title="Likes" width="20px">
-                      <p th:text="${topic.likesCount}"></p>
+                      <p class="js-format-num" th:data-raw-num="${topic.likesCount}"></p>
                     </span>
                   </div>
                   <div class="topic-last-post">
@@ -247,6 +273,14 @@
         $(this).prop('title', fullDate)
       })
 
+      $(".js-format-num").each(function () {
+        const rawNum = $(this).attr('data-raw-num')
+        const formatted = formatBigNumbers(rawNum)
+        const dotted = rawNum.toLocaleString('en-US')
+        $(this).text(formatted)
+        $(this).prop('title', dotted)
+      })
+
       $(document).on("click", ".delete-post", function (event) {
         event.preventDefault()
         const topicId = $(this).attr('data-topic-id')
@@ -269,6 +303,16 @@
           .catch(console.error);
       })
     })
+
+    // format number > 1000 to K or M
+    // e.g., 123 -> 123, 1230 -> 1.2K
+    function formatBigNumbers(num) {
+      if (num >= 1_000_000_000) return "1B+";
+      if (num >= 1_000_000) return `${+(num / 1_000_000).toFixed(0)}M`;
+      if (num >= 10_000) return `${+(num / 10_000).toFixed(1)}K`;
+      if (num >= 1_000) return `${+(num / 1_000).toFixed(1)}K`;
+      return num;
+    }
   </script>
 </body>
 

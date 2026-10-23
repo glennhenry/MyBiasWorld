@@ -18,8 +18,11 @@ import mbworld.domain.auth.UsersActivity
 import mbworld.domain.cafe.CafeActivity
 import mbworld.domain.cafe.Sections
 import mbworld.domain.cafe.likes.Likes
+import mbworld.domain.cafe.reply.Comment
 import mbworld.domain.cafe.reply.Reply
 import mbworld.domain.cafe.toUrlSlug
+import mbworld.domain.cafe.topic.PostInfo
+import mbworld.domain.cafe.topic.PostInfoType
 import mbworld.domain.cafe.topic.Topic
 import mbworld.domain.profile.model.Profile
 import mbworld.domain.profile.subunits.MongoProfileRepository
@@ -124,6 +127,34 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                         addedReplies.add(it)
                         serverContext.subunits.reply.addReply(it)
                         serverContext.subunits.topic.incrementReply(it.topicId)
+                    }
+                }
+            }
+
+            addedReplies.groupBy { it.topicId }.forEach { (topicId, replies) ->
+                if (replies.isNotEmpty()) {
+                    val latestReply = replies.maxBy { it.postedDate }
+                    var latestCommentDate = -1L
+                    var latestComment: Comment? = null
+
+                    replies.forEach {
+                        val comment = it.comments.maxBy { it.postedDate }
+                        if (comment.postedDate > latestCommentDate) {
+                            latestComment = comment
+                            latestCommentDate = comment.postedDate
+                        }
+                    }
+
+                    if (latestReply.postedDate > latestCommentDate) {
+                        serverContext.subunits.topic.updateLatestPost(
+                            topicId = topicId,
+                            postInfo = PostInfo(PostInfoType.Reply, latestReply.replyId)
+                        )
+                    } else {
+                        serverContext.subunits.topic.updateLatestPost(
+                            topicId = topicId,
+                            postInfo = PostInfo(PostInfoType.Comment, latestComment!!.commentId)
+                        )
                     }
                 }
             }

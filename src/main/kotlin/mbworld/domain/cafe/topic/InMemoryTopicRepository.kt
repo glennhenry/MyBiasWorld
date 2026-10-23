@@ -110,4 +110,24 @@ class InMemoryTopicRepository(
         topics.add(topic)
         return Result.success(Unit)
     }
+
+    override suspend fun getLatestPost(topicId: String): Result<PostInfo> {
+        val postInfo = topics.find { it.topicId == topicId }
+            ?.latestPost
+            ?: return Result.failure(DocumentNotFoundException("topicId=$topicId not found"))
+        return Result.success(postInfo)
+    }
+
+    override suspend fun updateLatestPost(
+        topicId: String,
+        postInfo: PostInfo
+    ): Result<Unit> {
+        val topic = topics.find { it.topicId == topicId }
+            ?.copy(latestPost = postInfo)
+            ?: return Result.failure(DocumentNotFoundException("topicId=$topicId not found"))
+
+        topics.removeIf { it.topicId == topicId }
+        topics.add(topic)
+        return Result.success(Unit)
+    }
 }

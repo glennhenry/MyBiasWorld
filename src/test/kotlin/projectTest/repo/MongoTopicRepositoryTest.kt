@@ -7,6 +7,7 @@ import initMongo
 import io.ktor.util.date.*
 import kotlinx.coroutines.test.runTest
 import mbworld.domain.cafe.topic.MongoTopicRepository
+import mbworld.domain.cafe.topic.PostInfo
 import mbworld.domain.cafe.topic.Topic
 import testUtils.assertDoesNotFailSuspend
 import testUtils.randomString
@@ -30,7 +31,7 @@ class MongoTopicRepositoryTest {
 
         // setup
         val id = "5ab0980c-e2cb-990a-427a-5ad9b0311b7f"
-        val targetTopic = Topic(id, "sectionId123", "title123", "author123", "content123", 0, 0, 0)
+        val targetTopic = Topic(id, "sectionId123", "title123", "author123", "content123", 0, 0, 0, PostInfo("yes", ""))
         collection.insertMany(createTopic(20) + targetTopic)
 
         // tests
@@ -57,7 +58,7 @@ class MongoTopicRepositoryTest {
         assertEquals(1, repo.getTopicsCountForEachSection().getOrThrow()["sectionId123"])
 
         // 7. addTopic
-        val t = Topic("asdf", "asdf", "asdf", "asdf", "asdf", 0, 0, 0)
+        val t = Topic("asdf", "asdf", "asdf", "asdf", "asdf", 0, 0, 0, PostInfo("", ""))
         assertDoesNotFailSuspend { repo.addTopic(t).getOrThrow() }
         assertDoesNotFailSuspend { repo.getTopic("asdf").getOrThrow() }
 
@@ -80,14 +81,21 @@ class MongoTopicRepositoryTest {
         assertDoesNotFailSuspend { repo.incrementReply(id).getOrThrow() }
         assertEquals(1, repo.getTopic(id).getOrThrow().replies)
 
-        // 12. decrementReply
+        // 13. decrementReply
         assertDoesNotFailSuspend { repo.decrementReply(id).getOrNull() }
         assertEquals(0, repo.getTopic(id).getOrThrow().replies)
+
+        // 14. getLatestPost
+        assertEquals("yes", repo.getLatestPost(id).getOrThrow().postType)
+
+        // 15. updateLatestPost
+        assertDoesNotFailSuspend { repo.updateLatestPost(id, PostInfo("no", "1")).getOrNull() }
+        assertEquals("no", repo.getLatestPost(id).getOrThrow().postType)
     }
 
     private fun createTopic(amount: Int): List<Topic> {
         return List(amount) {
-            Topic(randstr(), randstr(), randstr(), randstr(), randstr(), 0, 0, getTimeMillis())
+            Topic(randstr(), randstr(), randstr(), randstr(), randstr(), 0, 0, getTimeMillis(), PostInfo("", ""))
         }
     }
 

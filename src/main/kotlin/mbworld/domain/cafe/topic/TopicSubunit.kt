@@ -234,6 +234,42 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
             .toReport()
     }
 
+    /**
+     * Get the latest post information of [topicId].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with `null` if topic is not found.
+     * - [Outcome.Ok] with the [PostInfo] otherwise.
+     */
+    suspend fun getLatestPost(topicId: String): Outcome<PostInfo?> {
+        return topicRepository.getLatestPost(topicId)
+            .onFailure {
+                if (it is DocumentNotFoundException) {
+                    Fancam.warn("topic") {
+                        "getLatestPost topic not found for topicId=$topicId"
+                    }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, "topic") {
+                    "getLatestPost query failed for topicId=$topicId"
+                }
+            }
+            .toOutcome { it }
+    }
+
+    /**
+     * Update the latest post information of [topicId].
+     * @return [Report] denoting success or failure.
+     */
+    suspend fun updateLatestPost(topicId: String, postInfo: PostInfo): Report {
+        return topicRepository.updateLatestPost(topicId, postInfo)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "getLatestPost failed for topicId=$topicId"
+                }
+            }
+            .toReport()
+    }
+
     override suspend fun debut(scope: ServerScope): Result<Unit> {
         return runCatching { }
     }

@@ -156,4 +156,26 @@ interface TopicRepository {
      * - [Result.failure] if other error occurs during the operation.
      */
     suspend fun decrementReply(topicId: String): Result<Unit>
+
+    /**
+     * Get the [topicId]'s [Topic.latestPost].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
+     * - [Result.failure] if other error occurs during the operation.
+     */
+    suspend fun getLatestPost(topicId: String): Result<PostInfo>
+
+    /**
+     * Update the [topicId]'s [Topic.latestPost] with [postInfo].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
+     * - [Result.failure] if other error occurs during the operation.
+     */
+    suspend fun updateLatestPost(topicId: String, postInfo: PostInfo): Result<Unit>
 }

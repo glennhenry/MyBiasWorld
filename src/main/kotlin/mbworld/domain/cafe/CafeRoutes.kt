@@ -20,6 +20,8 @@ import mbworld.domain.activity.model.Activity
 import mbworld.domain.activity.model.ActivitySource
 import mbworld.domain.cafe.reply.Comment
 import mbworld.domain.cafe.reply.Reply
+import mbworld.domain.cafe.topic.PostInfo
+import mbworld.domain.cafe.topic.PostInfoType
 import mbworld.domain.cafe.topic.Topic
 import mbworld.domain.cafe.topic.TopicDeletionOutcome
 import mbworld.domain.cafe.view.model.*
@@ -181,7 +183,8 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     content = post.content,
                     likes = 0,
                     replies = 0,
-                    postedDate = time
+                    postedDate = time,
+                    latestPost = null
                 )
 
                 serverContext.subunits.topic.addTopic(topic)
@@ -402,6 +405,11 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         return@guard
                     }
 
+                serverContext.subunits.topic.updateLatestPost(
+                    topicId = topicId,
+                    postInfo = PostInfo(PostInfoType.Reply, replyId)
+                )
+
                 val replyAmountNow = serverContext.subunits.reply.getReplyCount(topicId)
                     .okOrNull() ?: "an unknown amount"
 
@@ -479,6 +487,11 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                         call.respond(HttpStatusCode.InternalServerError, "Failed to post comment")
                         return@guard
                     }
+
+                serverContext.subunits.topic.updateLatestPost(
+                    topicId = topicId,
+                    postInfo = PostInfo(PostInfoType.Comment, commentId)
+                )
 
                 serverContext.subunits.activity.publish(
                     Activity(

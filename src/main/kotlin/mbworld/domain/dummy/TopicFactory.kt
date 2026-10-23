@@ -23,7 +23,8 @@ object TopicFactory {
                 content = content(member),
                 likes = 0,
                 replies = 0,
-                postedDate = postedDate()
+                postedDate = postedDate(),
+                latestPost = null
             )
         }
     }

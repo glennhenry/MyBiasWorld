@@ -26,6 +26,9 @@ val FieldTopicLikes = Topic::likes.name
 /** `replies` */
 val FieldTopicReplies = Topic::replies.name
 
+/** `latestPost` */
+val FieldLatestPost = Topic::latestPost.name
+
 class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) : TopicRepository {
     override suspend fun awaitInit() {
         topicCollection.createIndex(Indexes.text())
@@ -173,6 +176,35 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
                 .throwIfNothingModified("decrementReply", { filter }, { update })
         }
     }
+
+    override suspend fun getLatestPost(topicId: String): Result<PostInfo> {
+        return runMongoCatching {
+            topicCollection
+                .withDocumentClass<QueryTopicLatestPost>()
+                .find(Filters.eq(FieldTopicId, topicId))
+                .projection(
+                    Projections.fields(
+                        Projections.include(FieldLatestPost),
+                        Projections.excludeId()
+                    )
+                )
+                .firstOrNull()
+                ?.latestPost
+        }
+    }
+
+    override suspend fun updateLatestPost(
+        topicId: String,
+        postInfo: PostInfo
+    ): Result<Unit> {
+        return runMongoCatching {
+            val filter = Filters.eq(FieldTopicId, topicId)
+            val update = Updates.set(FieldLatestPost, postInfo)
+
+            topicCollection.updateOne(filter, update)
+                .throwIfNothingModified("updateLatestPost", { filter }, { update })
+        }
+    }
 }
 
 data class SectionCount(
@@ -188,4 +220,9 @@ data class QueryTopicId(
 data class QueryTopicLikes(
     @field:BsonId val id: String? = null,
     val likes: Int
+)
+
+data class QueryTopicLatestPost(
+    @field:BsonId val id: String? = null,
+    val latestPost: PostInfo
 )

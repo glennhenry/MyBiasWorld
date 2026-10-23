@@ -15,6 +15,7 @@ import mbworld.mongo.collection.UserAccount
  * @property likes The amount of likes the topic has.
  * @property replies The amount of replies the topic has.
  * @property postedDate Epoch millis of when the topic was posted.
+ * @property latestPost The latest post of this topic.
  */
 @Serializable
 data class Topic(
@@ -25,5 +26,6 @@ data class Topic(
     val content: String,
     val likes: Int,
     val replies: Int,
-    val postedDate: Long
+    val postedDate: Long,
+    val latestPost: PostInfo?,
 )

@@ -53,7 +53,7 @@
 
     .post-list-item {
       display: grid;
-      grid-template-columns: 482px 200px;
+      grid-template-columns: 462px 20px 200px;
       padding: 4px 0px;
       background: var(--white-to-gray-gradient);
       border-left: 1px solid var(--border-color);
@@ -85,9 +85,9 @@
     }
 
     .topic-title {
-      /* topic-details is 420px grid, minus padding and gap */
+      /* topic-details is 462px grid, minus padding and gap */
       width: max-content;
-      max-width: 410px;
+      max-width: 400px;
       color: var(--sea-blue-600);
       font-size: 14px;
       font-weight: bold;
@@ -102,11 +102,12 @@
 
     .topic-description {
       display: flex;
+      align-items: center;
       gap: 4px;
     }
 
     .topic-author-name {
-      /* topic-details is 420px grid, minus padding and gap, and preserve space for date and like reply */
+      /* topic-details is 462px grid, minus padding and gap, and preserve space for date and like reply */
       max-width: 190px;
       white-space: nowrap;
       overflow: hidden;
@@ -121,6 +122,43 @@
       gap: 2px;
       font-size: 12px;
     }
+
+    .topic-options {
+      position: relative;
+      justify-self: end;
+    }
+
+    .topic-options-popup {
+      width: max-content;
+      position: absolute;
+      top: -20;
+      left: 10;
+      background-color: white;
+      border: 1px solid #ccc;
+      z-index: 1;
+    }
+
+    .topic-options-item {
+      padding: 4px;
+    }
+
+    .topic-options-item:not(:last-child) {
+      border-bottom: 1px solid #ccc;
+    }
+
+    .icon-button-text {
+      all: unset;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .icon-button-text:hover {
+      text-decoration: underline;
+    }
+
+    .delete-topic-option {}
 
     .topic-last-post {
       display: flex;
@@ -192,6 +230,19 @@
                           <img src="/icons/chat.png" alt="Chat bubble" title="Reply" width="20px">
                           <p class="js-format-num" th:data-raw-num="${topic.replyCount}"></p>
                         </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="topic-options" th:data-topic-id="${topic.topicId}">
+                    <button class="icon-button topic-options-btn">
+                      <img src="/icons/options-row.png" width="16px">
+                    </button>
+                    <div class="topic-options-popup hidden">
+                      <div class="topic-options-item">
+                        <button class="icon-button-text delete-topic-option">
+                          <img src="/icons/delete-top.png" width="16px">
+                          <p>Delete</p>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -290,9 +341,21 @@
         $(this).prop('title', dotted)
       })
 
-      $(document).on("click", ".delete-post", function (event) {
-        event.preventDefault()
-        const topicId = $(this).attr('data-topic-id')
+      $(".topic-options-btn").on("click", function (event) {
+        event.stopPropagation();
+        $(".topic-options-popup").addClass("hidden");
+        const popup = $(this).siblings(".topic-options-popup");
+        popup.removeClass("hidden");
+      });
+
+      $(document).on("click", function (event) {
+        if (!$(event.target).closest(".topic-options").length) {
+          $(".topic-options-popup").addClass("hidden");
+        }
+      });
+
+      $(".delete-topic-option").click(function () {
+        const topicId = $(this).parent().parent().parent().attr("data-topic-id")
 
         fetch(`${window.location.href}/delete`, {
           method: "POST",

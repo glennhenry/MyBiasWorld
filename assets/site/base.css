@@ -223,6 +223,11 @@ body {
   text-decoration: underline;
 }
 
+.icon-button {
+  all: unset;
+  cursor: pointer;
+}
+
 .space-y-xs {
   height: 4px;
 }

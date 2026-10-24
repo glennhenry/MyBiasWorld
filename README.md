@@ -14,15 +14,17 @@ _This is a fan-made community project and is not affiliated or endorsed by any o
 
 Latest progress:
 
-<img src="progress.png" alt="website image" style="border:1px black solid;" width=500/>
+<img src="1.png" alt="website image" style="border:1px black solid;" width=500/>
 
-<img src="progress2.png" alt="website image" style="border:1px black solid;" width=500/>
+<img src="2.png" alt="website image" style="border:1px black solid;" width=500/>
 
-<img src="progress3.png" alt="website image" style="border:1px black solid;" width=500/>
+<img src="3.png" alt="website image" style="border:1px black solid;" width=500/>
 
-<img src="progress4.png" alt="website image" style="border:1px black solid;" width=500/>
+<img src="4.png" alt="website image" style="border:1px black solid;" width=500/>
 
-_(fake generated posts)_
+<img src="5.png" alt="website image" style="border:1px black solid;" width=500/>
+
+_(posts are artifically generated to illustrate the contents of the platform)_
 
 Still establishing the core system...
 

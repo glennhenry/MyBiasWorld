@@ -68,6 +68,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
         val addedReplies = mutableMapOf<String, Reply>()
         val addedTopicLikes = mutableListOf<Likes>()
         val addedReplyLikes = mutableListOf<Likes>()
+        val latestPostOfSections = mutableMapOf<String, Long>()
 
         val accounts = mutableMapOf<UserId, UserAccount>()
         val profiles = mutableMapOf<UserId, Profile>()
@@ -105,10 +106,24 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                         serverContext.subunits.topic.addTopic(topic)
                         addedTopics[topic.topicId] = topic
                         serverContext.subunits.collection.incrementTopicCount(topic.sectionId)
-                        serverContext.subunits.collection.updateLatestPost(
-                            sectionId = topic.sectionId,
-                            postInfo = LatestPostInfo(PostInfoType.Topic, topic.topicId, topic.authorId, topic.postedDate)
-                        )
+                        // update latest post of each section depending on topic postedDate
+                        val latestPostDate = latestPostOfSections[topic.sectionId]
+                        if (latestPostDate != null) {
+                            if (topic.postedDate > latestPostDate) {
+                                serverContext.subunits.collection.updateLatestPost(
+                                    sectionId = topic.sectionId,
+                                    postInfo = LatestPostInfo(
+                                        PostInfoType.Topic,
+                                        topic.topicId,
+                                        topic.authorId,
+                                        topic.postedDate
+                                    )
+                                )
+                                latestPostOfSections[topic.sectionId] = topic.postedDate
+                            }
+                        } else {
+                            latestPostOfSections[topic.sectionId] = topic.postedDate
+                        }
                     }
                 }
             }
@@ -127,14 +142,34 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             possibleCommentAuthors = insertedUsers
                         )
                     }.sortedBy { it.postedDate }
-                    replies.forEach {
-                        addedReplies[it.replyId] = it
-                        serverContext.subunits.reply.addReply(it)
-                        serverContext.subunits.topic.incrementReply(it.topicId)
+                    replies.forEach { reply ->
+                        addedReplies[reply.replyId] = reply
+                        serverContext.subunits.reply.addReply(reply)
+                        serverContext.subunits.topic.incrementReply(reply.topicId)
+
+                        // update latest post of each section depending on reply postedDate
+                        val latestPostDate = latestPostOfSections[topic.sectionId]
+                        if (latestPostDate != null) {
+                            if (reply.postedDate > latestPostDate) {
+                                serverContext.subunits.collection.updateLatestPost(
+                                    sectionId = topic.sectionId,
+                                    postInfo = LatestPostInfo(
+                                        PostInfoType.Reply,
+                                        reply.replyId,
+                                        reply.authorId,
+                                        reply.postedDate
+                                    )
+                                )
+                                latestPostOfSections[topic.sectionId] = reply.postedDate
+                            }
+                        } else {
+                            latestPostOfSections[topic.sectionId] = reply.postedDate
+                        }
                     }
                 }
             }
 
+            // update latest post of each topic depending on reply/comment
             addedReplies.values.groupBy { it.topicId }.forEach { (topicId, replies) ->
                 if (replies.isNotEmpty()) {
                     val latestReply = replies.maxBy { it.postedDate }
@@ -154,16 +189,22 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                     if (latestReply.postedDate > latestCommentDate) {
                         serverContext.subunits.topic.updateLatestPost(
                             topicId = topicId,
-                            postInfo = LatestPostInfo(PostInfoType.Reply, latestReply.replyId, latestReply.authorId, latestReply.postedDate)
-                        )
-                        serverContext.subunits.collection.updateLatestPost(
-                            sectionId = addedTopics[topicId]!!.sectionId,
-                            postInfo = LatestPostInfo(PostInfoType.Reply, latestReply.replyId, latestReply.authorId, latestReply.postedDate)
+                            postInfo = LatestPostInfo(
+                                PostInfoType.Reply,
+                                latestReply.replyId,
+                                latestReply.authorId,
+                                latestReply.postedDate
+                            )
                         )
                     } else {
                         serverContext.subunits.topic.updateLatestPost(
                             topicId = topicId,
-                            postInfo = LatestPostInfo(PostInfoType.Comment, latestComment!!.commentId, latestComment.authorId, latestCommentDate)
+                            postInfo = LatestPostInfo(
+                                PostInfoType.Comment,
+                                latestComment!!.commentId,
+                                latestComment.authorId,
+                                latestCommentDate
+                            )
                         )
                     }
                 }

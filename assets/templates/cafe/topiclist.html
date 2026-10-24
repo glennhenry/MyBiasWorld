@@ -53,7 +53,7 @@
 
     .post-list-item {
       display: grid;
-      grid-template-columns: 420px 62px 200px;
+      grid-template-columns: 482px 200px;
       padding: 4px 0px;
       background: var(--white-to-gray-gradient);
       border-left: 1px solid var(--border-color);
@@ -66,6 +66,7 @@
       display: flex;
       align-items: center;
       padding-left: 4px;
+      padding-right: 4px;
       gap: 4px;
     }
 
@@ -85,7 +86,8 @@
 
     .topic-title {
       /* topic-details is 420px grid, minus padding and gap */
-      width: 370px;
+      width: max-content;
+      max-width: 410px;
       color: var(--sea-blue-600);
       font-size: 14px;
       font-weight: bold;
@@ -104,19 +106,12 @@
     }
 
     .topic-author-name {
-      /* topic-details is 420px grid, minus padding and gap, and preserve space for date */
+      /* topic-details is 420px grid, minus padding and gap, and preserve space for date and like reply */
       max-width: 190px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       color: var(--sea-blue-500);
-    }
-
-    .topic-stats {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding-right: 8px;
     }
 
     .topic-stat-row {
@@ -184,22 +179,21 @@
                     </div>
                     <div class="topic-title-column">
                       <a class="topic-title" th:href="${topic.link}" th:text="${topic.title}"></a>
-                      <p class="topic-description">
-                        Posted by <a class="topic-author-name" th:text="${topic.authorName}"
+                      <div class="topic-description">
+                        by <a class="topic-author-name" th:text="${topic.authorName}"
                           th:href="${topic.authorProfileUrl}"></a>—
-                        <span class="js-format-date" th:data-raw-date="${topic.postedDate}"></span>
-                      </p>
+                        <p class="js-format-date" th:data-raw-date="${topic.postedDate}"></p>
+                        ·
+                        <div class="topic-stat-row">
+                          <img src="/icons/heart.png" alt="Heart" title="Likes" width="20px">
+                          <p class="js-format-num" th:data-raw-num="${topic.likesCount}"></p>
+                        </div>
+                        <div class="topic-stat-row">
+                          <img src="/icons/chat.png" alt="Chat bubble" title="Reply" width="20px">
+                          <p class="js-format-num" th:data-raw-num="${topic.replyCount}"></p>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div class="topic-stats">
-                    <span class="topic-stat-row">
-                      <img src="/icons/chat.png" alt="Chat bubble" title="Reply" width="20px">
-                      <p class="js-format-num" th:data-raw-num="${topic.replyCount}"></p>
-                    </span>
-                    <span class="topic-stat-row">
-                      <img src="/icons/heart.png" alt="Heart" title="Likes" width="20px">
-                      <p class="js-format-num" th:data-raw-num="${topic.likesCount}"></p>
-                    </span>
                   </div>
                   <div class="topic-last-post">
                     <div class="last-post-details" th:if="${topic.latestPostData != null}">

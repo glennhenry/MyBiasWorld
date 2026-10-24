@@ -35,6 +35,12 @@ class InMemoryTopicRepository(
         return Result.success(topics)
     }
 
+    override suspend fun getTitles(topicIds: List<String>): Result<Map<String, String>> {
+        return Result.success(topics.filter { it.topicId in topicIds }
+            .associateBy { it.topicId }
+            .mapValues { it.value.title })
+    }
+
     override suspend fun getTopicsOfSection(sectionId: String): Result<List<Topic>> {
         return Result.success(topics.filter { it.sectionId == sectionId })
     }

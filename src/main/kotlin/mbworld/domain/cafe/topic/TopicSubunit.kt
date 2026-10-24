@@ -92,6 +92,18 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     }
 
     /**
+     * Get the topic titles of all listed [topicIds].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with a map of each `topicId` to its title.
+     *   If `topicId` is not found, it won't be present in the map.
+     */
+    suspend fun getTitles(topicIds: List<String>): Outcome<Map<String, String>> {
+        return topicRepository.getTitles(topicIds)
+            .onFailure { Fancam.error(it, "topic") { "getTitles query failed" } }
+            .toOutcome { it }
+    }
+
+    /**
      * Returns an [Outcome] containing list of topics from [sectionId].
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with the topics.

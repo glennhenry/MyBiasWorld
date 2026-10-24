@@ -57,6 +57,16 @@ interface TopicRepository {
     suspend fun getTopics(): Result<List<Topic>>
 
     /**
+     * Get the topic titles for all listed [topicIds].
+     *
+     * Returns:
+     * - [Result.success] with map of each `topicId` to its title.
+     *   `topicId` that is missing may be absent from the map.
+     * - [Result.failure] if other error occurs while retrieving the data.
+     */
+    suspend fun getTitles(topicIds: List<String>): Result<Map<String, String>>
+
+    /**
      * Get every available topics on a specific section identified by [sectionId].
      *
      * Returns:

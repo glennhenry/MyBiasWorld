@@ -15,6 +15,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 /**
  * Test operations of [MongoTopicRepository].
@@ -92,11 +93,30 @@ class MongoTopicRepositoryTest {
         // 15. updateLatestPost
         assertDoesNotFailSuspend { repo.updateLatestPost(id, LatestPostInfo("no", "1", "", 0)).getOrNull() }
         assertEquals("no", repo.getLatestPost(id).getOrThrow().postType)
+
+        // 16. getTitles
+        collection.insertOne(
+            Topic(
+                "abcdef",
+                "",
+                "title123456",
+                "",
+                "",
+                0,
+                0,
+                0,
+                LatestPostInfo("", "", "", 0)
+            )
+        )
+        assertTrue {
+            val result = repo.getTitles(listOf(id, "abcdef")).getOrThrow()
+            result[id]!! == "title123" && result["abcdef"] == "title123456"
+        }
     }
 
-    private fun createTopic(amount: Int): List<Topic> {
+    private fun createTopic(amount: Int, id: String = randstr()): List<Topic> {
         return List(amount) {
-            Topic(randstr(), randstr(), randstr(), randstr(), randstr(), 0, 0, getTimeMillis(), LatestPostInfo("", "", "", 0))
+            Topic(id, randstr(), randstr(), randstr(), randstr(), 0, 0, getTimeMillis(), LatestPostInfo("", "", "", 0))
         }
     }
 

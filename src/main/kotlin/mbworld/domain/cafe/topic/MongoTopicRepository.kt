@@ -7,6 +7,7 @@ import encore.datastore.throwIfNothingDeleted
 import encore.datastore.throwIfNothingModified
 import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.associate
+import kotlinx.coroutines.flow.associateBy
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import org.bson.Document
@@ -74,6 +75,26 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
                 .find()
                 .sort(Sorts.descending(FieldPostedDate))
                 .toList()
+        }
+    }
+
+    override suspend fun getTitles(topicIds: List<String>): Result<Map<String, String>> {
+        return runMongoCatching {
+            topicCollection.aggregate<QueryTopicTitle>(
+                listOf(
+                    Aggregates.match(Filters.`in`(FieldTopicId, topicIds)),
+                    Aggregates.project(
+                        Projections.fields(
+                            Projections.excludeId(),
+                            Projections.include(FieldTopicId),
+                            Projections.include("title"),
+                        )
+                    )
+                )
+            ).associateBy(
+                keySelector = { it.topicId },
+                valueTransform = { it.title }
+            )
         }
     }
 
@@ -237,4 +258,10 @@ data class QueryTopicLikes(
 data class QueryTopicLatestPost(
     @field:BsonId val id: String? = null,
     val latestPost: LatestPostInfo
+)
+
+data class QueryTopicTitle(
+    @field:BsonId val id: String? = null,
+    val topicId: String,
+    val title: String
 )

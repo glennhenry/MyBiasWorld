@@ -18,6 +18,7 @@ import io.ktor.server.thymeleaf.*
 import mbworld.context.ServerContext
 import mbworld.domain.activity.model.Activity
 import mbworld.domain.activity.model.ActivitySource
+import mbworld.domain.cafe.collection.LatestSectionPostInfo
 import mbworld.domain.cafe.reply.Comment
 import mbworld.domain.cafe.reply.Reply
 import mbworld.domain.cafe.topic.LatestPostInfo
@@ -58,7 +59,15 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 val sections = serverContext.subunits.collection.getSections()
                 val spaces = serverContext.subunits.collection.getSpaces()
 
-                val authors = sections.mapNotNull { it.latestPost?.authorId }
+                val authors = mutableListOf<String>()
+                val topicIds = mutableListOf<String>()
+                for ((_, _, _, _, _, _, latestPost) in sections) {
+                    if (latestPost != null) {
+                        authors.add(latestPost.authorId)
+                        topicIds.add(latestPost.topicId)
+                    }
+                }
+                val titles = serverContext.subunits.topic.getTitles(topicIds.distinct()).okOrThrow()
                 val summaries = serverContext.subunits.profile.getUserSummaries(authors.distinct()).okOrThrow()
 
                 val sectionsBySpace = sections.groupBy { it.spaceId }
@@ -72,6 +81,14 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                                 .sortedBy { it.order }
                                 .map {
                                     val latestPostData = if (it.latestPost != null) {
+                                        val title = titles[it.latestPost.topicId] ?: run {
+                                            Fancam.warn {
+                                                "Title is null for ${it.latestPost}"
+                                            }
+                                            "<unknown_title>"
+                                        }
+                                        val topicUrl =
+                                            "/cafe/${it.id}/${it.latestPost.topicId.shortUuid()}/${title.toUrlSlug()}"
                                         val authorSummary = summaries[it.latestPost.authorId]
                                         if (authorSummary == null) {
                                             Fancam.warn {
@@ -79,9 +96,17 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                                                         "is null (authorId '${it.latestPost.authorId}')"
                                             }
                                         }
-                                        LatestPostData(
-                                            postId = it.latestPost.postId,
+                                        LatestSectionPostData(
+                                            postId = if (it.latestPost.postType == PostInfoType.Topic) {
+                                                it.latestPost.topicId
+                                            } else {
+                                                requireNotNull(it.latestPost.replyId) {
+                                                    "latestPost.replyId shouldn't be null when latestPost.postType is reply"
+                                                }
+                                            },
                                             postType = it.latestPost.postType,
+                                            topicTitle = title.take(30),
+                                            topicUrl = topicUrl,
                                             authorDisplayName = authorSummary?.displayName ?: "<unknown>",
                                             authorAvatarUrl = authorSummary?.avatarUrl ?: "images/unknown.png",
                                             authorProfileUrl = authorSummary?.username?.let { a -> "/profile/@$a/overview" }
@@ -259,7 +284,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 serverContext.subunits.collection.incrementTopicCount(section)
                 serverContext.subunits.collection.updateLatestPost(
                     sectionId = section,
-                    postInfo = LatestPostInfo(PostInfoType.Topic, id, acc.userId, time)
+                    postInfo = LatestSectionPostInfo(PostInfoType.Topic, id, null, acc.userId, time)
                 )
 
                 val topicUrl = "/cafe/$section/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
@@ -479,7 +504,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 )
                 serverContext.subunits.collection.updateLatestPost(
                     sectionId = section,
-                    postInfo = LatestPostInfo(PostInfoType.Reply, id, account.userId, time)
+                    postInfo = LatestSectionPostInfo(PostInfoType.Reply, topicId, replyId, account.userId, time)
                 )
 
                 val replyAmountNow = serverContext.subunits.reply.getReplyCount(topicId)

@@ -38,5 +38,26 @@ data class SectionItem(
     val name: String,
     val description: String,
     val topicCounts: Int,
-    val latestPostData: LatestPostData?
+    val latestPostData: LatestSectionPostData?
+)
+
+/**
+ * @property postId
+ * @property postType
+ * @property topicTitle
+ * @property topicUrl
+ * @property authorDisplayName
+ * @property authorAvatarUrl
+ * @property authorProfileUrl
+ * @property postedDate
+ */
+data class LatestSectionPostData(
+    val postId: String,
+    val postType: String,
+    val topicTitle: String,
+    val topicUrl: String,
+    val authorDisplayName: String,
+    val authorAvatarUrl: String,
+    val authorProfileUrl: String,
+    val postedDate: Long
 )

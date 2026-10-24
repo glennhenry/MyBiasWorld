@@ -18,7 +18,16 @@ class OptionalAccountGuard(private val serverContext: ServerContext) : AuthGuard
     override suspend fun verify(call: ApplicationCall): GuardResult {
         // no account -> no token is found; verify fails by returning null; db failure; or profile not found;
         val token = call.request.cookies["session"] ?: return GuardResult.Welcome
-        val userId = serverContext.subunits.websiteSession.verify(token) ?: return GuardResult.Welcome
+        val userId = serverContext.subunits.websiteSession.verify(token) ?: run {
+            // verify failed, remove cookie
+            call.response.cookies.append(
+                name = "session",
+                value = "",
+                maxAge = 0,
+                path = "/"
+            )
+            return GuardResult.Welcome
+        }
         val account = serverContext.subunits.account.getAccountByUserId(userId).okOrNull() ?: return GuardResult.Welcome
 
         call.attributes[SessionAccountKey] = account

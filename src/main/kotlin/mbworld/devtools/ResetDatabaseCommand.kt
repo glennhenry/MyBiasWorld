@@ -48,6 +48,7 @@ class ResetDatabaseCommand(private val mongoClient: MongoClient) : Command {
         val db = mongoClient.getDatabase(Venue.encore.database.dbName)
             .withCodecRegistry(CodecRegistry)
         db.drop()
+        serverContext.subunits.websiteSession.clearAllSessions()
         val res = serverContext.commandDispatcher.handleCommand(
             CommandRequest("setupdb", emptyMap()), serverContext
         )

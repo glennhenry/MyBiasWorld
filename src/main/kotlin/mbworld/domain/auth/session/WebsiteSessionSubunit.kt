@@ -120,6 +120,10 @@ class WebsiteSessionSubunit(
             }
     }
 
+    fun clearAllSessions() {
+        sessions.clear()
+    }
+
     override suspend fun debut(scope: ServerScope): Result<Unit> {
         return runCatching {
             val result = sessionStore.load().getOrThrow()

@@ -24,7 +24,17 @@ class MustNotHaveAccountGuard(
     override suspend fun verify(call: ApplicationCall): GuardResult {
         // no account -> no token is found; verify fails by returning null;
         val token = call.request.cookies["session"] ?: return GuardResult.Welcome
-        val userId = websiteSessionSubunit.verify(token) ?: return GuardResult.Welcome
+        val userId = websiteSessionSubunit.verify(token) ?: run {
+            // verify failed, remove cookie
+            call.response.cookies.append(
+                name = "session",
+                value = "",
+                maxAge = 0,
+                path = "/"
+            )
+            return GuardResult.Welcome
+        }
+
         val account = serverContext.subunits.account.getAccountByUserId(userId).okOrNull()
 
         val data = ErrorModel(

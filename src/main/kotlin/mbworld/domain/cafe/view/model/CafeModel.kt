@@ -31,10 +31,12 @@ data class SpaceItem(
  * @property name Display name of the section (e.g., "Kep1er Discussion")
  * @property description Text describing the purpose of the section.
  * @property topicCounts The amount of topic that exists within this section.
+ * @property latestPostData The data of the latest post this section has, if any.
  */
 data class SectionItem(
     val id: String,
     val name: String,
     val description: String,
     val topicCounts: Int,
+    val latestPostData: LatestPostData?
 )

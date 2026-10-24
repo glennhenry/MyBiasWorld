@@ -18,6 +18,7 @@ data class LatestPostInfo(
 )
 
 object PostInfoType {
+    const val Topic = "topic"
     const val Reply = "reply"
     const val Comment = "comment"
 }

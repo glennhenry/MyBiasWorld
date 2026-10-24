@@ -1,6 +1,7 @@
 package mbworld.domain.cafe.collection
 
 import kotlinx.serialization.Serializable
+import mbworld.domain.cafe.topic.LatestPostInfo
 
 /**
  * Refer to the **section** concept in cafe.
@@ -15,6 +16,7 @@ import kotlinx.serialization.Serializable
  * @property name Display name of the section.
  * @property order The order of how each sections are displayed within the same space.
  * @property topicCounts The amount of topic this section have.
+ * @property latestPost The information about the latest post (topic or reply) this section has.
  */
 @Serializable
 data class Section(
@@ -24,6 +26,6 @@ data class Section(
     val description: String,
     val order: Int,
 
-    // not thread safe
-    var topicCounts: Int,
+    val topicCounts: Int,
+    val latestPost: LatestPostInfo?,
 )

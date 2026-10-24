@@ -117,7 +117,8 @@ class SetupDatabaseCommand(private val mongoClient: MongoClient) : Command {
                     name = space.getElementsByTagName("name").item(0).textContent,
                     description = space.getElementsByTagName("description").item(0).textContent,
                     order = space.getAttribute("order").toInt(),
-                    topicCounts = 0
+                    topicCounts = 0,
+                    latestPost = null
                 )
             )
         }

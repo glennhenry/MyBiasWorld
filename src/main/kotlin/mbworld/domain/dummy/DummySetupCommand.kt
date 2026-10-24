@@ -64,8 +64,8 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
         val numAccounts = (15..20).random()
 
         val insertedUsers = mutableListOf<String>()
-        val addedTopics = mutableListOf<Topic>()
-        val addedReplies = mutableListOf<Reply>()
+        val addedTopics = mutableMapOf<String, Topic>()
+        val addedReplies = mutableMapOf<String, Reply>()
         val addedTopicLikes = mutableListOf<Likes>()
         val addedReplyLikes = mutableListOf<Likes>()
 
@@ -103,20 +103,24 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                     val topics = TopicFactory.topics(userId, numPostsEachAccounts)
                     for (topic in topics) {
                         serverContext.subunits.topic.addTopic(topic)
-                        addedTopics.add(topic)
+                        addedTopics[topic.topicId] = topic
                         serverContext.subunits.collection.incrementTopicCount(topic.sectionId)
+                        serverContext.subunits.collection.updateLatestPost(
+                            sectionId = topic.sectionId,
+                            postInfo = LatestPostInfo(PostInfoType.Topic, topic.topicId, topic.authorId, topic.postedDate)
+                        )
                     }
                 }
             }
 
             // 3. create replies and comments
-            addedTopics.forEach { topic ->
+            addedTopics.forEach { (topicId, topic) ->
                 // 70% chance of reply, 30% chance for no reply
                 if (Random.nextDouble() < 0.7) {
                     val amountOfReply = (1..6).random()
                     val replies = List(amountOfReply) {
                         ReplyFactory.reply(
-                            topicId = topic.topicId,
+                            topicId = topicId,
                             topicPostDate = topic.postedDate,
                             possibleReplyAuthors = insertedUsers,
                             possibleAmountofComments = 1..4,
@@ -124,14 +128,14 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                         )
                     }.sortedBy { it.postedDate }
                     replies.forEach {
-                        addedReplies.add(it)
+                        addedReplies[it.replyId] = it
                         serverContext.subunits.reply.addReply(it)
                         serverContext.subunits.topic.incrementReply(it.topicId)
                     }
                 }
             }
 
-            addedReplies.groupBy { it.topicId }.forEach { (topicId, replies) ->
+            addedReplies.values.groupBy { it.topicId }.forEach { (topicId, replies) ->
                 if (replies.isNotEmpty()) {
                     val latestReply = replies.maxBy { it.postedDate }
                     var latestCommentDate = -1L
@@ -152,6 +156,10 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             topicId = topicId,
                             postInfo = LatestPostInfo(PostInfoType.Reply, latestReply.replyId, latestReply.authorId, latestReply.postedDate)
                         )
+                        serverContext.subunits.collection.updateLatestPost(
+                            sectionId = addedTopics[topicId]!!.sectionId,
+                            postInfo = LatestPostInfo(PostInfoType.Reply, latestReply.replyId, latestReply.authorId, latestReply.postedDate)
+                        )
                     } else {
                         serverContext.subunits.topic.updateLatestPost(
                             topicId = topicId,
@@ -164,22 +172,22 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
             // 4. add user likes to topic and replies
             insertedUsers.forEach { userId ->
                 // 30% chance for a user to like a particular topic
-                addedTopics.forEach { topic ->
+                addedTopics.forEach { (topicId, _) ->
                     if (Random.nextDouble() < 0.3) {
                         val now = TimeCenter.now() // differ very slightly
-                        serverContext.subunits.likes.addLike(userId, topic.topicId)
-                        serverContext.subunits.topic.incrementLike(topic.topicId)
-                        addedTopicLikes.add(Likes(userId, topic.topicId, now))
+                        serverContext.subunits.likes.addLike(userId, topicId)
+                        serverContext.subunits.topic.incrementLike(topicId)
+                        addedTopicLikes.add(Likes(userId, topicId, now))
                     }
                 }
 
                 // 10% chance for a user to like a particular reply
-                addedReplies.forEach { reply ->
+                addedReplies.forEach { (replyId, reply) ->
                     if (Random.nextDouble() < 0.1) {
                         val now = TimeCenter.now() // differ very slightly
-                        serverContext.subunits.likes.addLike(userId, reply.replyId)
-                        serverContext.subunits.reply.incrementLike(reply.replyId)
-                        addedReplyLikes.add(Likes(userId, reply.replyId, now))
+                        serverContext.subunits.likes.addLike(userId, replyId)
+                        serverContext.subunits.reply.incrementLike(replyId)
+                        addedReplyLikes.add(Likes(userId, replyId, now))
                     }
                 }
             }
@@ -203,7 +211,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
             }
 
             // 5 topic posts
-            addedTopics.shuffled().take(5).forEach { topic ->
+            addedTopics.values.shuffled().take(5).forEach { topic ->
                 val topicUrl =
                     "/cafe/${topic.sectionId}/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
@@ -225,7 +233,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
             }
 
             // 5 replies
-            addedReplies.shuffled().take(5).forEach { reply ->
+            addedReplies.values.shuffled().take(5).forEach { reply ->
                 val topic = serverContext.subunits.topic.getTopic(reply.topicId)
                     .okOrThrow()!!
                 val replyAmount = serverContext.subunits.reply.getReplyCount(reply.topicId)
@@ -252,7 +260,7 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
             }
 
             // 0-5 comments
-            addedReplies.shuffled().take(5).forEach { reply ->
+            addedReplies.values.shuffled().take(5).forEach { reply ->
                 reply.comments.shuffled().take(1).firstOrNull()?.let {
                     serverContext.subunits.activity.publish(
                         Activity(

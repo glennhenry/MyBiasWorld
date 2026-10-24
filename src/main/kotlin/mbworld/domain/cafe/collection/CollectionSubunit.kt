@@ -1,13 +1,14 @@
 package mbworld.domain.cafe.collection
 
+import encore.datastore.DocumentNotFoundException
 import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.utils.types.Outcome
 import encore.utils.types.Report
+import encore.utils.types.toOutcome
 import encore.utils.types.toReport
-import mbworld.domain.cafe.view.model.SectionItem
-import mbworld.domain.cafe.view.model.SpaceItem
+import mbworld.domain.cafe.topic.LatestPostInfo
 
 /**
  * Server subunits that handles [Space] and [Section] concerns from [CollectionRepository].
@@ -42,21 +43,6 @@ class CollectionSubunit(
         return Outcome.Ok(sections.find { it.id == sectionId })
     }
 
-    fun getSpacesForLandingModel(): List<SpaceItem> {
-        val sectionsBySpace = sections.groupBy { it.spaceId }
-        return spaces
-            .sortedBy { it.order }
-            .map { space ->
-                SpaceItem(
-                    name = space.name,
-                    sections = sectionsBySpace[space.id]
-                        .orEmpty()
-                        .sortedBy { it.order }
-                        .map { SectionItem(it.id, it.name, it.description, it.topicCounts) }
-                )
-            }
-    }
-
     /**
      * Increment the topic count of [sectionId] by 1.
      * `sectionId` refers to the [Section.id].
@@ -68,9 +54,8 @@ class CollectionSubunit(
                 Fancam.error(it) { "incrementTopicCount failed for $sectionId" }
             }
             .onSuccess {
-                // not thread safe: may modified concurrently resulting in inconsistent number
-                // but topic counts aren't very important
-                sections.find { it.id == sectionId }?.topicCounts += 1
+                val idx = sections.indexOfFirst { it.id == sectionId }
+                sections[idx] = sections[idx].copy(topicCounts = sections[idx].topicCounts + 1)
             }
             .toReport()
     }
@@ -86,7 +71,48 @@ class CollectionSubunit(
                 Fancam.error(it) { "decrementTopicCount failed for $sectionId" }
             }
             .onSuccess {
-                sections.find { it.id == sectionId }?.topicCounts -= 1
+                val idx = sections.indexOfFirst { it.id == sectionId }
+                sections[idx] = sections[idx].copy(topicCounts = sections[idx].topicCounts - 1)
+            }
+            .toReport()
+    }
+
+    /**
+     * Get the latest post information of [sectionId].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with `null` if topic is not found.
+     * - [Outcome.Ok] with the [LatestPostInfo] otherwise.
+     */
+    suspend fun getLatestPost(sectionId: String): Outcome<LatestPostInfo?> {
+        return collectionRepository.getLatestPost(sectionId)
+            .onFailure {
+                if (it is DocumentNotFoundException) {
+                    Fancam.warn("topic") {
+                        "getLatestPost topic not found for sectionId=$sectionId"
+                    }
+                    return Outcome.Ok(null)
+                }
+                Fancam.error(it, "topic") {
+                    "getLatestPost query failed for sectionId=$sectionId"
+                }
+            }
+            .toOutcome { it }
+    }
+
+    /**
+     * Update the latest post information of [sectionId].
+     * @return [Report] denoting success or failure.
+     */
+    suspend fun updateLatestPost(sectionId: String, postInfo: LatestPostInfo): Report {
+        return collectionRepository.updateLatestPost(sectionId, postInfo)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "getLatestPost failed for sectionId=$sectionId"
+                }
+            }
+            .onSuccess {
+                val idx = sections.indexOfFirst { it.id == sectionId }
+                sections[idx] = sections[idx].copy(latestPost = postInfo)
             }
             .toReport()
     }

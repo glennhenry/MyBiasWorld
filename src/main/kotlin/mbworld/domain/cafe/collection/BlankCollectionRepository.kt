@@ -1,5 +1,7 @@
 package mbworld.domain.cafe.collection
 
+import mbworld.domain.cafe.topic.LatestPostInfo
+
 class BlankCollectionRepository: CollectionRepository {
     override suspend fun getSpaces(): Result<List<Space>> = TODO("NO OPERATION")
     override suspend fun getSections(): Result<List<Section>> = TODO("NO OPERATION")
@@ -16,6 +18,17 @@ class BlankCollectionRepository: CollectionRepository {
     }
 
     override suspend fun decrementTopicCount(sectionId: String): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getLatestPost(sectionId: String): Result<LatestPostInfo> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateLatestPost(
+        sectionId: String,
+        postInfo: LatestPostInfo
+    ): Result<Unit> {
         TODO("Not yet implemented")
     }
 }

@@ -35,6 +35,7 @@ import mbworld.routes.guard.RequireAccountGuard
 import mbworld.routes.guard.getAccountData
 import mbworld.routes.guard.getUserAccount
 import mbworld.routes.utils.serverError
+import kotlin.collections.orEmpty
 
 val Sections = mapOf(
     "kpop" to "K-pop Discussion",
@@ -54,11 +55,50 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
     override fun Route.install() {
         get("/cafe") {
             guard(call, optionalAccountGuard) {
-                val spaces = serverContext.subunits.collection.getSpacesForLandingModel()
+                val sections = serverContext.subunits.collection.getSections()
+                val spaces = serverContext.subunits.collection.getSpaces()
+
+                val authors = sections.mapNotNull { it.latestPost?.authorId }
+                val summaries = serverContext.subunits.profile.getUserSummaries(authors.distinct()).okOrThrow()
+
+                val sectionsBySpace = sections.groupBy { it.spaceId }
+                val spaceItems = spaces
+                    .sortedBy { it.order }
+                    .map { space ->
+                        SpaceItem(
+                            name = space.name,
+                            sections = sectionsBySpace[space.id]
+                                .orEmpty()
+                                .sortedBy { it.order }
+                                .map {
+                                    val latestPostData = if (it.latestPost != null) {
+                                        val authorSummary = summaries[it.latestPost.authorId]
+                                        if (authorSummary == null) {
+                                            Fancam.warn {
+                                                "authorSummary of sectionId '${it.id}' " +
+                                                        "is null (authorId '${it.latestPost.authorId}')"
+                                            }
+                                        }
+                                        LatestPostData(
+                                            postId = it.latestPost.postId,
+                                            postType = it.latestPost.postType,
+                                            authorDisplayName = authorSummary?.displayName ?: "<unknown>",
+                                            authorAvatarUrl = authorSummary?.avatarUrl ?: "images/unknown.png",
+                                            authorProfileUrl = authorSummary?.username?.let { a -> "/profile/@$a/overview" }
+                                                ?: "",
+                                            postedDate = it.latestPost.postedDate
+                                        )
+                                    } else {
+                                        null
+                                    }
+                                    SectionItem(it.id, it.name, it.description, it.topicCounts, latestPostData)
+                                }
+                        )
+                    }
 
                 val data = CafeModel(
                     account = call.attributes.getAccountData(),
-                    spaces = spaces
+                    spaces = spaceItems
                 )
 
                 call.respond(ThymeleafContent("cafe/cafe", mapOf("data" to data)))
@@ -217,6 +257,10 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                     }
 
                 serverContext.subunits.collection.incrementTopicCount(section)
+                serverContext.subunits.collection.updateLatestPost(
+                    sectionId = section,
+                    postInfo = LatestPostInfo(PostInfoType.Topic, id, acc.userId, time)
+                )
 
                 val topicUrl = "/cafe/$section/${topic.topicId.shortUuid()}/${topic.title.toUrlSlug()}"
                 serverContext.subunits.activity.publish(
@@ -432,6 +476,10 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 serverContext.subunits.topic.updateLatestPost(
                     topicId = topicId,
                     postInfo = LatestPostInfo(PostInfoType.Reply, replyId, account.userId, time)
+                )
+                serverContext.subunits.collection.updateLatestPost(
+                    sectionId = section,
+                    postInfo = LatestPostInfo(PostInfoType.Reply, id, account.userId, time)
                 )
 
                 val replyAmountNow = serverContext.subunits.reply.getReplyCount(topicId)

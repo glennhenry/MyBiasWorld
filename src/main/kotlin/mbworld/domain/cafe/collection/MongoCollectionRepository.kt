@@ -1,6 +1,7 @@
 package mbworld.domain.cafe.collection
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Projections
 import com.mongodb.client.model.Sorts
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
@@ -8,6 +9,8 @@ import encore.datastore.runMongoCatching
 import encore.datastore.throwIfNothingModified
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
+import mbworld.domain.cafe.topic.LatestPostInfo
+import mbworld.domain.cafe.topic.QueryTopicLatestPost
 
 /** `order` */
 val FieldSpaceOrder = Space::order.name
@@ -21,8 +24,11 @@ val FieldSpaceId = Space::id.name
 /** `id` */
 val FieldSectionId = Section::id.name
 
-/** `topicCouts` */
+/** `topicCounts` */
 val FieldSectionTopicCounts = Section::topicCounts.name
+
+/** `latestPost` */
+val FieldSectionLatestPost = Section::latestPost.name
 
 class MongoCollectionRepository(
     private val spaceCollection: MongoCollection<Space>,
@@ -81,6 +87,35 @@ class MongoCollectionRepository(
             sectionCollection
                 .updateOne(filter, update)
                 .throwIfNothingModified("incrementTopicCount", { filter }, { update })
+        }
+    }
+
+    override suspend fun getLatestPost(sectionId: String): Result<LatestPostInfo> {
+        return runMongoCatching {
+            sectionCollection
+                .withDocumentClass<QueryTopicLatestPost>()
+                .find(Filters.eq(FieldSectionId, sectionId))
+                .projection(
+                    Projections.fields(
+                        Projections.include(FieldSectionLatestPost),
+                        Projections.excludeId()
+                    )
+                )
+                .firstOrNull()
+                ?.latestPost
+        }
+    }
+
+    override suspend fun updateLatestPost(
+        sectionId: String,
+        postInfo: LatestPostInfo
+    ): Result<Unit> {
+        return runMongoCatching {
+            val filter = Filters.eq(FieldSectionId, sectionId)
+            val update = Updates.set(FieldSectionLatestPost, postInfo)
+
+            sectionCollection.updateOne(filter, update)
+                .throwIfNothingModified("updateLatestPost", { filter }, { update })
         }
     }
 }

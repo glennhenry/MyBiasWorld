@@ -1,5 +1,10 @@
 package mbworld.domain.cafe.collection
 
+import encore.datastore.DocumentNotFoundException
+import encore.datastore.DocumentNotUpdatedException
+import mbworld.domain.cafe.topic.LatestPostInfo
+import mbworld.domain.cafe.topic.Topic
+
 /**
  * Repository for [Space] and [Section] data collection.
  *
@@ -39,4 +44,27 @@ interface CollectionRepository {
      * `sectionId` refers to [Section.id].
      */
     suspend fun decrementTopicCount(sectionId: String): Result<Unit>
+
+    /**
+     * Get the [sectionId]'s [Section.latestPost].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
+     * - [Result.failure] if other error occurs during the operation.
+     */
+    suspend fun getLatestPost(sectionId: String): Result<LatestPostInfo>
+
+    /**
+     * Update the [sectionId]'s [Section.latestPost] with [postInfo].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] with [DocumentNotFoundException] if topic is not found.
+     * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
+     * - [Result.failure] if other error occurs during the operation.
+     */
+    suspend fun updateLatestPost(sectionId: String, postInfo: LatestPostInfo): Result<Unit>
+
 }

@@ -28,8 +28,11 @@ import mbworld.ProjectIdentity
 import mbworld.context.RealContextFactory
 import mbworld.context.ServerContext
 import mbworld.definition.XmlDataSource
+import mbworld.devtools.ClearWebSessionCommand
+import mbworld.devtools.ListWebSessionCommand
 import mbworld.devtools.ResetDatabaseCommand
 import mbworld.devtools.SetupDatabaseCommand
+import mbworld.devtools.GetWebSessionCommand
 import mbworld.domain.activity.ActivityReceiver
 import mbworld.domain.auth.AuthApiRoutes
 import mbworld.domain.auth.AuthPageRoutes
@@ -171,6 +174,9 @@ fun commandHandlers(fancam: OfficialFancam, serverContext: ServerContext, mongoc
         register(DummySetupCommand(db))
         register(SetupDatabaseCommand(mongoc))
         register(ResetDatabaseCommand(mongoc))
+        register(ClearWebSessionCommand())
+        register(ListWebSessionCommand())
+        register(GetWebSessionCommand())
     }
 }
 

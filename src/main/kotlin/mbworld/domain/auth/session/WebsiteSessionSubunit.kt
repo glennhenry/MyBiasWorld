@@ -93,6 +93,19 @@ class WebsiteSessionSubunit(
     }
 
     /**
+     * Verify and retrieve the session by its [token].
+     *
+     * @return the session or `null` if session is invalid or not found.
+     */
+    suspend fun getSession(token: String): SessionMemoryModel? {
+        return if (verify(token) != null) {
+            sessions[token]
+        } else {
+            null
+        }
+    }
+
+    /**
      * Used to delete a session by it's [token], usually when user logs out.
      */
     suspend fun delete(token: String) {
@@ -120,8 +133,21 @@ class WebsiteSessionSubunit(
             }
     }
 
-    fun clearAllSessions() {
+    /**
+     * Get all active sessions.
+     */
+    fun getAllActiveSessions(limit: Int = 20): List<SessionMemoryModel> {
+        return sessions.values.take(limit)
+    }
+
+    /**
+     * Clear all sessions
+     * @return The total amount of sessions deleted.
+     */
+    fun clearAllSessions(): Int {
+        val total = sessions.size
         sessions.clear()
+        return total
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> {

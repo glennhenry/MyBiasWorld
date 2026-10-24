@@ -49,11 +49,9 @@
       border-bottom: 1px solid var(--border-color);
     }
 
-    .topic-lists {}
-
     .post-list-item {
       display: grid;
-      grid-template-columns: 462px 20px 200px;
+      grid-template-columns: 457px 20px 5px 200px;
       padding: 4px 0px;
       background: var(--white-to-gray-gradient);
       border-left: 1px solid var(--border-color);
@@ -126,13 +124,26 @@
     .topic-options {
       position: relative;
       justify-self: end;
+      margin-top: 3px;
+    }
+
+    .topic-options-btn {
+      display: none;
+    }
+
+    .post-list-item:hover .topic-options-btn {
+      display: block;
+    }
+
+    .post-list-item.menu-open .topic-options-btn {
+      display: block;
     }
 
     .topic-options-popup {
       width: max-content;
       position: absolute;
-      top: -20;
-      left: 10;
+      top: -20px;
+      left: 10px;
       background-color: white;
       border: 1px solid #ccc;
       z-index: 1;
@@ -158,15 +169,18 @@
       text-decoration: underline;
     }
 
-    .delete-topic-option {}
+    .divider {
+      width: 2px;
+      height: 90%;
+      align-self: center;
+      background-color: var(--muted-blue-500);
+    }
 
     .topic-last-post {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-right: 4px;
-      padding-left: 4px;
-      border-left: 2px solid var(--muted-blue-500);
+      padding: 4px;
     }
 
     .last-post-details {
@@ -246,6 +260,7 @@
                       </div>
                     </div>
                   </div>
+                  <div class="divider"></div>
                   <div class="topic-last-post">
                     <div class="last-post-details" th:if="${topic.latestPostData != null}">
                       <a th:href="${topic.latestPostData.authorProfileUrl}"
@@ -343,14 +358,24 @@
 
       $(".topic-options-btn").on("click", function (event) {
         event.stopPropagation();
-        $(".topic-options-popup").addClass("hidden");
+
+        const item = $(this).closest(".post-list-item");
         const popup = $(this).siblings(".topic-options-popup");
-        popup.removeClass("hidden");
+        const isOpen = !popup.hasClass("hidden");
+
+        $(".topic-options-popup").addClass("hidden");
+        $(".post-list-item").removeClass("menu-open");
+
+        if (!isOpen) {
+          popup.removeClass("hidden");
+          item.addClass("menu-open");
+        }
       });
 
       $(document).on("click", function (event) {
         if (!$(event.target).closest(".topic-options").length) {
           $(".topic-options-popup").addClass("hidden");
+          $(".post-list-item").removeClass("menu-open");
         }
       });
 

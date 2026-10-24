@@ -22,9 +22,9 @@
     }
 
     .space-lists {
+      width: 650px;
       display: flex;
       flex-direction: column;
-      width: 500px;
     }
 
     .space-item {}
@@ -48,13 +48,19 @@
     }
 
     .section-item {
-      padding: 4px;
-      padding-left: 24px;
+      display: grid;
+      grid-template-columns: 370px 11px 262px;
+      align-items: center;
+      padding: 6px 4px;
       background: linear-gradient(to bottom, rgb(255, 255, 255), #eee);
     }
 
     .section-item:not(:last-child) {
       border-bottom: 1px solid var(--border-color);
+    }
+
+    .section-details {
+      padding-left: 12px;
     }
 
     .section-name {
@@ -70,6 +76,52 @@
     .section-description {
       color: black;
       font-size: 12px;
+    }
+
+    .divider {
+      width: 2px;
+      height: 100%;
+      background-color: var(--sea-blue-600);
+    }
+
+    .section-last-post {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 4px;
+    }
+
+    .last-post-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+    }
+
+    .last-post-title {
+      width: max-content;
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--sea-blue-600);
+      font-weight: bold;
+    }
+
+    .last-post-author-details {
+      max-width: 200px;
+    }
+
+    .last-post-author-name {
+      color: var(--sea-blue-500);
+    }
+
+    .author-avatar {
+      border: 1px solid #ccc;
+    }
+
+    .author-avatar img {
+      padding: 1px;
     }
   </style>
 </head>
@@ -87,12 +139,36 @@
                   <p class="space-name-row" th:text="${space.name}"></p>
                   <ul class="section-lists">
                     <li class="section-item" th:each="section : ${space.sections}">
-                      <p>
-                        <a th:href="'cafe/' + ${section.id}" class="section-name" th:text="${section.name}">
-                        </a>
-                        <span th:inline="text">([[${section.topicCounts}]] posts)</span>
-                      </p>
-                      <p class="section-description" th:text="${section.description}"></p>
+                      <div class="section-details">
+                        <p>
+                          <a th:href="'cafe/' + ${section.id}" class="section-name" th:text="${section.name}"></a>
+                          <span th:inline="text">([[${section.topicCounts}]] posts)</span>
+                        </p>
+                        <p class="section-description" th:text="${section.description}"></p>
+                      </div>
+                      <div class="divider"></div>
+                      <div class="section-last-post">
+                        <div class="last-post-details" th:if="${section.latestPostData != null}">
+                          <a class="last-post-title" th:href="${section.latestPostData.topicUrl}"
+                            th:text="${section.latestPostData.topicTitle}"></a>
+                          <p class="last-post-author-details" th:if="${section.latestPostData.postType == 'topic'}">
+                            <a class="last-post-author-name" th:href="${section.latestPostData.authorProfileUrl}"
+                              th:text="${section.latestPostData.authorDisplayName}"></a>
+                            wrote — <span class="js-format-date"
+                              th:data-raw-date="${section.latestPostData.postedDate}"></span>
+                          </p>
+                          <p class="last-post-author-details" th:if="${section.latestPostData.postType == 'reply'}">
+                            <a class="last-post-author-name" th:href="${section.latestPostData.authorProfileUrl}"
+                              th:text="${section.latestPostData.authorDisplayName}"></a>
+                            replied — <span class="js-format-date"
+                              th:data-raw-date="${section.latestPostData.postedDate}"></span>
+                          </p>
+                        </div>
+                        <div class="author-avatar" th:if="${section.latestPostData != null}">
+                          <img th:src="'/' + ${section.latestPostData.authorAvatarUrl}" width="40px">
+                        </div>
+                        <p th:if="${section.latestPostData == null}">No latest post yet...</p>
+                      </div>
                     </li>
                   </ul>
                 </div>
@@ -110,6 +186,61 @@
   </div>
 
   <th:block th:replace="~{fragments/floating-toolbar :: floating-toolbar-script}"></th:block>
+  <script>
+    /**
+     * Get formatted date, returning two strings in an array:
+     * - minimal date; e.g., "Today 10:57" or "Yesterday 10:57" or "2026 Jul 28"
+     * - full date; "2026 Jul 28 10:57"
+     */
+    function getFormattedDate(millis) {
+      const datePosted = new Date(Number(millis))
+
+      const year = datePosted.getFullYear()
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const monthName = months[datePosted.getMonth()];
+      const day = String(datePosted.getDate()).padStart(2, "0")
+
+      const hours = String(datePosted.getHours()).padStart(2, "0");
+      const minutes = String(datePosted.getMinutes()).padStart(2, "0");
+
+      const now = new Date()
+      const isToday = now.getDate() == datePosted.getDate()
+      const isYesterday = now.getDate() - 1 == datePosted.getDate()
+
+      const fullFormat = `${year} ${monthName} ${day} ${hours}:${minutes}`
+      const simpleFullFormat = `${year} ${monthName} ${day}`
+
+      if (isToday) {
+        return [`Today ${hours}:${minutes}`, fullFormat]
+      } else if (isYesterday) {
+        return [`Yesterday ${hours}:${minutes}`, fullFormat]
+      } else {
+        return [simpleFullFormat, fullFormat]
+      }
+    }
+
+    $(document).ready(function () {
+      $(".js-format-date").each(function () {
+        const rawDate = $(this).attr('data-raw-date')
+        const [minimalDate, fullDate] = getFormattedDate(rawDate)
+        $(this).text(minimalDate)
+        $(this).prop('title', fullDate)
+      })
+    })
+  </script>
 </body>
 
 </html>

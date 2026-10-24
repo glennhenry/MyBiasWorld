@@ -54,7 +54,7 @@ interface CollectionRepository {
      * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
      * - [Result.failure] if other error occurs during the operation.
      */
-    suspend fun getLatestPost(sectionId: String): Result<LatestPostInfo>
+    suspend fun getLatestPost(sectionId: String): Result<LatestSectionPostInfo>
 
     /**
      * Update the [sectionId]'s [Section.latestPost] with [postInfo].
@@ -65,6 +65,6 @@ interface CollectionRepository {
      * - [Result.failure] with [DocumentNotUpdatedException] if topic fails to be updated.
      * - [Result.failure] if other error occurs during the operation.
      */
-    suspend fun updateLatestPost(sectionId: String, postInfo: LatestPostInfo): Result<Unit>
+    suspend fun updateLatestPost(sectionId: String, postInfo: LatestSectionPostInfo): Result<Unit>
 
 }

@@ -1,7 +1,6 @@
 package mbworld.domain.cafe.collection
 
 import kotlinx.serialization.Serializable
-import mbworld.domain.cafe.topic.LatestPostInfo
 
 /**
  * Refer to the **section** concept in cafe.
@@ -27,5 +26,20 @@ data class Section(
     val order: Int,
 
     val topicCounts: Int,
-    val latestPost: LatestPostInfo?,
+    val latestPost: LatestSectionPostInfo?,
+)
+
+/**
+ * Describes a post:
+ * - Whether it's a topic, reply, or a comment by [postType].
+ * - The unique [topicId] reference, [replyId] if it's a reply,
+ *   [authorId], and [postedDate].
+ */
+@Serializable
+data class LatestSectionPostInfo(
+    val postType: String,
+    val topicId: String,
+    val replyId: String?,
+    val authorId: String,
+    val postedDate: Long
 )

@@ -81,9 +81,9 @@ class CollectionSubunit(
      * Get the latest post information of [sectionId].
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with `null` if topic is not found.
-     * - [Outcome.Ok] with the [LatestPostInfo] otherwise.
+     * - [Outcome.Ok] with the [LatestSectionPostInfo] otherwise.
      */
-    suspend fun getLatestPost(sectionId: String): Outcome<LatestPostInfo?> {
+    suspend fun getLatestPost(sectionId: String): Outcome<LatestSectionPostInfo?> {
         return collectionRepository.getLatestPost(sectionId)
             .onFailure {
                 if (it is DocumentNotFoundException) {
@@ -103,7 +103,7 @@ class CollectionSubunit(
      * Update the latest post information of [sectionId].
      * @return [Report] denoting success or failure.
      */
-    suspend fun updateLatestPost(sectionId: String, postInfo: LatestPostInfo): Report {
+    suspend fun updateLatestPost(sectionId: String, postInfo: LatestSectionPostInfo): Report {
         return collectionRepository.updateLatestPost(sectionId, postInfo)
             .onFailure {
                 Fancam.error(it, "topic") {

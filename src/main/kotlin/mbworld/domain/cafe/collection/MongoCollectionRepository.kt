@@ -9,8 +9,7 @@ import encore.datastore.runMongoCatching
 import encore.datastore.throwIfNothingModified
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
-import mbworld.domain.cafe.topic.LatestPostInfo
-import mbworld.domain.cafe.topic.QueryTopicLatestPost
+import org.bson.codecs.pojo.annotations.BsonId
 
 /** `order` */
 val FieldSpaceOrder = Space::order.name
@@ -90,10 +89,10 @@ class MongoCollectionRepository(
         }
     }
 
-    override suspend fun getLatestPost(sectionId: String): Result<LatestPostInfo> {
+    override suspend fun getLatestPost(sectionId: String): Result<LatestSectionPostInfo> {
         return runMongoCatching {
             sectionCollection
-                .withDocumentClass<QueryTopicLatestPost>()
+                .withDocumentClass<QuerySectionLatestPost>()
                 .find(Filters.eq(FieldSectionId, sectionId))
                 .projection(
                     Projections.fields(
@@ -108,7 +107,7 @@ class MongoCollectionRepository(
 
     override suspend fun updateLatestPost(
         sectionId: String,
-        postInfo: LatestPostInfo
+        postInfo: LatestSectionPostInfo
     ): Result<Unit> {
         return runMongoCatching {
             val filter = Filters.eq(FieldSectionId, sectionId)
@@ -119,3 +118,8 @@ class MongoCollectionRepository(
         }
     }
 }
+
+data class QuerySectionLatestPost(
+    @field:BsonId val id: String? = null,
+    val latestPost: LatestSectionPostInfo
+)

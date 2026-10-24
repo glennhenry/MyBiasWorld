@@ -17,6 +17,7 @@ import mbworld.domain.activity.model.ActivitySource
 import mbworld.domain.auth.UsersActivity
 import mbworld.domain.cafe.CafeActivity
 import mbworld.domain.cafe.Sections
+import mbworld.domain.cafe.collection.LatestSectionPostInfo
 import mbworld.domain.cafe.likes.Likes
 import mbworld.domain.cafe.reply.Comment
 import mbworld.domain.cafe.reply.Reply
@@ -112,9 +113,10 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             if (topic.postedDate > latestPostDate) {
                                 serverContext.subunits.collection.updateLatestPost(
                                     sectionId = topic.sectionId,
-                                    postInfo = LatestPostInfo(
+                                    postInfo = LatestSectionPostInfo(
                                         PostInfoType.Topic,
                                         topic.topicId,
+                                        null,
                                         topic.authorId,
                                         topic.postedDate
                                     )
@@ -153,8 +155,9 @@ class DummySetupCommand(private val db: MongoDatabase) : Command {
                             if (reply.postedDate > latestPostDate) {
                                 serverContext.subunits.collection.updateLatestPost(
                                     sectionId = topic.sectionId,
-                                    postInfo = LatestPostInfo(
+                                    postInfo = LatestSectionPostInfo(
                                         PostInfoType.Reply,
+                                        reply.topicId,
                                         reply.replyId,
                                         reply.authorId,
                                         reply.postedDate

@@ -166,6 +166,7 @@ fun commandHandlers(fancam: OfficialFancam, serverContext: ServerContext, mongoc
         register(StopActsCommand())
         register(GetEasyStorageItemCommand())
         register(PeekEasyStorageCommand())
+        register(ClearSessionCommand())
         // project
         register(DummySetupCommand(db))
         register(SetupDatabaseCommand(mongoc))

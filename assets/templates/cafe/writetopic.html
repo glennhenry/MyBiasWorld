@@ -140,7 +140,10 @@
         })
 
         if (response.ok) {
-          window.location.href = new URL('.', window.location.href).href.replace(/\/$/, '')
+          if (response.redirected) {
+            window.location.href = response.url;
+            return;
+          }
           return
         } else if (response.status == 400) {
           $("#post-status").text(await response.text())

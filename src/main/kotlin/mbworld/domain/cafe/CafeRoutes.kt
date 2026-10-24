@@ -306,7 +306,7 @@ class CafeRoutes(private val serverContext: ServerContext) : RouteHandler {
                 )
 
                 Fancam.debug { "Created new topicId=$id" }
-                call.respond(HttpStatusCode.OK)
+                call.respondRedirect(topicUrl)
             }
         }
 
